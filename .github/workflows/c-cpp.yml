@@ -25,10 +25,16 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install yaqti
 
+    - name: Clean up existing Qt directory
+      run: |
+        if [ -d "qt" ]; then
+          echo "Removing existing Qt directory"
+          rm -rf qt
+        fi
+
     - name: Install Qt5/Qt6 (yaqti)
       run: |
         python -m yaqti install --version 5.15.2 --os linux --platform desktop --set-envs --install-deps
-      # Note: If the --modules option is unsupported or results in errors, try removing it
 
     - name: Verify Qt installation
       run: |
