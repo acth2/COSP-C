@@ -10,11 +10,18 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Qt
-      uses: supermarin/qt-action@v2
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libgl1-mesa-dev
+
+    - name: Install Qt5/Qt6 (yaqti)
+      uses: WillBrennan/yaqti@2021.07.29
       with:
-        qt-version: '5.15'
-        qmake-args: 'CONFIG+=c++11'
+        version: '5.15.2'
+        os: 'linux'
+        platform: 'desktop'
+        modules: 'qtcharts, qtnetworkauth'
 
     - name: Build with qmake and make
       run: |
