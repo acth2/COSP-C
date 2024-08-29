@@ -12,7 +12,7 @@ jobs:
     - name: Install Qt6
       uses: WillBrennan/yaqti@2021.07.29
       with:
-        version: 6.2.1
+        version: 6.2.0
         os: linux
         platform: desktop
 
