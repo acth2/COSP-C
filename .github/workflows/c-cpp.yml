@@ -36,6 +36,19 @@ jobs:
       run: |
         python -m yaqti install --version 5.15.2 --os linux --platform desktop --set-envs --install-deps
 
+    - name: Find and set Qt path
+      run: |
+        # Find where qmake is installed
+        QT_DIR=$(find ~/ -type d -name "qt" -print -quit)
+        if [ -z "$QT_DIR" ]; then
+          echo "Qt installation directory not found."
+          exit 1
+        fi
+
+        echo "Qt installation directory: $QT_DIR"
+        export PATH=$QT_DIR/bin:$PATH
+        echo "PATH updated."
+
     - name: Verify Qt installation
       run: |
         qmake --version
