@@ -4,7 +4,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
-// A test program to see if Qt works..
+// Un programme de test pour voir si Qt fonctionne..
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
