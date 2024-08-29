@@ -10,11 +10,10 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install Qt6
-      uses: WillBrennan/yaqti@2021.07.29
+      uses: github-actions-qt/qt-setup@v2
       with:
-        version: 6.2.0
-        os: linux
-        platform: desktop
+        qt-version: '6.2.0'
+        modules: 'qtcharts'  # Add other modules as needed
 
     - name: Set up Build Environment
       run: |
