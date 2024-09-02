@@ -2,14 +2,12 @@
 #define WINDOWMANAGER_H
 
 #include <QWidget>
-#include <QEvent>
 
 class WindowManager : public QWidget {
     Q_OBJECT
 
 public:
-    WindowManager(QWidget *parent = nullptr);
-    ~WindowManager();
+    explicit WindowManager(QWidget *parent = nullptr);
 
 protected:
     bool event(QEvent *event) override;
