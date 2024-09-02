@@ -1,16 +1,23 @@
 #include <QApplication>
-#include <QDebug>
-#include <QProcess>
-#include <QByteArray>
+#include <QScreen>
 #include "windowmanager.h"
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     WindowManager manager;
-    manager.setGeometry(0, 0, 800, 600);
-    manager.setWindowTitle("My Window Manager");
-    manager.show();
+
+    QScreen *screen = QApplication::primaryScreen();
+    if (screen) {
+        QRect screenGeometry = screen->geometry();
+        manager.setGeometry(screenGeometry);
+        qDebug() << "Screen size:" << screenGeometry.size();
+    } else {
+        qDebug() << "Erreur : Impossible d'obtenir les informations sur l'écran.";
+    }
+
+    manager.setWindowTitle("CWM");
+    manager.showFullScreen();
 
     return app.exec();
 }
