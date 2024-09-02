@@ -11,7 +11,7 @@
 #include <QTextStream>
 #include <iostream>
 
-static QFile logFile("/path/to/your/logfile.txt");
+static QFile logFile("/usr/cydra/logs/cwm.log");
 static QTextStream logStream(&logFile);
 
 void logDebug(const QString &message) {
