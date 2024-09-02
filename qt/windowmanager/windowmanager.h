@@ -12,6 +12,7 @@ public:
 protected:
     bool event(QEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;  // Empêche la fermeture par les méthodes habituelles
 };
 
 #endif // WINDOWMANAGER_H
