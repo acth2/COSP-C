@@ -14,7 +14,7 @@
 
 WindowManager::WindowManager(QWidget *parent)
     : QWidget(parent), backgroundImagePath("/usr/cydra/backgrounds/current.png") {
-    
+
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
@@ -33,6 +33,8 @@ WindowManager::WindowManager(QWidget *parent)
     layout->setContentsMargins(10, 10, 10, 10);
     setLayout(layout);
 
+    konamiCodeHandler = new KonamiCodeHandler(logLabel, this);
+
     showFullScreen();
 }
 
@@ -50,12 +52,7 @@ bool WindowManager::event(QEvent *event) {
 
 void WindowManager::keyPressEvent(QKeyEvent *event) {
     appendLog("Key pressed: " + QString::number(event->key()));
-    if (event->key() == Qt::Key_P) {
-        appendLog("Key 'P' pressed: closing X server");
-        QProcess::execute("pkill Xorg");
-    } else {
-        QWidget::keyPressEvent(event);
-    }
+    konamiCodeHandler->keyPressEvent(event);
 }
 
 void WindowManager::closeEvent(QCloseEvent *event) {
@@ -66,10 +63,16 @@ void WindowManager::closeEvent(QCloseEvent *event) {
 void WindowManager::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     QPixmap backgroundPixmap(backgroundImagePath);
+
     if (!backgroundPixmap.isNull()) {
         appendLog("Background image loaded successfully.");
+
         QPixmap scaledPixmap = backgroundPixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        painter.drawPixmap(0, 0, scaledPixmap);
+    
+        int x = (width() - scaledPixmap.width()) / 2;
+        int y = (height() - scaledPixmap.height()) / 2;
+
+        painter.drawPixmap(x, y, scaledPixmap);
     } else {
         appendLog("Failed to load background image. Filling with white.");
         painter.fillRect(rect(), Qt::white);
