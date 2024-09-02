@@ -12,7 +12,11 @@ public:
 protected:
     bool event(QEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
-    void closeEvent(QCloseEvent *event) override;  // Empêche la fermeture par les méthodes habituelles
+    void closeEvent(QCloseEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
+
+private:
+    QString backgroundImagePath;
 };
 
 #endif // WINDOWMANAGER_H
