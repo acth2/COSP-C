@@ -1,6 +1,9 @@
-<h1>Éxecutez la commande 'qmake' pour construire le Makefile </h1>
-<p>Puis éxécutez la commande make pour compilé CWM </p>
-<h2>Installation:</h2>
-<p>make install</p>
-<h2>Uninstallation:</h2>
-<p>make uninstall</p>
+Éxecutez la commande 'qmake' pour construire le Makefile
+
+Puis éxécutez la commande make pour compilé CWM 
+
+Installation:
+make install
+
+Uninstallation:
+make uninstall
