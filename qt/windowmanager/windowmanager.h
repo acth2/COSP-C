@@ -2,6 +2,7 @@
 #define WINDOWMANAGER_H
 
 #include <QWidget>
+#include <QLabel>
 
 class WindowManager : public QWidget {
     Q_OBJECT
@@ -17,6 +18,8 @@ protected:
 
 private:
     QString backgroundImagePath;
+    QLabel *logLabel;
+    void appendLog(const QString &message);
 };
 
 #endif // WINDOWMANAGER_H
