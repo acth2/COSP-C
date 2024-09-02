@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QLabel>
+#include "konami_code_handler.h"
 
 class WindowManager : public QWidget {
     Q_OBJECT
@@ -19,6 +20,7 @@ protected:
 private:
     QString backgroundImagePath;
     QLabel *logLabel;
+    KonamiCodeHandler *konamiCodeHandler;
     void appendLog(const QString &message);
 };
 
