@@ -1,5 +1,6 @@
 #include "konami_code_handler.h"
 #include <QDebug>
+#include <QLabel>
 
 const int KonamiCodeHandler::konamiCode[] = {
     Qt::Key_Up, Qt::Key_Up, Qt::Key_Down, Qt::Key_Down,
@@ -9,41 +10,29 @@ const int KonamiCodeHandler::konamiCode[] = {
 
 const int KonamiCodeHandler::konamiCodeLength = sizeof(konamiCode) / sizeof(konamiCode[0]);
 
-KonamiCodeHandler::KonamiCodeHandler(QObject *parent)
-    : QObject(parent), currentCodeIndex(0), consoleOpened(false), consoleProcess(nullptr) {}
+KonamiCodeHandler::KonamiCodeHandler(QLabel *logLabel, QObject *parent)
+    : QObject(parent), logLabel(logLabel), currentCodeIndex(0) {}
 
 void KonamiCodeHandler::keyPressEvent(QKeyEvent *event) {
     if (event->key() == konamiCode[currentCodeIndex]) {
         ++currentCodeIndex;
         if (currentCodeIndex == konamiCodeLength) {
-            qDebug() << "Konami code entered. Opening console.";
-            openConsole();
+            appendLog("Konami code entered. Displaying system warnings.");
             currentCodeIndex = 0;
         }
     } else {
         currentCodeIndex = 0;
     }
 
-    if (consoleOpened && event->key() == Qt::Key_Escape) {
-        qDebug() << "ESC pressed. Closing console.";
-        closeConsole();
+    if (event->key() == Qt::Key_Escape) {
+        appendLog("ESC pressed. Clearing warnings.");
+        logLabel->clear();
     }
 }
 
-void KonamiCodeHandler::openConsole() {
-    if (!consoleOpened && !consoleProcess) {
-        consoleProcess = new QProcess(this);
-        consoleProcess->start("xterm");
-        consoleOpened = true;
-    }
-}
-
-void KonamiCodeHandler::closeConsole() {
-    if (consoleProcess) {
-        consoleProcess->terminate();
-        consoleProcess->waitForFinished();
-        delete consoleProcess;
-        consoleProcess = nullptr;
-        consoleOpened = false;
+void KonamiCodeHandler::appendLog(const QString &message) {
+    if (logLabel) {
+        QString currentText = logLabel->text();
+        logLabel->setText(currentText + "\n" + message);
     }
 }
