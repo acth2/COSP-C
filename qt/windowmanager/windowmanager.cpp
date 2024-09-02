@@ -7,32 +7,45 @@
 #include <QCloseEvent>
 #include <QPainter>
 #include <QPixmap>
+#include <QFile>
+#include <QTextStream>
 
-WindowManager::WindowManager(QWidget *parent) : QWidget(parent) {
+static QFile logFile("/usr/cydra/logs/cwm.log");
+static QTextStream logStream(&logFile);
+
+void logDebug(const QString &message) {
+    if (!logFile.isOpen()) {
+        logFile.open(QIODevice::WriteOnly | QIODevice::Append);
+    }
+    logStream << message << endl;
+    logStream.flush();
+}
+
+WindowManager::WindowManager(QWidget *parent) : QWidget(parent), backgroundImagePath("/usr/cydra/backgrounds/current.png") {
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
     QScreen *screen = QApplication::primaryScreen();
     if (screen) {
         QRect screenGeometry = screen->geometry();
         setGeometry(screenGeometry);
-        qDebug() << "Screen size:" << screenGeometry.size();
+        logDebug("Screen size: " + QString::number(screenGeometry.size().width()) + "x" + QString::number(screenGeometry.size().height()));
     } else {
-        qDebug() << "Erreur : Impossible d'obtenir les informations sur l'écran.";
+        logDebug("Erreur : Impossible d'obtenir les informations sur l'écran.");
     }
     showFullScreen();
 }
 
 bool WindowManager::event(QEvent *event) {
     if (event->type() == QEvent::WindowActivate) {
-        qDebug() << "Window activated";
+        logDebug("Window activated");
     }
     return QWidget::event(event);
 }
 
 void WindowManager::keyPressEvent(QKeyEvent *event) {
-    qDebug() << "Touche pressée : " << event->key();
+    logDebug("Touche pressée : " + QString::number(event->key()));
     if (event->key() == Qt::Key_P) {
-        qDebug() << "Touche 'p' pressée : fermeture du serveur X";
+        logDebug("Touche 'p' pressée : fermeture du serveur X");
         QProcess::execute("pkill Xorg");
     } else {
         QWidget::keyPressEvent(event);
@@ -40,16 +53,17 @@ void WindowManager::keyPressEvent(QKeyEvent *event) {
 }
 
 void WindowManager::closeEvent(QCloseEvent *event) {
-    qDebug() << "Tentative de fermeture ignorée";
+    logDebug("Tentative de fermeture ignorée");
     event->ignore();
 }
 
 void WindowManager::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
-    QPixmap backgroundPixmap("/usr/cydra/backgrounds/current.png");
-    if (!backgroundPixmap.isNull()) {
-        painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
+    QPixmap backgroundPixmap(backgroundImagePath);
+    if (backgroundPixmap.isNull()) {
+        logDebug("Erreur : Impossible de charger l'image de fond à partir de " + backgroundImagePath);
     } else {
-        qDebug() << "Erreur : Impossible de charger l'image de fond.";
+        logDebug("Image de fond chargée avec succès.");
+        painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
     }
 }
