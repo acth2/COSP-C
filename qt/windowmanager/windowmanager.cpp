@@ -7,11 +7,9 @@
 #include <QCloseEvent>
 #include <QPainter>
 #include <QPixmap>
-#include <QFile>
-#include <QTextStream>
-#include <iostream>
 
-WindowManager::WindowManager(QWidget *parent) : QWidget(parent), backgroundImagePath("/usr/cydra/backgrounds/current.png") {
+WindowManager::WindowManager(QWidget *parent)
+    : QWidget(parent), backgroundImagePath("/usr/cydra/backgrounds/current.png") {
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
     QScreen *screen = QApplication::primaryScreen();
@@ -24,15 +22,15 @@ WindowManager::WindowManager(QWidget *parent) : QWidget(parent), backgroundImage
 
 bool WindowManager::event(QEvent *event) {
     if (event->type() == QEvent::WindowActivate) {
-        logDebug("Window activated");
+        qDebug() << "Window activated";
     }
     return QWidget::event(event);
 }
 
 void WindowManager::keyPressEvent(QKeyEvent *event) {
-    logDebug("Touche pressée : " + QString::number(event->key()));
+    qDebug() << "Key pressed:" << event->key();
     if (event->key() == Qt::Key_P) {
-        logDebug("Touche 'p' pressée : fermeture du serveur X");
+        qDebug() << "Key 'P' pressed: Closing X server";
         QProcess::execute("pkill Xorg");
     } else {
         QWidget::keyPressEvent(event);
@@ -40,7 +38,7 @@ void WindowManager::keyPressEvent(QKeyEvent *event) {
 }
 
 void WindowManager::closeEvent(QCloseEvent *event) {
-    logDebug("Tentative de fermeture ignorée");
+    qDebug() << "Close attempt ignored";
     event->ignore();
 }
 
@@ -48,7 +46,9 @@ void WindowManager::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     QPixmap backgroundPixmap(backgroundImagePath);
     if (!backgroundPixmap.isNull()) {
-        logDebug("Image de fond chargée avec succès.");
-        painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
+        qDebug() << "Background image loaded successfully.";
+        painter.drawPixmap(0, 0, width(), height(), backgroundPixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    } else {
+        qDebug() << "Failed to load background image.";
     }
 }
