@@ -3,13 +3,9 @@
 #include <QScreen>
 #include <QDebug>
 #include <QKeyEvent>
-#include <QProcess>
 #include <QCloseEvent>
 #include <QPainter>
 #include <QPixmap>
-#include <QFile>
-#include <QTextStream>
-#include <QLabel>
 #include <QVBoxLayout>
 
 WindowManager::WindowManager(QWidget *parent)
@@ -66,9 +62,8 @@ void WindowManager::paintEvent(QPaintEvent *event) {
 
     if (!backgroundPixmap.isNull()) {
         appendLog("Background image loaded successfully.");
-
         QPixmap scaledPixmap = backgroundPixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    
+        
         int x = (width() - scaledPixmap.width()) / 2;
         int y = (height() - scaledPixmap.height()) / 2;
 
