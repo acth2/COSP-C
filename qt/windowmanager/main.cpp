@@ -1,20 +1,23 @@
-TEMPLATE = app
-TARGET = windowmanager
-CONFIG += console c++11
-CONFIG += qml
-CONFIG += release
-CONFIG += no_accessibility
-CONFIG += no_pro
-CONFIG += qt
-QT += core gui widgets
+#include <QApplication>
+#include <QScreen>
+#include "windowmanager.h"
 
-# Répertoire source
-SOURCES += src/main.cpp \
-           src/windowmanager.cpp
+int main(int argc, char *argv[]) {
+    QApplication app(argc, argv);
 
-HEADERS += src/windowmanager.h
+    WindowManager manager;
 
-DESTDIR = src
+    QScreen *screen = QApplication::primaryScreen();
+    if (screen) {
+        QRect screenGeometry = screen->geometry();
+        manager.setGeometry(screenGeometry);
+        qDebug() << "Screen size:" << screenGeometry.size();
+    } else {
+        qDebug() << "Erreur : Impossible d'obtenir les informations sur l'écran.";
+    }
 
-INSTALLS += target
-target.path = /usr/bin
+    manager.setWindowTitle("CWM");
+    manager.showFullScreen();
+
+    return app.exec();
+}
