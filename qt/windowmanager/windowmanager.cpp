@@ -9,7 +9,7 @@
 #include <QPixmap>
 
 WindowManager::WindowManager(QWidget *parent)
-    : QWidget(parent), backgroundImagePath("/usr/cydra/backgrounds/current.png") {
+    : QWidget(parent), backgroundImagePath("/home/acth2/current.png") { 
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
     QScreen *screen = QApplication::primaryScreen();
