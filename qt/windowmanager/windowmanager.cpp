@@ -1,6 +1,5 @@
 #include "windowmanager.h"
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QScreen>
 #include <QDebug>
 #include <QKeyEvent>
@@ -14,6 +13,7 @@ WindowManager::WindowManager(QWidget *parent) : QWidget(parent) {
     } else {
         qDebug() << "Erreur : Impossible d'obtenir les informations sur l'écran.";
     }
+
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 }
 
@@ -27,7 +27,8 @@ bool WindowManager::event(QEvent *event) {
 void WindowManager::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_P) {
         qDebug() << "Touche 'p' pressée : fermeture du serveur X";
-        QProcess::execute("pkill Xorg");
+        
+        QProcess::execute("pkill Xorg"); 
     }
-    QWidget::keyPressEvent(event);
+    QWidget::keyPressEvent(event); 
 }
