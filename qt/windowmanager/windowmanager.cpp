@@ -47,7 +47,9 @@ void WindowManager::paintEvent(QPaintEvent *event) {
     QPixmap backgroundPixmap(backgroundImagePath);
     if (!backgroundPixmap.isNull()) {
         qDebug() << "Background image loaded successfully.";
-        painter.drawPixmap(0, 0, width(), height(), backgroundPixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        // Scale the image to fit the widget size
+        QPixmap scaledPixmap = backgroundPixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        painter.drawPixmap(0, 0, scaledPixmap);
     } else {
         qDebug() << "Failed to load background image.";
     }
