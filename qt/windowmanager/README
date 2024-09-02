@@ -1,0 +1,1 @@
+use commande qmake to generate the makefile then a make make install would do the job if you have Qt 6 installed.
