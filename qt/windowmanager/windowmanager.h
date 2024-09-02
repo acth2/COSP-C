@@ -11,6 +11,7 @@ public:
 
 protected:
     bool event(QEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
 };
 
-#endif
+#endif // WINDOWMANAGER_H
