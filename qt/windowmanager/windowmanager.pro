@@ -1,11 +1,19 @@
-QT += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-TARGET = windowmanager
 TEMPLATE = app
+TARGET = windowmanager
+CONFIG += console c++11
+CONFIG += qml
+CONFIG += release
+CONFIG += no_accessibility
+CONFIG += no_pro
+CONFIG += qt
+QT += core gui widgets
 
-SOURCES += main.cpp \
-           windowmanager.cpp
+SOURCES += src/main.cpp \
+           src/windowmanager.cpp
 
-HEADERS += windowmanager.h
+HEADERS += src/windowmanager.h
+
+DESTDIR = src
+
+INSTALLS += target
+target.path = /usr/bin
