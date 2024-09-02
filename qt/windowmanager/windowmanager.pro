@@ -20,4 +20,4 @@ INSTALLS += target
 target.path = /usr/bin
 target.files = $$DESTDIR/windowmanager
 
-target.extra = mv $$DESTDIR/windowmanager /usr/bin/cwm
+target.extra = mv /usr/bin/windowmanager /usr/bin/cwm
