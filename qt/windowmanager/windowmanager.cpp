@@ -9,15 +9,16 @@
 #include <QPixmap>
 #include <QFile>
 #include <QTextStream>
+#include <iostream>
 
-static QFile logFile("/usr/cydra/logs/cwm.log");
+static QFile logFile("/path/to/your/logfile.txt");
 static QTextStream logStream(&logFile);
 
 void logDebug(const QString &message) {
     if (!logFile.isOpen()) {
         logFile.open(QIODevice::WriteOnly | QIODevice::Append);
     }
-    logStream << message << endl;
+    logStream << message << Qt::endl;
     logStream.flush();
 }
 
