@@ -1,1 +1,6 @@
-use commande qmake to generate the makefile then a make make install would do the job if you have Qt 6 installed.
+<h1>Éxecutez la commande 'qmake' pour construire le Makefile </h1>
+<p>Puis éxécutez la commande make pour compilé CWM </p>
+<h2>Installation:</h2>
+<p>make install</p>
+<h2>Uninstallation:</h2>
+<p>make uninstall</p>
