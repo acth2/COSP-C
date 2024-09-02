@@ -45,11 +45,13 @@ void WindowManager::closeEvent(QCloseEvent *event) {
 void WindowManager::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     QPixmap backgroundPixmap(backgroundImagePath);
+
     if (!backgroundPixmap.isNull()) {
         qDebug() << "Background image loaded successfully.";
         QPixmap scaledPixmap = backgroundPixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
         painter.drawPixmap(0, 0, scaledPixmap);
     } else {
-        qDebug() << "Failed to load background image.";
+        qDebug() << "Failed to load background image. Filling with white.";
+        painter.fillRect(rect(), Qt::white);
     }
 }
