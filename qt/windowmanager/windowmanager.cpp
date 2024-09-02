@@ -11,17 +11,6 @@
 #include <QTextStream>
 #include <iostream>
 
-static QFile logFile("/usr/cydra/logs/cwm.log");
-static QTextStream logStream(&logFile);
-
-void logDebug(const QString &message) {
-    if (!logFile.isOpen()) {
-        logFile.open(QIODevice::WriteOnly | QIODevice::Append);
-    }
-    logStream << message << Qt::endl;
-    logStream.flush();
-}
-
 WindowManager::WindowManager(QWidget *parent) : QWidget(parent), backgroundImagePath("/usr/cydra/backgrounds/current.png") {
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -29,9 +18,6 @@ WindowManager::WindowManager(QWidget *parent) : QWidget(parent), backgroundImage
     if (screen) {
         QRect screenGeometry = screen->geometry();
         setGeometry(screenGeometry);
-        logDebug("Screen size: " + QString::number(screenGeometry.size().width()) + "x" + QString::number(screenGeometry.size().height()));
-    } else {
-        logDebug("Erreur : Impossible d'obtenir les informations sur l'écran.");
     }
     showFullScreen();
 }
@@ -61,9 +47,7 @@ void WindowManager::closeEvent(QCloseEvent *event) {
 void WindowManager::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     QPixmap backgroundPixmap(backgroundImagePath);
-    if (backgroundPixmap.isNull()) {
-        logDebug("Erreur : Impossible de charger l'image de fond à partir de " + backgroundImagePath);
-    } else {
+    if (!backgroundPixmap.isNull()) {
         logDebug("Image de fond chargée avec succès.");
         painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
     }
