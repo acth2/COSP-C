@@ -1,12 +1,13 @@
 #include <QApplication>
-#include <QWidget>
+#include "windowmanager.h"
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
-    QWidget mainWindow;
-    mainWindow.setGeometry(0, 0, 800, 600);  // test
-    mainWindow.show();
+    WindowManager manager;
+    manager.setGeometry(0, 0, 800, 600);
+    manager.setWindowTitle("My Window Manager");
+    manager.show();
 
     return app.exec();
 }
