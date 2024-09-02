@@ -3,7 +3,4 @@
 Puis éxécutez la commande make pour compilé CWM 
 
 Installation:
-make install
-
-Uninstallation:
-make uninstall
+make install-
