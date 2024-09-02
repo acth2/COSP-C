@@ -8,11 +8,10 @@ CONFIG += no_pro
 CONFIG += qt
 QT += core gui widgets
 
-# Répertoire source
-SOURCES += src/main.cpp \
-           src/windowmanager.cpp
+SOURCES += main.cpp \
+           windowmanager.cpp
 
-HEADERS += src/windowmanager.h
+HEADERS += windowmanager.h
 
 DESTDIR = src
 
