@@ -4,23 +4,21 @@
 #include <QObject>
 #include <QKeyEvent>
 
-class QLabel;
-
 class KonamiCodeHandler : public QObject {
     Q_OBJECT
 
 public:
-    explicit KonamiCodeHandler(QLabel *logLabel, QObject *parent = nullptr);
+    explicit KonamiCodeHandler(QObject *parent = nullptr);
 
-    void keyPressEvent(QKeyEvent *event);
+signals:
+    void konamiCodeEntered();
+
+public slots:
+    void handleKeyPress(QKeyEvent *event);
 
 private:
-    void appendLog(const QString &message);
-
-    static const int konamiCode[];
-    static const int konamiCodeLength;
-    int currentCodeIndex;
-    QLabel *logLabel;
+    QString currentSequence;
+    const QString konamiCode = "38384040373937396665";
 };
 
 #endif // KONAMI_CODE_HANDLER_H
