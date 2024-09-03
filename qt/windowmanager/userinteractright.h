@@ -24,8 +24,6 @@ private:
     QPushButton *button3;
     QLabel *textLabel;
     bool isMousePressed = false;
-
-    void checkOutsideClick(const QPoint &pos);
 };
 
 #endif // USERINTERACTRIGHT_H
