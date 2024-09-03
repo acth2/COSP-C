@@ -23,7 +23,7 @@ void UserInteractRight::setupUI() {
             background-color: #0078D4; /* Windows 11 Blue */
             color: white;
             border: none;
-            border-radius: 8px; /* Rounded corners */
+            border-radius: 5px; /* Slightly rounded corners */
             padding: 8px 16px;
             font-size: 12px;
             font-weight: bold;
@@ -54,7 +54,7 @@ void UserInteractRight::setupUI() {
     layout->addWidget(button2);
     layout->addWidget(button3);
     layout->setSpacing(10);
-    layout->setContentsMargins(15, 15, 15, 15); 
+    layout->setContentsMargins(15, 15, 15, 15);
     setLayout(layout);
 
     connect(button1, &QPushButton::clicked, this, &UserInteractRight::button1Clicked);
@@ -80,10 +80,10 @@ void UserInteractRight::mouseReleaseEvent(QMouseEvent *event) {
 
 void UserInteractRight::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
-    
-    painter.setPen(Qt::NoPen);
+
+    painter.setPen(QPen(Qt::black, 2));
     painter.setBrush(QColor(255, 255, 255, 240));
-    painter.drawRoundedRect(rect(), 12, 12);
+    painter.drawRect(rect());
 
     QWidget::paintEvent(event);
 }
