@@ -4,13 +4,9 @@
 #include <QScreen>
 #include <QDebug>
 #include <QKeyEvent>
-#include <QProcess>
+#include <QMouseEvent>
 #include <QCloseEvent>
 #include <QPainter>
-#include <QPixmap>
-#include <QFile>
-#include <QTextStream>
-#include <QLabel>
 #include <QVBoxLayout>
 
 WindowManager::WindowManager(QWidget *parent)
@@ -64,7 +60,8 @@ bool WindowManager::event(QEvent *event) {
     } else if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
         if (mouseEvent->button() == Qt::RightButton) {
-            interactWidget->mousePressEvent(mouseEvent);
+            interactWidget->move(mouseEvent->globalPos());
+            interactWidget->show();
         }
     }
     return QWidget::event(event);
