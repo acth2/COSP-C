@@ -4,6 +4,7 @@
 #include <QVBoxLayout>
 #include <QApplication>
 #include <QFile>
+#include <QProcess>
 
 UserInteractRight::UserInteractRight(QWidget *parent) 
     : QWidget(parent), isDarkMode(false) {
@@ -24,9 +25,9 @@ UserInteractRight::UserInteractRight(QWidget *parent)
 
 void UserInteractRight::setupUI() {
     button1 = new QPushButton("Exit system", this);
-    button2 = new QPushButton("Button 2", this);
+    button2 = new QPushButton("Start Shell", this);
     button3 = new QPushButton("Button 3", this);
-    textLabel = new QLabel("This is a text label", this);
+    textLabel = new QLabel("Control panel", this);
 
     textLabel->setAlignment(Qt::AlignCenter);
 
@@ -40,6 +41,7 @@ void UserInteractRight::setupUI() {
     setLayout(layout);
 
     connect(button1, &QPushButton::clicked, this, &UserInteractRight::button1Clicked);
+    connect(button2, &QPushButton::clicked, this, &UserInteractRight::button2Clicked);
 }
 
 void UserInteractRight::applyStyles() {
@@ -139,6 +141,11 @@ void UserInteractRight::paintEvent(QPaintEvent *event) {
 
 void UserInteractRight::button1Clicked() {
     QApplication::quit();
+}
+
+void UserInteractRight::button2Clicked() {
+    QProcess process;
+    process.start("xterm", "");
 }
 
 void UserInteractRight::closeIfClickedOutside(QMouseEvent *event) {
