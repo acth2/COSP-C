@@ -57,18 +57,11 @@ void WindowManager::toggleConsole() {
 void WindowManager::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     QPixmap backgroundPixmap(backgroundImagePath);
-
     if (!backgroundPixmap.isNull()) {
-        appendLog("Background image loaded successfully.");
-
-        QPixmap scaledPixmap = backgroundPixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        int x = (width() - scaledPixmap.width()) / 2;
-        int y = (height() - scaledPixmap.height()) / 2;
-
-        painter.drawPixmap(x, y, scaledPixmap);
-    } else {
-        appendLog("Failed to load background image. Filling with white.");
-        painter.fillRect(rect(), Qt::white);
+        appendLog("The background loaded correctly..");
+        painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
+    else {
+        appendLog("The background did not loaded correctly..");
     }
 }
 
