@@ -1,10 +1,10 @@
 #include "userinteractright.h"
+#include "windowmanager.h"
 #include <QPainter>
 #include <QApplication>
-#include <QDesktopWidget>
 
-UserInteractRight::UserInteractRight(QWidget *parent)
-    : QWidget(parent), isMouseInside(false) {
+UserInteractRight::UserInteractRight(WindowManager *windowManager, QWidget *parent)
+    : QWidget(parent), windowManager(windowManager), isMouseInside(false) {
 
     setupUI();
 
