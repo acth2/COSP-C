@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QLabel>
-#include <QVBoxLayout>
+#include <QMouseEvent>
 
 class UserInteractRight : public QWidget {
     Q_OBJECT
@@ -23,6 +23,8 @@ private:
     QPushButton *button3;
     QLabel *textLabel;
     bool isMousePressed = false;
+
+    void checkOutsideClick(const QPoint &pos);
 };
 
 #endif // USERINTERACTRIGHT_H
