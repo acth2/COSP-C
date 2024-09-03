@@ -54,7 +54,7 @@ void UserInteractRight::setupUI() {
     layout->addWidget(button2);
     layout->addWidget(button3);
     layout->setSpacing(10);
-    layout->setContentsMargins(15, 15, 15, 15);
+    layout->setContentsMargins(15, 15, 15, 15); 
     setLayout(layout);
 
     connect(button1, &QPushButton::clicked, this, &UserInteractRight::button1Clicked);
@@ -81,9 +81,9 @@ void UserInteractRight::mouseReleaseEvent(QMouseEvent *event) {
 void UserInteractRight::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     
-    painter.setPen(QPen(QColor(0, 0, 0, 150), 2)); 
+    painter.setPen(Qt::NoPen);
     painter.setBrush(QColor(255, 255, 255, 240));
-    painter.drawRoundedRect(rect(), 12, 12); 
+    painter.drawRoundedRect(rect(), 12, 12);
 
     QWidget::paintEvent(event);
 }
