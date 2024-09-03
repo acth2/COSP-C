@@ -80,8 +80,6 @@ void WindowManager::paintEvent(QPaintEvent *event) {
     if (!backgroundPixmap.isNull()) {
         appendLog("Background loaded!");
         painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
-    else {
-        appendLog("Background failed to load..");
     }
 }
 
