@@ -49,23 +49,24 @@ void UserInteractRight::applyStyles() {
     if (isDarkMode) {
         buttonStyle = R"(
             QPushButton {
-                background-color: #1e1e1e; /* Dark background */
-                color: #cfcfcf; /* Light text color */
+                background-color: #cfcfcf; 
+                color: #595853;
                 border: none;
-                border-radius: 5px; /* Slightly rounded corners */
+                border-radius: 5px; 
                 padding: 8px 16px;
                 font-size: 12px;
                 font-weight: bold;
-                min-width: 100px; /* Ensure buttons have a minimum width */
+                min-width: 100px; width 
             }
             QPushButton:hover {
-                background-color: #333333; /* Darker on hover */
+                color: #bab9b5;
+                background-color: #52514e 
             }
         )";
 
         labelStyle = R"(
             QLabel {
-                color: #cfcfcf; /* Light text color */
+                color: #bab9b5;
                 font-size: 14px;
                 font-weight: medium;
                 margin-bottom: 10px;
@@ -75,23 +76,23 @@ void UserInteractRight::applyStyles() {
     } else {
         buttonStyle = R"(
             QPushButton {
-                background-color: #0078D4; /* Windows 11 Blue */
+                background-color: #0078D4;
                 color: white;
                 border: none;
-                border-radius: 5px; /* Slightly rounded corners */
+                border-radius: 5px;
                 padding: 8px 16px;
                 font-size: 12px;
                 font-weight: bold;
-                min-width: 100px; /* Ensure buttons have a minimum width */
+                min-width: 100px; 
             }
             QPushButton:hover {
-                background-color: #005A9E; /* Darker blue on hover */
+                background-color: #005A9E;
             }
         )";
 
         labelStyle = R"(
             QLabel {
-                color: #333333; /* Dark text color */
+                color: #333333;
                 font-size: 14px;
                 font-weight: medium;
                 margin-bottom: 10px;
