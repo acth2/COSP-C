@@ -31,3 +31,41 @@ UserInteractRight::UserInteractRight(QWidget *parent) : QWidget(parent) {
 
     setFixedSize(200, 200);
 }
+
+void UserInteractRight::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::RightButton) {
+        isMousePressed = true;
+        QPoint pos = event->globalPos();
+        move(pos.x() - width(), pos.y());
+        show();
+    }
+    QWidget::mousePressEvent(event);
+}
+
+void UserInteractRight::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->button() == Qt::RightButton) {
+        isMousePressed = false;
+        QPoint pos = event->globalPos();
+        checkOutsideClick(pos);
+    }
+    QWidget::mouseReleaseEvent(event);
+}
+
+void UserInteractRight::paintEvent(QPaintEvent *event) {
+    QPainter painter(this);
+    painter.setPen(Qt::gray);
+    painter.setBrush(Qt::lightGray);
+    painter.drawRect(rect());
+
+    QWidget::paintEvent(event);
+}
+
+void UserInteractRight::checkOutsideClick(const QPoint &pos) {
+    if (!rect().contains(mapFromGlobal(pos))) {
+        close();
+    }
+}
+
+void UserInteractRight::button1Clicked() {
+    QApplication::quit();
+}
