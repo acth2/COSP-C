@@ -1,10 +1,10 @@
 #include "userinteractright.h"
 #include <QMouseEvent>
 #include <QPainter>
-#include <QPaintEvent>
 #include <QApplication>
 
-UserInteractRight::UserInteractRight(QWidget *parent) : QWidget(parent) {
+UserInteractRight::UserInteractRight(QWidget *parent)
+    : QWidget(parent) {
     setWindowFlags(Qt::Popup | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
@@ -36,7 +36,7 @@ void UserInteractRight::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
         isMousePressed = true;
         QPoint pos = event->globalPos();
-        move(pos.x() - width(), pos.y());
+        move(pos.x() - width() / 2, pos.y() - height() / 2);
         show();
     }
     QWidget::mousePressEvent(event);
@@ -44,9 +44,10 @@ void UserInteractRight::mousePressEvent(QMouseEvent *event) {
 
 void UserInteractRight::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
+        if (!rect().contains(event->pos())) {
+            close();
+        }
         isMousePressed = false;
-        QPoint pos = event->globalPos();
-        checkOutsideClick(pos);
     }
     QWidget::mouseReleaseEvent(event);
 }
@@ -61,7 +62,7 @@ void UserInteractRight::paintEvent(QPaintEvent *event) {
 }
 
 void UserInteractRight::checkOutsideClick(const QPoint &pos) {
-    if (!rect().contains(mapFromGlobal(pos))) {
+    if (!rect().contains(pos)) {
         close();
     }
 }
