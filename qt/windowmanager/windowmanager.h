@@ -27,7 +27,9 @@ private:
     KonamiCodeHandler *konamiCodeHandler;
     bool isConsoleVisible;
     UserInteractRight *userInteractRightWidget;
-
+    bool isConsoleVisible;
+   
+    UserInteractRight *interactWidget;
     void appendLog(const QString &message);
     void toggleConsole();
     void handleRightClick(QMouseEvent *event);
