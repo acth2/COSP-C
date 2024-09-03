@@ -128,9 +128,9 @@ void UserInteractRight::paintEvent(QPaintEvent *event) {
 
     painter.setPen(QPen(Qt::black, 2)); 
     if (isDarkMode) {
-        painter.setBrush(QColor(255, 255, 255, 240)); 
-    } else {
         painter.setBrush(QColor(31, 30, 29, 240)); 
+    } else {
+        painter.setBrush(QColor(255, 255, 255, 240)); 
     }
     painter.drawRect(rect());
 
