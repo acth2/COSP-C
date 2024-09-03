@@ -18,6 +18,7 @@ void UserInteractRight::setupUI() {
     button3 = new QPushButton("Button 3", this);
     textLabel = new QLabel("This is a text label", this);
 
+    // Modern UI Styling
     QString buttonStyle = R"(
         QPushButton {
             background-color: #0078D4; /* Windows 11 Blue */
@@ -40,10 +41,12 @@ void UserInteractRight::setupUI() {
             font-size: 14px;
             font-weight: medium;
             margin-bottom: 10px;
+            background-color: transparent;
         }
     )";
 
     textLabel->setStyleSheet(labelStyle);
+    textLabel->setAlignment(Qt::AlignCenter);
     button1->setStyleSheet(buttonStyle);
     button2->setStyleSheet(buttonStyle);
     button3->setStyleSheet(buttonStyle);
