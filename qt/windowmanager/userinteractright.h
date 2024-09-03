@@ -5,7 +5,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QMouseEvent>
-#include <QEvent>
+#include <QPaintEvent>
 
 class UserInteractRight : public QWidget {
     Q_OBJECT
