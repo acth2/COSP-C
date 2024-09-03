@@ -10,7 +10,10 @@
 #include <QVBoxLayout>
 
 WindowManager::WindowManager(QWidget *parent)
-    : QWidget(parent), backgroundImagePath("/usr/cydra/backgrounds/current.png") {
+    : QWidget(parent), 
+      isConsoleVisible(false),
+      userInteractRightWidget(nullptr),
+      backgroundImagePath("/usr/cydra/backgrounds/current.png") {
     
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -34,7 +37,7 @@ WindowManager::WindowManager(QWidget *parent)
     konamiCodeHandler = new KonamiCodeHandler(this);
     connect(konamiCodeHandler, &KonamiCodeHandler::konamiCodeEntered, this, &WindowManager::toggleConsole);
 
-    interactWidget = new UserInteractRight(this);
+    userInteractRightWidget = nullptr;
 
     showFullScreen();
 }
@@ -60,8 +63,11 @@ bool WindowManager::event(QEvent *event) {
     } else if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
         if (mouseEvent->button() == Qt::RightButton) {
-            interactWidget->move(mouseEvent->globalPos());
-            interactWidget->show();
+            if (!userInteractRightWidget) {
+                userInteractRightWidget = new UserInteractRight(this);
+            }
+            userInteractRightWidget->move(mouseEvent->globalPos());
+            userInteractRightWidget->show();
         }
     }
     return QWidget::event(event);
