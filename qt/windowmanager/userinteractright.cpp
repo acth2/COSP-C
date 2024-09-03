@@ -1,60 +1,71 @@
 #include "userinteractright.h"
-#include "windowmanager.h"
+#include <QMouseEvent>
 #include <QPainter>
+#include <QPaintEvent>
 #include <QApplication>
 
-UserInteractRight::UserInteractRight(WindowManager *windowManager, QWidget *parent)
-    : QWidget(parent), windowManager(windowManager), isMouseInside(false) {
-
-    setupUI();
-
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
+UserInteractRight::UserInteractRight(QWidget *parent) : QWidget(parent) {
+    setWindowFlags(Qt::Popup | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
-    setStyleSheet("background-color: rgba(255, 255, 255, 200); border: 2px solid black;");
-}
 
-void UserInteractRight::setupUI() {
-    button1 = new QPushButton("Button 1", this);
+    button1 = new QPushButton("Exit system", this);
     button2 = new QPushButton("Button 2", this);
     button3 = new QPushButton("Button 3", this);
     textLabel = new QLabel("This is a text label", this);
-
+    
+    button1->setStyleSheet("QPushButton { background-color: lightgray; border: none; }");
+    button2->setStyleSheet("QPushButton { background-color: lightgray; border: none; }");
+    button3->setStyleSheet("QPushButton { background-color: lightgray; border: none; }");
+    
+    textLabel->setStyleSheet("QLabel { background-color: transparent; }");
+    
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(textLabel);
     layout->addWidget(button1);
     layout->addWidget(button2);
     layout->addWidget(button3);
-
     layout->setContentsMargins(10, 10, 10, 10);
     setLayout(layout);
+
+    connect(button1, &QPushButton::clicked, this, &UserInteractRight::button1Clicked);
+    
+    setFixedSize(200, 200);
 }
 
 void UserInteractRight::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
         QPoint pos = event->globalPos();
-        move(pos.x() - 100, pos.y() - 50);
+        move(pos.x() - 7, pos.y() + 10));
         show();
     }
 }
 
-void UserInteractRight::mouseReleaseEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
-        checkOutsideClick(event);
+void UserInteractRight::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::RightButton) {
+        isMousePressed = true;
     }
+    QWidget::mousePressEvent(event);
+}
+
+void UserInteractRight::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->button() == Qt::RightButton) {
+        isMousePressed = false;
+        if (!rect().contains(event->pos())) {
+            close();
+        }
+    }
+    QWidget::mouseReleaseEvent(event);
 }
 
 void UserInteractRight::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
-    painter.setPen(QPen(Qt::black, 2));
-    painter.setBrush(QBrush(QColor(255, 255, 255, 200)));
+    painter.setPen(Qt::gray);
+    painter.setBrush(Qt::lightGray);
     painter.drawRect(rect());
+
+    QWidget::paintEvent(event);
 }
 
-void UserInteractRight::checkOutsideClick(QMouseEvent *event) {
-    QPoint globalPos = event->globalPos();
-    QRect rect = geometry();
-
-    if (!rect.contains(globalPos)) {
-        close();
-    }
+void UserInteractRight::button1Clicked() {
+    QApplication::quit();
 }
