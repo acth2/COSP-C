@@ -1,14 +1,12 @@
 #include "konami_code_handler.h"
-#include <QDebug>
 
-KonamiCodeHandler::KonamiCodeHandler(QObject *parent) : QObject(parent) {}
+KonamiCodeHandler::KonamiCodeHandler(QObject *parent) : QObject(parent), currentSequence("") {}
 
 void KonamiCodeHandler::handleKeyPress(QKeyEvent *event) {
-    QString keyStr = QString::number(event->key());
-    currentSequence.append(keyStr);
+    currentSequence += QString::number(event->key());
 
     if (currentSequence.length() > konamiCode.length()) {
-        currentSequence.remove(0, currentSequence.length() - konamiCode.length());
+        currentSequence = currentSequence.right(konamiCode.length());
     }
 
     if (currentSequence == konamiCode) {
