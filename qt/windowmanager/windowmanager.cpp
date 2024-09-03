@@ -1,67 +1,54 @@
-#include "userinteractright.h"
 #include "windowmanager.h"
-#include <QPainter>
 #include <QApplication>
+#include <QScreen>
+#include <QDebug>
+#include <QKeyEvent>
+#include <QProcess>
+#include <QCloseEvent>
+#include <QPainter>
+#include <QPixmap>
+#include <QFile>
+#include <QTextStream>
+#include <iostream>
 
-UserInteractRight::UserInteractRight(WindowManager *windowManager, QWidget *parent)
-    : QWidget(parent), windowManager(windowManager), isMouseInside(false) {
-
-    setupUI();
-
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
+WindowManager::WindowManager(QWidget *parent) : QWidget(parent), backgroundImagePath("/usr/cydra/backgrounds/current.png") {
+    setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
-    setStyleSheet("background-color: rgba(255, 255, 255, 200); border: 2px solid black;");
+    QScreen *screen = QApplication::primaryScreen();
+    if (screen) {
+        QRect screenGeometry = screen->geometry();
+        setGeometry(screenGeometry);
+    }
+    showFullScreen();
 }
 
-void UserInteractRight::setupUI() {
-    button1 = new QPushButton("Exit the system", this);
-    button2 = new QPushButton("Button 2", this);
-    button3 = new QPushButton("Button 3", this);
-    textLabel = new QLabel("This is a text label", this);
-
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->addWidget(textLabel);
-    layout->addWidget(button1);
-    layout->addWidget(button2);
-    layout->addWidget(button3);
-
-    layout->setContentsMargins(10, 10, 10, 10);
-    setLayout(layout);
-
-    connect(button1, &QPushButton::clicked, this, &UserInteractRight::button1Clicked);
-    connect(button2, &QPushButton::clicked, this, &UserInteractRight::button2Clicked);
-    connect(button3, &QPushButton::clicked, this, &UserInteractRight::button3Clicked);
+bool WindowManager::event(QEvent *event) {
+    if (event->type() == QEvent::WindowActivate) {
+        logDebug("Window activated");
+    }
+    return QWidget::event(event);
 }
 
-void UserInteractRight::mousePressEvent(QMouseEvent *event) {
-    if (event->button() == Qt::RightButton) {
-        QPoint pos = event->globalPos();
-        move(pos.x() - 7, pos.y() + 10);
-        show();
+void WindowManager::keyPressEvent(QKeyEvent *event) {
+    logDebug("Touche pressée : " + QString::number(event->key()));
+    if (event->key() == Qt::Key_P) {
+        logDebug("Touche 'p' pressée : fermeture du serveur X");
+        QProcess::execute("pkill Xorg");
+    } else {
+        QWidget::keyPressEvent(event);
     }
 }
 
-void UserInteractRight::mouseReleaseEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
-        checkOutsideClick(event);
-    }
+void WindowManager::closeEvent(QCloseEvent *event) {
+    logDebug("Tentative de fermeture ignorée");
+    event->ignore();
 }
 
-void UserInteractRight::paintEvent(QPaintEvent *event) {
+void WindowManager::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
-    painter.setPen(QPen(Qt::black, 2));
-    painter.setBrush(QBrush(QColor(255, 255, 255, 200)));
-    painter.drawRect(rect());
-}
-
-void UserInteractRight::checkOutsideClick(QMouseEvent *event) {
-    QPoint globalPos = event->globalPos();
-    QRect rect = geometry();
-
-    if (!rect.contains(globalPos)) {
-        close();
+    QPixmap backgroundPixmap(backgroundImagePath);
+    if (!backgroundPixmap.isNull()) {
+        logDebug("Image de fond chargée avec succès.");
+        painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
     }
-
-void UserInteractRight::button1Clicked() {
-    QApplication::quit();
 }
