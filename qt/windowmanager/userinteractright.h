@@ -18,6 +18,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
 
+private slots:
+    void button1Clicked();
 private:
     QPushButton *button1;
     QPushButton *button2;
