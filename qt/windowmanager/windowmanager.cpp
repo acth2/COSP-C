@@ -74,3 +74,12 @@ void WindowManager::closeEvent(QCloseEvent *event) {
     event->ignore();
 }
 
+void WindowManager::paintEvent(QPaintEvent *event) {
+    QPainter painter(this);
+    QPixmap backgroundPixmap(backgroundImagePath);
+    if (!backgroundPixmap.isNull()) {
+        logDebug("Image de fond chargée avec succès.");
+        painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
+    }
+}
+
