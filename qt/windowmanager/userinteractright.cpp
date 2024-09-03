@@ -5,18 +5,21 @@
 #include <QApplication>
 #include <QFile>
 
-UserInteractRight::UserInteractRight(QWidget *parent) : QWidget(parent) {
+UserInteractRight::UserInteractRight(QWidget *parent) 
+    : QWidget(parent), isDarkMode(false) {
+
     setWindowFlags(Qt::Popup | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
     setupUI();
-    setFixedSize(200, 250);
 
+    setFixedSize(200, 250);
+        
     if (QFile::exists("/usr/cydra/settings/darkmode")) {
-        applyDarkMode();
-    } else {
-        applyLightMode();
+        isDarkMode = true;
     }
+    
+    applyStyles();
 }
 
 void UserInteractRight::setupUI() {
@@ -32,72 +35,70 @@ void UserInteractRight::setupUI() {
     layout->addWidget(button1);
     layout->addWidget(button2);
     layout->addWidget(button3);
-    layout->setSpacing(10);
-    layout->setContentsMargins(15, 15, 15, 15); 
+    layout->setSpacing(10); 
+    layout->setContentsMargins(15, 15, 15, 15);
     setLayout(layout);
 
     connect(button1, &QPushButton::clicked, this, &UserInteractRight::button1Clicked);
 }
 
-void UserInteractRight::applyDarkMode() {
-    QString buttonStyle = R"(
-        QPushButton {
-            background-color: #1e1e1e; /* Dark background */
-            color: #cfcfcf; /* Light text color */
-            border: none;
-            border-radius: 5px; /* Slightly rounded corners */
-            padding: 8px 16px;
-            font-size: 12px;
-            font-weight: bold;
-            min-width: 100px; /* Ensure buttons have a minimum width */
-        }
-        QPushButton:hover {
-            background-color: #333333; /* Darker on hover */
-        }
-    )";
+void UserInteractRight::applyStyles() {
+    QString buttonStyle;
+    QString labelStyle;
 
-    QString labelStyle = R"(
-        QLabel {
-            color: #cfcfcf; /* Light text color */
-            font-size: 14px;
-            font-weight: medium;
-            margin-bottom: 10px;
-            background-color: transparent;
-        }
-    )";
+    if (isDarkMode) {
+        buttonStyle = R"(
+            QPushButton {
+                background-color: #1e1e1e; /* Dark background */
+                color: #cfcfcf; /* Light text color */
+                border: none;
+                border-radius: 5px; /* Slightly rounded corners */
+                padding: 8px 16px;
+                font-size: 12px;
+                font-weight: bold;
+                min-width: 100px; /* Ensure buttons have a minimum width */
+            }
+            QPushButton:hover {
+                background-color: #333333; /* Darker on hover */
+            }
+        )";
 
-    textLabel->setStyleSheet(labelStyle);
-    button1->setStyleSheet(buttonStyle);
-    button2->setStyleSheet(buttonStyle);
-    button3->setStyleSheet(buttonStyle);
-}
+        labelStyle = R"(
+            QLabel {
+                color: #cfcfcf; /* Light text color */
+                font-size: 14px;
+                font-weight: medium;
+                margin-bottom: 10px;
+                background-color: transparent;
+            }
+        )";
+    } else {
+        buttonStyle = R"(
+            QPushButton {
+                background-color: #0078D4; /* Windows 11 Blue */
+                color: white;
+                border: none;
+                border-radius: 5px; /* Slightly rounded corners */
+                padding: 8px 16px;
+                font-size: 12px;
+                font-weight: bold;
+                min-width: 100px; /* Ensure buttons have a minimum width */
+            }
+            QPushButton:hover {
+                background-color: #005A9E; /* Darker blue on hover */
+            }
+        )";
 
-void UserInteractRight::applyLightMode() {
-    QString buttonStyle = R"(
-        QPushButton {
-            background-color: #0078D4; /* Windows 11 Blue */
-            color: white;
-            border: none;
-            border-radius: 5px; /* Slightly rounded corners */
-            padding: 8px 16px;
-            font-size: 12px;
-            font-weight: bold;
-            min-width: 100px; /* Ensure buttons have a minimum width */
-        }
-        QPushButton:hover {
-            background-color: #005A9E; /* Darker blue on hover */
-        }
-    )";
-
-    QString labelStyle = R"(
-        QLabel {
-            color: #333333; /* Dark text color */
-            font-size: 14px;
-            font-weight: medium;
-            margin-bottom: 10px;
-            background-color: transparent;
-        }
-    )";
+        labelStyle = R"(
+            QLabel {
+                color: #333333; /* Dark text color */
+                font-size: 14px;
+                font-weight: medium;
+                margin-bottom: 10px;
+                background-color: transparent;
+            }
+        )";
+    }
 
     textLabel->setStyleSheet(labelStyle);
     button1->setStyleSheet(buttonStyle);
@@ -107,7 +108,6 @@ void UserInteractRight::applyLightMode() {
 
 void UserInteractRight::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
-        isMousePressed = true;
         QPoint cursorPos = event->globalPos();
         move(cursorPos.x() - width() / 2, cursorPos.y() - height() / 2);
         show();
@@ -117,7 +117,6 @@ void UserInteractRight::mousePressEvent(QMouseEvent *event) {
 
 void UserInteractRight::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
-        isMousePressed = false;
         closeIfClickedOutside(event);
     }
     QWidget::mouseReleaseEvent(event);
