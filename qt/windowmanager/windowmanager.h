@@ -22,6 +22,7 @@ private:
     QLabel *logLabel;
     QSet<QString> loggedMessages;
     KonamiCodeHandler *konamiCodeHandler;
+    bool isConsoleVisible;
 
     void appendLog(const QString &message);
     void toggleConsole();
