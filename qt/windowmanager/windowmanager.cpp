@@ -3,14 +3,18 @@
 #include <QScreen>
 #include <QDebug>
 #include <QKeyEvent>
+#include <QProcess>
 #include <QCloseEvent>
 #include <QPainter>
 #include <QPixmap>
+#include <QFile>
+#include <QTextStream>
+#include <QLabel>
 #include <QVBoxLayout>
 
 WindowManager::WindowManager(QWidget *parent)
     : QWidget(parent), backgroundImagePath("/usr/cydra/backgrounds/current.png") {
-
+    
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
@@ -29,9 +33,43 @@ WindowManager::WindowManager(QWidget *parent)
     layout->setContentsMargins(10, 10, 10, 10);
     setLayout(layout);
 
-    konamiCodeHandler = new KonamiCodeHandler(logLabel, this);
+    konamiCodeHandler = new KonamiCodeHandler(this);
+    connect(konamiCodeHandler, &KonamiCodeHandler::konamiCodeEntered, this, &WindowManager::toggleConsole);
 
     showFullScreen();
+}
+
+void WindowManager::keyPressEvent(QKeyEvent *event) {
+    konamiCodeHandler->handleKeyPress(event);
+
+    if (event->key() == Qt::Key_Escape && isConsoleVisible) {
+        toggleConsole();
+    }
+
+    QWidget::keyPressEvent(event);
+}
+
+void WindowManager::toggleConsole() {
+    isConsoleVisible = !isConsoleVisible;
+    logLabel->setVisible(isConsoleVisible);
+}
+
+void WindowManager::paintEvent(QPaintEvent *event) {
+    QPainter painter(this);
+    QPixmap backgroundPixmap(backgroundImagePath);
+
+    if (!backgroundPixmap.isNull()) {
+        appendLog("Background image loaded successfully.");
+
+        QPixmap scaledPixmap = backgroundPixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        int x = (width() - scaledPixmap.width()) / 2;
+        int y = (height() - scaledPixmap.height()) / 2;
+
+        painter.drawPixmap(x, y, scaledPixmap);
+    } else {
+        appendLog("Failed to load background image. Filling with white.");
+        painter.fillRect(rect(), Qt::white);
+    }
 }
 
 void WindowManager::appendLog(const QString &message) {
@@ -46,30 +84,6 @@ bool WindowManager::event(QEvent *event) {
     return QWidget::event(event);
 }
 
-void WindowManager::keyPressEvent(QKeyEvent *event) {
-    appendLog("Key pressed: " + QString::number(event->key()));
-    konamiCodeHandler->keyPressEvent(event);
-}
-
 void WindowManager::closeEvent(QCloseEvent *event) {
     appendLog("Close attempt ignored");
     event->ignore();
-}
-
-void WindowManager::paintEvent(QPaintEvent *event) {
-    QPainter painter(this);
-    QPixmap backgroundPixmap(backgroundImagePath);
-
-    if (!backgroundPixmap.isNull()) {
-        appendLog("Background image loaded successfully.");
-        QPixmap scaledPixmap = backgroundPixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        
-        int x = (width() - scaledPixmap.width()) / 2;
-        int y = (height() - scaledPixmap.height()) / 2;
-
-        painter.drawPixmap(x, y, scaledPixmap);
-    } else {
-        appendLog("Failed to load background image. Filling with white.");
-        painter.fillRect(rect(), Qt::white);
-    }
-}
