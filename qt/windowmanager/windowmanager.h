@@ -18,7 +18,6 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
 
 private:
     QString backgroundImagePath;
@@ -30,9 +29,6 @@ private:
 
     void appendLog(const QString &message);
     void toggleConsole();
-
-    void handleRightClick(QMouseEvent *event);
-
 };
 
 #endif // WINDOWMANAGER_H
