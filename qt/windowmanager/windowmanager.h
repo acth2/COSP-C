@@ -30,7 +30,9 @@ private:
 
     void appendLog(const QString &message);
     void toggleConsole();
+
     void handleRightClick(QMouseEvent *event);
+
 };
 
 #endif // WINDOWMANAGER_H
