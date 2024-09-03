@@ -3,17 +3,14 @@
 
 #include <QWidget>
 #include <QPushButton>
-#include <QVBoxLayout>
-#include <QMouseEvent>
 #include <QLabel>
-
-class WindowManager;
+#include <QVBoxLayout>
 
 class UserInteractRight : public QWidget {
     Q_OBJECT
 
 public:
-    explicit UserInteractRight(WindowManager *windowManager, QWidget *parent = nullptr);
+    explicit UserInteractRight(QWidget *parent = nullptr);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -21,16 +18,11 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    WindowManager *windowManager;
     QPushButton *button1;
     QPushButton *button2;
     QPushButton *button3;
     QLabel *textLabel;
-    bool isMouseInside;
-
-    void setupUI();
-    void checkOutsideClick(QMouseEvent *event);
-    void logOpening(); 
+    bool isMousePressed = false;
 };
 
 #endif // USERINTERACTRIGHT_H
