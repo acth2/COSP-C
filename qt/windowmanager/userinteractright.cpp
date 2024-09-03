@@ -127,7 +127,11 @@ void UserInteractRight::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
 
     painter.setPen(QPen(Qt::black, 2)); 
-    painter.setBrush(QColor(255, 255, 255, 240)); 
+    if (isDarkMode) {
+        painter.setBrush(QColor(255, 255, 255, 240)); 
+    else {
+        painter.setBrush(QColor(31, 30, 29, 240)); 
+    }
     painter.drawRect(rect());
 
     QWidget::paintEvent(event);
