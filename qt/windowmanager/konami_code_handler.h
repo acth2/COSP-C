@@ -18,7 +18,7 @@ public slots:
 
 private:
     QString currentSequence;
-    const QString konamiCode = "38384040373937396665";
+    const QString konamiCode = "38384040373937386665";
 };
 
 #endif // KONAMI_CODE_HANDLER_H
