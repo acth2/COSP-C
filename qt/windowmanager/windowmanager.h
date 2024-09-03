@@ -1,24 +1,27 @@
-#ifndef KONAMI_CODE_HANDLER_H
-#define KONAMI_CODE_HANDLER_H
+#ifndef WINDOWMANAGER_H
+#define WINDOWMANAGER_H
 
-#include <QObject>
-#include <QKeyEvent>
+#include <QWidget>
+#include <QLabel>
+#include "konami_code_handler.h"
 
-class KonamiCodeHandler : public QObject {
+class WindowManager : public QWidget {
     Q_OBJECT
 
 public:
-    explicit KonamiCodeHandler(QObject *parent = nullptr);
+    explicit WindowManager(QWidget *parent = nullptr);
 
-signals:
-    void konamiCodeEntered();
-
-public slots:
-    void handleKeyPress(QKeyEvent *event);
+protected:
+    bool event(QEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
 
 private:
-    QString currentSequence;
-    const QString konamiCode = "38384040373937396665";
+    QString backgroundImagePath;
+    QLabel *logLabel;
+    KonamiCodeHandler *konamiCodeHandler;
+    void appendLog(const QString &message);
 };
 
-#endif // KONAMI_CODE_HANDLER_H
+#endif // WINDOWMANAGER_H
