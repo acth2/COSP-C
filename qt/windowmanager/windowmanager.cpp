@@ -8,6 +8,7 @@
 #include <QCloseEvent>
 #include <QPainter>
 #include <QVBoxLayout>
+#include <QProcess>
 
 WindowManager::WindowManager(QWidget *parent)
     : QWidget(parent), 
