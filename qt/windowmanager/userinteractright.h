@@ -25,7 +25,6 @@ private:
     bool isMousePressed = false;
 
     void checkOutsideClick(const QPoint &pos);
-    void button1Clicked();
 };
 
 #endif // USERINTERACTRIGHT_H
