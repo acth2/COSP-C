@@ -23,10 +23,11 @@ void UserInteractRight::setupUI() {
             background-color: #0078D4; /* Windows 11 Blue */
             color: white;
             border: none;
-            border-radius: 12px; /* Rounded corners */
-            padding: 10px 20px;
-            font-size: 14px;
+            border-radius: 8px; /* Rounded corners */
+            padding: 8px 16px;
+            font-size: 12px;
             font-weight: bold;
+            min-width: 100px; /* Ensure buttons have a minimum width */
         }
         QPushButton:hover {
             background-color: #005A9E; /* Darker blue on hover */
@@ -36,7 +37,7 @@ void UserInteractRight::setupUI() {
     QString labelStyle = R"(
         QLabel {
             color: #333333; /* Dark text color */
-            font-size: 16px;
+            font-size: 14px;
             font-weight: medium;
             margin-bottom: 10px;
         }
@@ -52,7 +53,7 @@ void UserInteractRight::setupUI() {
     layout->addWidget(button1);
     layout->addWidget(button2);
     layout->addWidget(button3);
-    layout->setSpacing(15);
+    layout->setSpacing(10);
     layout->setContentsMargins(15, 15, 15, 15);
     setLayout(layout);
 
@@ -79,9 +80,10 @@ void UserInteractRight::mouseReleaseEvent(QMouseEvent *event) {
 
 void UserInteractRight::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
-    painter.setPen(Qt::NoPen);
+    
+    painter.setPen(QPen(QColor(0, 0, 0, 150), 2)); 
     painter.setBrush(QColor(255, 255, 255, 240));
-    painter.drawRoundedRect(rect(), 15, 15); 
+    painter.drawRoundedRect(rect(), 12, 12); 
 
     QWidget::paintEvent(event);
 }
