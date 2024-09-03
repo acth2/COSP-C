@@ -78,8 +78,10 @@ void WindowManager::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     QPixmap backgroundPixmap(backgroundImagePath);
     if (!backgroundPixmap.isNull()) {
-        logDebug("Image de fond chargée avec succès.");
+        appendLog("Background loaded!");
         painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
+    else {
+        appendLog("Background failed to load..");
     }
 }
 
