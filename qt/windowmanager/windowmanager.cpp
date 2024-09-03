@@ -36,7 +36,7 @@ WindowManager::WindowManager(QWidget *parent)
 
     konamiCodeHandler = new KonamiCodeHandler(this);
     connect(konamiCodeHandler, &KonamiCodeHandler::konamiCodeEntered, this, &WindowManager::toggleConsole);
-
+        
     userInteractRightWidget = nullptr;
 
     showFullScreen();
