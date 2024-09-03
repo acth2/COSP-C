@@ -145,7 +145,9 @@ void UserInteractRight::button1Clicked() {
 
 void UserInteractRight::button2Clicked() {
     QProcess process;
-    process.start("xterm", "");
+    QString command = "xterm";
+    QStringList arguments;
+    process.start(command, arguments);
 }
 
 void UserInteractRight::closeIfClickedOutside(QMouseEvent *event) {
