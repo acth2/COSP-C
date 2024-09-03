@@ -12,13 +12,13 @@ class WindowManager : public QWidget {
 
 public:
     explicit WindowManager(QWidget *parent = nullptr);
+    void mousePressEvent(QMouseEvent *event) override;
 
 protected:
     bool event(QEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
 
 private:
     QString backgroundImagePath;
