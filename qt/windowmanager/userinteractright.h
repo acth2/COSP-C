@@ -5,8 +5,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QMouseEvent>
-#include <QKeyEvent>
-#include <QPaintEvent>
+#include <QEvent>
 
 class UserInteractRight : public QWidget {
     Q_OBJECT
@@ -16,14 +15,17 @@ public:
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
-    void keyPressEvent(QKeyEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    QPushButton *exitButton;
+    QPushButton *button1;
+    QPushButton *button2;
+    QPushButton *button3;
     QLabel *textLabel;
+    bool isMousePressed = false;
 
-    void closeIfClickedOutside(const QPoint &pos);
+    void setupUI();
 };
 
 #endif // USERINTERACTRIGHT_H
