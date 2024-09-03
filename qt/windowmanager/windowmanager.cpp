@@ -39,16 +39,6 @@ WindowManager::WindowManager(QWidget *parent)
     showFullScreen();
 }
 
-void WindowManager::keyPressEvent(QKeyEvent *event) {
-    konamiCodeHandler->handleKeyPress(event);
-
-    if (event->key() == Qt::Key_Escape && isConsoleVisible) {
-        toggleConsole();
-    }
-
-    QWidget::keyPressEvent(event);
-}
-
 void WindowManager::toggleConsole() {
     isConsoleVisible = !isConsoleVisible;
     logLabel->setVisible(isConsoleVisible);
@@ -66,8 +56,11 @@ void WindowManager::paintEvent(QPaintEvent *event) {
 }
 
 void WindowManager::appendLog(const QString &message) {
-    QString currentText = logLabel->text();
-    logLabel->setText(currentText + "\n" + message);
+    if (!loggedMessages.contains(message)) {
+        loggedMessages.insert(message);
+        QString currentText = logLabel->text();
+        logLabel->setText(currentText + "\n" + message);
+    }
 }
 
 bool WindowManager::event(QEvent *event) {
@@ -77,6 +70,15 @@ bool WindowManager::event(QEvent *event) {
     return QWidget::event(event);
 }
 
+void WindowManager::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Escape && logLabel->isVisible()) {
+        logLabel->setVisible(false);
+    } else {
+        QWidget::keyPressEvent(event);
+    }
+}
+
 void WindowManager::closeEvent(QCloseEvent *event) {
     appendLog("Close attempt ignored");
     event->ignore();
+}
