@@ -51,9 +51,7 @@ void UserInteractRight::mousePressEvent(QMouseEvent *event) {
 void UserInteractRight::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
         isMousePressed = false;
-        if (!rect().contains(mapFromGlobal(event->globalPos()))) {
-            close();
-        }
+        closeIfClickedOutside(event);
     }
     QWidget::mouseReleaseEvent(event);
 }
@@ -69,4 +67,10 @@ void UserInteractRight::paintEvent(QPaintEvent *event) {
 
 void UserInteractRight::button1Clicked() {
     QApplication::quit();
+}
+
+void UserInteractRight::closeIfClickedOutside(QMouseEvent *event) {
+    if (!rect().contains(mapFromGlobal(event->globalPos()))) {
+        close();
+    }
 }
