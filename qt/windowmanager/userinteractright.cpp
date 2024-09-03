@@ -34,15 +34,10 @@ UserInteractRight::UserInteractRight(QWidget *parent) : QWidget(parent) {
 
 void UserInteractRight::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
-        QPoint pos = event->globalPos();
-        move(pos.x() - 7, pos.y() + 10);
-        show();
-    }
-}
-
-void UserInteractRight::mousePressEvent(QMouseEvent *event) {
-    if (event->button() == Qt::RightButton) {
         isMousePressed = true;
+        QPoint pos = event->globalPos();
+        move(pos.x() - 5, pos.y() + 10); 
+        show();
     }
     QWidget::mousePressEvent(event);
 }
@@ -50,7 +45,8 @@ void UserInteractRight::mousePressEvent(QMouseEvent *event) {
 void UserInteractRight::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
         isMousePressed = false;
-        if (!rect().contains(event->pos())) {
+        QPoint pos = event->globalPos();
+        if (!rect().contains(mapFromGlobal(pos))) {
             close();
         }
     }
@@ -64,6 +60,12 @@ void UserInteractRight::paintEvent(QPaintEvent *event) {
     painter.drawRect(rect());
 
     QWidget::paintEvent(event);
+}
+
+void UserInteractRight::checkOutsideClick(const QPoint &pos) {
+    if (!rect().contains(mapFromGlobal(pos))) {
+        close();
+    }
 }
 
 void UserInteractRight::button1Clicked() {
