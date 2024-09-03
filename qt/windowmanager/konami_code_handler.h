@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QKeyEvent>
+#include <QList>
+#include <QTimer>
 
 class KonamiCodeHandler : public QObject {
     Q_OBJECT
@@ -17,8 +19,13 @@ public slots:
     void handleKeyPress(QKeyEvent *event);
 
 private:
-    QString currentSequence;
-    const QString konamiCode = "38384040373937386665";
+    QList<int> currentSequence;
+    const QList<int> konamiCode = {Qt::Key_Up, Qt::Key_Up, Qt::Key_Down, Qt::Key_Down, 
+                                   Qt::Key_Left, Qt::Key_Right, Qt::Key_Left, Qt::Key_Right, 
+                                   Qt::Key_B, Qt::Key_A};
+    QTimer *resetTimer;
+
+    void resetSequence();
 };
 
 #endif // KONAMI_CODE_HANDLER_H
