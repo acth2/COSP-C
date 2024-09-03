@@ -9,7 +9,7 @@ UserInteractRight::UserInteractRight(QWidget *parent) : QWidget(parent) {
     setAttribute(Qt::WA_TranslucentBackground);
 
     setupUI();
-    setFixedSize(200, 150);  
+    setFixedSize(200, 150);
 }
 
 void UserInteractRight::setupUI() {
