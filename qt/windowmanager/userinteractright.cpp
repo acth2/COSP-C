@@ -1,5 +1,5 @@
 #include "userinteractright.h"
-#include <QMouseEvent>
+#include <QVBoxLayout>
 #include <QPainter>
 #include <QApplication>
 
