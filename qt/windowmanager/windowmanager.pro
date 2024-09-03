@@ -18,6 +18,6 @@ DESTDIR = src
 
 INSTALLS += target
 target.path = /usr/bin
-target.files = $$DESTDIR/windowmanager
+target.files = $$DESTDIR/src/windowmanager
 
-target.extra = mv $$DESTDIR/windowmanager/windowmanager /usr/bin/cwm
+target.extra = mv $$DESTDIR/windowmanager /usr/bin/cwm
