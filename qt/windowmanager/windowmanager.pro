@@ -9,15 +9,17 @@ QT += core gui widgets
 
 SOURCES += main.cpp \
            windowmanager.cpp \
-           konami_code_handler.cpp
+           konami_code_handler.cpp \
+           userinteractright.cpp
 
 HEADERS += windowmanager.h \
-           konami_code_handler.h
+           konami_code_handler.h \
+           userinteractright.h
 
 DESTDIR = src
 
 INSTALLS += target
 target.path = /usr/bin
-target.files = $$DESTDIR/src/windowmanager
+target.files = $$DESTDIR/windowmanager
 
 target.extra = mv $$DESTDIR/windowmanager /usr/bin/cwm
