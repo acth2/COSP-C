@@ -30,6 +30,7 @@ private:
     bool isDarkMode;
 
     void setupUI();
+    void applyStyles();
     void closeIfClickedOutside(QMouseEvent *event);
 };
 
