@@ -53,10 +53,6 @@ void WindowManager::appendLog(const QString &message) {
     }
 }
 
-void WindowManager::toggleConsole() {
-    logLabel->setVisible(!logLabel->isVisible());
-}
-
 bool WindowManager::event(QEvent *event) {
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
