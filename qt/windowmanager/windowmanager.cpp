@@ -43,7 +43,7 @@ WindowManager::WindowManager(QWidget *parent)
 void WindowManager::toggleConsole() {
     isConsoleVisible = !isConsoleVisible;
     logLabel->setVisible(isConsoleVisible);
-    appendLog("Welcome into the DEBUG window (AKA: My worst nightmare), Press ESC to exit it");
+    appendLog("Welcome into the DEBUG window (AKA: Where my nightmare comes true), Press ESC to exit it");
 }
 
 void WindowManager::appendLog(const QString &message) {
