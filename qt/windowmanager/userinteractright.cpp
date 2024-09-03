@@ -35,7 +35,7 @@ UserInteractRight::UserInteractRight(QWidget *parent) : QWidget(parent) {
 void UserInteractRight::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
         QPoint pos = event->globalPos();
-        move(pos.x() - 7, pos.y() + 10));
+        move(pos.x() - 7, pos.y() + 10);
         show();
     }
 }
