@@ -1,4 +1,5 @@
 #include <QApplication>
+#include "userinteractright.h"
 #include <QScreen>
 #include "windowmanager.h"
 
@@ -12,7 +13,9 @@ int main(int argc, char *argv[]) {
         QRect screenGeometry = screen->geometry();
         manager.setGeometry(screenGeometry);
     }
-
+    
+    UserInteractRight interactWidget;
+    interactWidget.show();
     manager.setWindowTitle("CWM");
     manager.showFullScreen();
 
