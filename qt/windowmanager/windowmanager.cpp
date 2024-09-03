@@ -1,109 +1,67 @@
+#include "userinteractright.h"
 #include "windowmanager.h"
-#include <QApplication>
-#include <QScreen>
-#include <QDebug>
-#include <QKeyEvent>
-#include <QProcess>
-#include <QCloseEvent>
 #include <QPainter>
-#include <QPixmap>
-#include <QFile>
-#include <QTextStream>
-#include <QLabel>
-#include <QVBoxLayout>
+#include <QApplication>
 
-WindowManager::WindowManager(QWidget *parent)
-    : QWidget(parent), backgroundImagePath("/usr/cydra/backgrounds/current.png"),
-      isConsoleVisible(false), userInteractRightWidget(nullptr) {
-    
-    setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+UserInteractRight::UserInteractRight(WindowManager *windowManager, QWidget *parent)
+    : QWidget(parent), windowManager(windowManager), isMouseInside(false) {
+
+    setupUI();
+
+    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
+    setStyleSheet("background-color: rgba(255, 255, 255, 200); border: 2px solid black;");
+}
 
-    QScreen *screen = QApplication::primaryScreen();
-    if (screen) {
-        QRect screenGeometry = screen->geometry();
-        setGeometry(screenGeometry);
-    }
-
-    logLabel = new QLabel(this);
-    logLabel->setStyleSheet("QLabel { color : white; background-color : rgba(0, 0, 0, 150); }");
-    logLabel->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
-    logLabel->setVisible(false);
+void UserInteractRight::setupUI() {
+    button1 = new QPushButton("Exit the system", this);
+    button2 = new QPushButton("Button 2", this);
+    button3 = new QPushButton("Button 3", this);
+    textLabel = new QLabel("This is a text label", this);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->addWidget(logLabel);
+    layout->addWidget(textLabel);
+    layout->addWidget(button1);
+    layout->addWidget(button2);
+    layout->addWidget(button3);
+
     layout->setContentsMargins(10, 10, 10, 10);
     setLayout(layout);
 
-    konamiCodeHandler = new KonamiCodeHandler(this);
-    connect(konamiCodeHandler, &KonamiCodeHandler::konamiCodeEntered, this, &WindowManager::toggleConsole);
-
-    showFullScreen();
+    connect(button1, &QPushButton::clicked, this, &UserInteractRight::button1Clicked);
+    connect(button2, &QPushButton::clicked, this, &UserInteractRight::button2Clicked);
+    connect(button3, &QPushButton::clicked, this, &UserInteractRight::button3Clicked);
 }
 
-void WindowManager::toggleConsole() {
-    isConsoleVisible = !isConsoleVisible;
-    logLabel->setVisible(isConsoleVisible);
-    if (isConsoleVisible) {
-        appendLog("Welcome into the DEBUG window (AKA: Where my nightmare comes true), Press ESC to exit it");
-    }
-}
-
-void WindowManager::appendLog(const QString &message) {
-    if (!loggedMessages.contains(message)) {
-        loggedMessages.insert(message);
-        QString currentText = logLabel->text();
-        logLabel->setText(currentText + "\n" + message);
-    }
-}
-
-bool WindowManager::event(QEvent *event) {
-    if (event->type() == QEvent::KeyPress) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-        konamiCodeHandler->handleKeyPress(keyEvent);
-    }
-    return QWidget::event(event);
-}
-
-void WindowManager::keyPressEvent(QKeyEvent *event) {
-    if (event->key() == Qt::Key_Escape && logLabel->isVisible()) {
-        toggleConsole();
-    } else {
-        QWidget::keyPressEvent(event);
-    }
-}
-
-void WindowManager::closeEvent(QCloseEvent *event) {
-    appendLog("Close attempt ignored");
-    event->ignore();
-}
-
-void WindowManager::paintEvent(QPaintEvent *event) {
-    QPainter painter(this);
-    QPixmap backgroundPixmap(backgroundImagePath);
-    if (!backgroundPixmap.isNull()) {
-        appendLog("Background loaded!");
-        painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
-    }
-}
-
-void WindowManager::mousePressEvent(QMouseEvent *event) {
+void UserInteractRight::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
-        handleRightClick(event);
-    } else {
-        QWidget::mousePressEvent(event);
+        QPoint pos = event->globalPos();
+        move(pos.x() - 7, pos.y() + 10);
+        show();
     }
 }
 
-void WindowManager::handleRightClick(QMouseEvent *event) {
-    if (userInteractRightWidget) {
-        userInteractRightWidget->close(); // Remove the existing widget if it exists
+void UserInteractRight::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        checkOutsideClick(event);
+    }
+}
+
+void UserInteractRight::paintEvent(QPaintEvent *event) {
+    QPainter painter(this);
+    painter.setPen(QPen(Qt::black, 2));
+    painter.setBrush(QBrush(QColor(255, 255, 255, 200)));
+    painter.drawRect(rect());
+}
+
+void UserInteractRight::checkOutsideClick(QMouseEvent *event) {
+    QPoint globalPos = event->globalPos();
+    QRect rect = geometry();
+
+    if (!rect.contains(globalPos)) {
+        close();
     }
 
-    userInteractRightWidget = new UserInteractRight(this);
-    userInteractRightWidget->move(event->globalPos() - QPoint(userInteractRightWidget->width() / 2, userInteractRightWidget->height() / 2));
-    userInteractRightWidget->show();
-    connect(userInteractRightWidget, &UserInteractRight::destroyed, [this]() {
-        userInteractRightWidget = nullptr; // Reset the widget pointer when it is destroyed
-    });
+void UserInteractRight::button1Clicked() {
+    QApplication::quit();
 }
