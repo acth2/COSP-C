@@ -40,6 +40,7 @@ void UserInteractRight::setupUI() {
 
 void UserInteractRight::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
+        close();
         isMousePressed = true;
         QPoint cursorPos = event->globalPos();
         move(cursorPos.x() - width() / 2, cursorPos.y() - height() / 2);
