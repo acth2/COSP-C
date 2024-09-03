@@ -20,6 +20,7 @@ protected:
 
 private slots:
     void button1Clicked();
+
 private:
     QPushButton *button1;
     QPushButton *button2;
@@ -28,6 +29,7 @@ private:
     bool isMousePressed = false;
 
     void setupUI();
+    void closeIfClickedOutside(QMouseEvent *event);
 };
 
 #endif // USERINTERACTRIGHT_H
