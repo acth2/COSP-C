@@ -27,6 +27,7 @@ private:
     QPushButton *button3;
     QLabel *textLabel;
     bool isMousePressed = false;
+    bool isDarkMode;
 
     void setupUI();
     void closeIfClickedOutside(QMouseEvent *event);
