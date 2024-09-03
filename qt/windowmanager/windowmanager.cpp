@@ -13,7 +13,8 @@
 #include <QVBoxLayout>
 
 WindowManager::WindowManager(QWidget *parent)
-    : QWidget(parent), backgroundImagePath("/usr/cydra/backgrounds/current.png") {
+    : QWidget(parent), backgroundImagePath("/usr/cydra/backgrounds/current.png"),
+      isConsoleVisible(false), userInteractRightWidget(nullptr) {
     
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -43,7 +44,9 @@ WindowManager::WindowManager(QWidget *parent)
 void WindowManager::toggleConsole() {
     isConsoleVisible = !isConsoleVisible;
     logLabel->setVisible(isConsoleVisible);
-    appendLog("Welcome into the DEBUG window (AKA: Where my nightmare comes true), Press ESC to exit it");
+    if (isConsoleVisible) {
+        appendLog("Welcome into the DEBUG window (AKA: Where my nightmare comes true), Press ESC to exit it");
+    }
 }
 
 void WindowManager::appendLog(const QString &message) {
@@ -84,3 +87,23 @@ void WindowManager::paintEvent(QPaintEvent *event) {
     }
 }
 
+void WindowManager::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::RightButton) {
+        handleRightClick(event);
+    } else {
+        QWidget::mousePressEvent(event);
+    }
+}
+
+void WindowManager::handleRightClick(QMouseEvent *event) {
+    if (userInteractRightWidget) {
+        userInteractRightWidget->close(); // Remove the existing widget if it exists
+    }
+
+    userInteractRightWidget = new UserInteractRight(this);
+    userInteractRightWidget->move(event->globalPos() - QPoint(userInteractRightWidget->width() / 2, userInteractRightWidget->height() / 2));
+    userInteractRightWidget->show();
+    connect(userInteractRightWidget, &UserInteractRight::destroyed, [this]() {
+        userInteractRightWidget = nullptr; // Reset the widget pointer when it is destroyed
+    });
+}
