@@ -9,7 +9,7 @@ UserInteractRight::UserInteractRight(QWidget *parent) : QWidget(parent) {
     setAttribute(Qt::WA_TranslucentBackground);
 
     setupUI();
-    setFixedSize(200, 150);
+    setFixedSize(200, 250);
 }
 
 void UserInteractRight::setupUI() {
@@ -40,7 +40,6 @@ void UserInteractRight::setupUI() {
 
 void UserInteractRight::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
-        close();
         isMousePressed = true;
         QPoint cursorPos = event->globalPos();
         move(cursorPos.x() - width() / 2, cursorPos.y() - height() / 2);
