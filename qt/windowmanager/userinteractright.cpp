@@ -1,46 +1,61 @@
 #include "userinteractright.h"
-#include <QVBoxLayout>
+#include <QMouseEvent>
 #include <QPainter>
+#include <QVBoxLayout>
 #include <QApplication>
 
-UserInteractRight::UserInteractRight(QWidget *parent)
-    : QWidget(parent) {
+UserInteractRight::UserInteractRight(QWidget *parent) : QWidget(parent) {
     setWindowFlags(Qt::Popup | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
-    exitButton = new QPushButton("Exit system", this);
-    textLabel = new QLabel("Ceci est un test", this);
+    setupUI();
+    setFixedSize(200, 150);  
+}
 
-    exitButton->setStyleSheet("QPushButton { background-color: lightgray; border: none; }");
-    textLabel->setStyleSheet("QLabel { background-color: transparent; }");
+void UserInteractRight::setupUI() {
+    button1 = new QPushButton("Exit system", this);
+    button2 = new QPushButton("Button 2", this);
+    button3 = new QPushButton("Button 3", this);
+    textLabel = new QLabel("This is a text label", this);
+
+    button1->setStyleSheet("QPushButton { background-color: lightgray; border: none; padding: 10px; }"
+                           "QPushButton:hover { background-color: gray; }");
+    button2->setStyleSheet("QPushButton { background-color: lightgray; border: none; padding: 10px; }"
+                           "QPushButton:hover { background-color: gray; }");
+    button3->setStyleSheet("QPushButton { background-color: lightgray; border: none; padding: 10px; }"
+                           "QPushButton:hover { background-color: gray; }");
+
+    textLabel->setStyleSheet("QLabel { background-color: transparent; padding: 10px; }");
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(textLabel);
-    layout->addWidget(exitButton);
+    layout->addWidget(button1);
+    layout->addWidget(button2);
+    layout->addWidget(button3);
     layout->setContentsMargins(10, 10, 10, 10);
     setLayout(layout);
 
-    connect(exitButton, &QPushButton::clicked, QApplication::instance(), &QApplication::quit);
-
-    setFixedSize(200, 100);
+    connect(button1, &QPushButton::clicked, this, &UserInteractRight::button1Clicked);
 }
 
 void UserInteractRight::mousePressEvent(QMouseEvent *event) {
-    close();
     if (event->button() == Qt::RightButton) {
-        QPoint pos = event->globalPos();
-        move(pos.x() - width() / 2, pos.y() - height() / 2); 
+        isMousePressed = true;
+        QPoint cursorPos = event->globalPos();
+        move(cursorPos.x() - width() / 2, cursorPos.y() - height() / 2);
         show();
-    } else {
-        closeIfClickedOutside(event->pos());
     }
+    QWidget::mousePressEvent(event);
 }
 
-void UserInteractRight::keyPressEvent(QKeyEvent *event) {
-    if (event->key() == Qt::Key_Escape) {
-        close();
+void UserInteractRight::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->button() == Qt::RightButton) {
+        isMousePressed = false;
+        if (!rect().contains(mapFromGlobal(event->globalPos()))) {
+            close();
+        }
     }
-    QWidget::keyPressEvent(event);
+    QWidget::mouseReleaseEvent(event);
 }
 
 void UserInteractRight::paintEvent(QPaintEvent *event) {
@@ -52,8 +67,6 @@ void UserInteractRight::paintEvent(QPaintEvent *event) {
     QWidget::paintEvent(event);
 }
 
-void UserInteractRight::closeIfClickedOutside(const QPoint &pos) {
-    if (!rect().contains(pos)) {
-        close();
-    }
+void UserInteractRight::button1Clicked() {
+    QApplication::quit();
 }
