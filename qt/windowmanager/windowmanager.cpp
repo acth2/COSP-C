@@ -27,6 +27,7 @@ WindowManager::WindowManager(QWidget *parent)
     logLabel = new QLabel(this);
     logLabel->setStyleSheet("QLabel { color : white; background-color : rgba(0, 0, 0, 150); }");
     logLabel->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
+    logLabel->setVisible(false);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(logLabel);
@@ -44,17 +45,6 @@ void WindowManager::toggleConsole() {
     logLabel->setVisible(isConsoleVisible);
 }
 
-void WindowManager::paintEvent(QPaintEvent *event) {
-    QPainter painter(this);
-    QPixmap backgroundPixmap(backgroundImagePath);
-    if (!backgroundPixmap.isNull()) {
-        appendLog("The background loaded correctly..");
-        painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
-    else {
-        appendLog("The background did not loaded correctly..");
-    }
-}
-
 void WindowManager::appendLog(const QString &message) {
     if (!loggedMessages.contains(message)) {
         loggedMessages.insert(message);
@@ -63,16 +53,21 @@ void WindowManager::appendLog(const QString &message) {
     }
 }
 
+void WindowManager::toggleConsole() {
+    logLabel->setVisible(!logLabel->isVisible());
+}
+
 bool WindowManager::event(QEvent *event) {
-    if (event->type() == QEvent::WindowActivate) {
-        appendLog("Window activated");
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        konamiCodeHandler->handleKeyPress(keyEvent);
     }
     return QWidget::event(event);
 }
 
 void WindowManager::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Escape && logLabel->isVisible()) {
-        logLabel->setVisible(false);
+        toggleConsole();
     } else {
         QWidget::keyPressEvent(event);
     }
@@ -82,3 +77,4 @@ void WindowManager::closeEvent(QCloseEvent *event) {
     appendLog("Close attempt ignored");
     event->ignore();
 }
+
