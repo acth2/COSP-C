@@ -1,34 +1,31 @@
-#ifndef WINDOWMANAGER_H
-#define WINDOWMANAGER_H
+#ifndef USERINTERACTRIGHT_H
+#define USERINTERACTRIGHT_H
 
 #include <QWidget>
+#include <QPushButton>
 #include <QLabel>
-#include <QSet>
-#include "konami_code_handler.h"
-#include "userinteractright.h"
+#include <QMouseEvent>
+#include <QEvent>
 
-class WindowManager : public QWidget {
+class UserInteractRight : public QWidget {
     Q_OBJECT
 
 public:
-    explicit WindowManager(QWidget *parent = nullptr);
+    explicit UserInteractRight(QWidget *parent = nullptr);
 
 protected:
-    bool event(QEvent *event) override;
-    void keyPressEvent(QKeyEvent *event) override;
-    void closeEvent(QCloseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    QString backgroundImagePath;
-    QLabel *logLabel;
-    QSet<QString> loggedMessages;
-    KonamiCodeHandler *konamiCodeHandler;
-    bool isConsoleVisible;
-    UserInteractRight *userInteractRightWidget;
+    QPushButton *button1;
+    QPushButton *button2;
+    QPushButton *button3;
+    QLabel *textLabel;
+    bool isMousePressed = false;
 
-    void appendLog(const QString &message);
-    void toggleConsole();
+    void setupUI();
 };
 
-#endif // WINDOWMANAGER_H
+#endif // USERINTERACTRIGHT_H
