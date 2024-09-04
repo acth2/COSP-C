@@ -19,7 +19,7 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     setStyleSheet("background-color: #333333;");
 
     startButton = new QPushButton(this);
-    if (isDarkMode) {
+    if (!isDarkMode) {
         startButton->setIcon(QIcon("/usr/cydra/cydradm.png"));
     } else {
         startButton->setIcon(QIcon("/usr/cydra/cydra.png"));
