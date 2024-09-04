@@ -27,7 +27,8 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     popup->setStyleSheet("background-color: #333333; border: 1px solid gray;"); 
     popup->hide();
 
-    powerButton = new QPushButton(this);
+    // Power button setup
+    powerButton = new QPushButton(popup);
     powerButton->setIcon(QIcon("/usr/cydra/icons/power.png"));
     powerButton->setIconSize(QSize(32, 32));
     powerButton->setStyleSheet("border: none;");
@@ -88,7 +89,7 @@ void TaskBar::showPowerMenu() {
         overlay->setGeometry(QApplication::primaryScreen()->geometry());
         overlay->show();
 
-        QDialog *powerDialog = new QDialog(popup);
+        QDialog *powerDialog = new QDialog(popup); 
         powerDialog->setWindowTitle("Power Options");
         powerDialog->setModal(true);
         powerDialog->setAttribute(Qt::WA_DeleteOnClose);
@@ -131,4 +132,19 @@ void TaskBar::closePowerMenu() {
     if (powerMenuVisible) {
         powerMenuVisible = false;
     }
+}
+
+void TaskBar::installEventFilter() {
+    qApp->installEventFilter(this);
+}
+
+bool TaskBar::eventFilter(QObject *object, QEvent *event) {
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        if (popup->isVisible() && !popup->geometry().contains(mouseEvent->globalPos())) {
+            closePopup();
+            return true;
+        }
+    }
+    return QWidget::eventFilter(object, event);
 }
