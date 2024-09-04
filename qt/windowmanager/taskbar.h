@@ -8,6 +8,8 @@
 #include <QResizeEvent>
 #include <QMouseEvent>
 #include <QKeyEvent>
+#include <QDialog>
+#include <QEvent>
 
 class TaskBar : public QWidget {
     Q_OBJECT
@@ -28,9 +30,9 @@ private:
     void adjustSizeToScreen();
     void showPopup();
     void closePopup();
-    void installEventFilter();
     void showPowerMenu();
     void closePowerMenu();
+    void installEventFilter();
     bool isPopupVisible = false;
     bool powerMenuVisible = false;
 };
