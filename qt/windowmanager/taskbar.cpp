@@ -23,7 +23,7 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent), popupVisible(false) {
     connect(startButton, &QPushButton::clicked, this, &TaskBar::showPopup);
 
     adjustSizeToScreen();
-
+    
     qApp->installEventFilter(this);
 }
 
@@ -72,7 +72,9 @@ void TaskBar::showPopup() {
     }
 
     QRect taskbarGeometry = geometry();
-    popup->move(0, taskbarGeometry.top() - popup->height());  
+    qDebug() << "Taskbar Geometry:" << taskbarGeometry;
+    popup->move(0, taskbarGeometry.top() - popup->height());
+    qDebug() << "Popup Position:" << popup->pos();
     popup->show();
     popupVisible = true;
 }
