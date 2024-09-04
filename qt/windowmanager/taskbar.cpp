@@ -4,6 +4,7 @@
 #include <QScreen>
 #include <QDebug>
 #include <QEvent>
+#include <QHBoxLayout>
 
 TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
