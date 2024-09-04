@@ -6,7 +6,7 @@
 #include <QEvent>
 #include <QHBoxLayout>
 
-TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
+TaskBar::TaskBar(QWidget *parent) : QWidget(parent), popupVisible(false) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setStyleSheet("background-color: #333333;");
 
@@ -67,11 +67,13 @@ void TaskBar::showPopup() {
     if (!popup) {
         popup = new QLabel(this);
         popup->setStyleSheet("background-color: #222222; color: #FFFFFF;");
-        popup->setFixedSize(500, 500); 
+        popup->setFixedSize(500, 500);
         popup->setText("This is the popup content.");
     }
 
-    popup->setGeometry(0, -200, 200, 200);
+    QRect taskbarGeometry = geometry();
+    popup->move(0, taskbarGeometry.top() - popup->height());  
+    popup->show();
     popupVisible = true;
 }
 
