@@ -1,4 +1,5 @@
 #include "userinteractright.h"
+#include "TerminalWindow.h"
 #include <QMouseEvent>
 #include <QPainter>
 #include <QVBoxLayout>
@@ -139,7 +140,8 @@ void UserInteractRight::paintEvent(QPaintEvent *event) {
 }
 
 void UserInteractRight::button1Clicked() {
-    // weeee
+    TerminalWindow window;
+    window.show();
 }
 
 void UserInteractRight::closeIfClickedOutside(QMouseEvent *event) {
