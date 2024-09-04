@@ -18,9 +18,9 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     layout->setContentsMargins(5, 5, 5, 5);
     setLayout(layout);
 
-    popup = new QLabel(this);
-    popup->setGeometry(0, -200, 200, 200);
-    popup->setStyleSheet("background-color: white; border: 1px solid gray;");
+    popup = new QLabel(nullptr);
+    popup->setFixedSize(200, 200);
+    popup->setStyleSheet("background-color: #333333; border: 1px solid gray;");
     popup->hide();
 
     connect(startButton, &QPushButton::clicked, this, &TaskBar::showPopup);
@@ -43,13 +43,14 @@ void TaskBar::adjustSizeToScreen() {
 }
 
 void TaskBar::showPopup() {
-    popup->setGeometry(startButton->x(), startButton->y() - popup->height(), popup->width(), popup->height());
+    QRect screenGeometry = QApplication::primaryScreen()->geometry();
+    popup->setGeometry(startButton->x(), screenGeometry.height() - height() - popup->height(), popup->width(), popup->height());
     popup->show();
-    
+
     QPropertyAnimation *animation = new QPropertyAnimation(popup, "geometry");
-    animation->setDuration(500);
-    animation->setStartValue(QRect(popup->x(), popup->y() + popup->height(), popup->width(), popup->height()));
-    animation->setEndValue(QRect(popup->x(), popup->y(), popup->width(), popup->height()));
+    animation->setDuration(500); 
+    animation->setStartValue(QRect(popup->x(), screenGeometry.height(), popup->width(), popup->height()));
+    animation->setEndValue(QRect(popup->x(), screenGeometry.height() - height() - popup->height(), popup->width(), popup->height()));
     animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
@@ -62,7 +63,7 @@ void TaskBar::keyPressEvent(QKeyEvent *event) {
 }
 
 void TaskBar::mousePressEvent(QMouseEvent *event) {
-    if (popup->isVisible() && !popup->rect().contains(event->pos()) && !startButton->rect().contains(event->pos())) {
+    if (popup->isVisible() && !popup->rect().contains(event->globalPos()) && !rect().contains(event->globalPos())) {
         closePopup();
     } else {
         QWidget::mousePressEvent(event);
