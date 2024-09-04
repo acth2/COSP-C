@@ -1,5 +1,4 @@
 #include "taskbar.h"
-#include <QPropertyAnimation>
 #include <QApplication>
 #include <QScreen>
 #include <QVBoxLayout>
@@ -37,7 +36,7 @@ void TaskBar::adjustSizeToScreen() {
     QScreen *screen = QApplication::primaryScreen();
     if (screen) {
         QRect screenGeometry = screen->geometry();
-        setFixedSize(screenGeometry.width(), 40);
+        setFixedSize(screenGeometry.width(), 60);
         move(0, screenGeometry.height() - height());
     }
 }
@@ -46,12 +45,6 @@ void TaskBar::showPopup() {
     QRect screenGeometry = QApplication::primaryScreen()->geometry();
     popup->setGeometry(startButton->x(), screenGeometry.height() - height() - popup->height(), popup->width(), popup->height());
     popup->show();
-
-    QPropertyAnimation *animation = new QPropertyAnimation(popup, "geometry");
-    animation->setDuration(500); 
-    animation->setStartValue(QRect(popup->x(), screenGeometry.height(), popup->width(), popup->height()));
-    animation->setEndValue(QRect(popup->x(), screenGeometry.height() - height() - popup->height(), popup->width(), popup->height()));
-    animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void TaskBar::keyPressEvent(QKeyEvent *event) {
