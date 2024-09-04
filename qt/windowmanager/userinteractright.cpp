@@ -142,6 +142,8 @@ void UserInteractRight::paintEvent(QPaintEvent *event) {
 void UserInteractRight::button1Clicked() {
     TerminalWindow *window = new TerminalWindow();
     window->show();
+    window->raise();
+    window->activateWindow();
 }
 
 void UserInteractRight::closeIfClickedOutside(QMouseEvent *event) {
