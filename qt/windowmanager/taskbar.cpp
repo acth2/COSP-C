@@ -62,18 +62,23 @@ void TaskBar::showPopup() {
         hidePopup();
         return;
     }
+
     if (!popup) {
         popup = new QLabel(this);
-        popup->setStyleSheet("background-color: #222222; color: #FFFFFF;");
+        popup->setStyleSheet("background-color: #222222; color: #FFFFFF; border: 1px solid #444444;");
         popup->setFixedSize(500, 500);
         popup->setText("This is the popup content.");
         popup->setAlignment(Qt::AlignCenter);
     }
 
     QRect taskbarGeometry = geometry();
+    QRect screenGeometry = QApplication::primaryScreen()->geometry();
     popup->move(0, taskbarGeometry.top() - popup->height());
+
+    windowManager->appendLog("Taskbar opened.");
     popup->show();
     popupVisible = true;
+    isPopupVisible = true;
 
     windowManager->appendLog("Popup shown.");
 }
@@ -83,6 +88,6 @@ void TaskBar::hidePopup() {
         popup->hide();
         popupVisible = false;
 
-        windowManager->appendLog("Popup hidden.");
+        windowManager->appendLog("Taskbar hidden.");
     }
 }
