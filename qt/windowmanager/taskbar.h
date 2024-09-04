@@ -3,11 +3,10 @@
 
 #include <QWidget>
 #include <QPushButton>
-#include <QHBoxLayout>
 #include <QLabel>
 #include <QResizeEvent>
 #include <QMouseEvent>
-#include <QKeyEvent>
+#include <QEvent>
 
 class TaskBar : public QWidget {
     Q_OBJECT
@@ -18,12 +17,17 @@ public:
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
-    void keyPressEvent(QKeyEvent *event) override;
+    bool eventFilter(QObject *watched, QEvent *event) override;
+
+private slots:
+    void showPopup();
 
 private:
     QLabel *popup;
     QPushButton *startButton;
     void adjustSizeToScreen();
+    void hidePopup();
+    bool popupVisible = false;
     void showPopup();
     void closePopup();
     void installEventFilter();
@@ -31,3 +35,4 @@ private:
 };
 
 #endif // TASKBAR_H
+
