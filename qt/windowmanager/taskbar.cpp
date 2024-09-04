@@ -92,20 +92,82 @@ void TaskBar::showPowerMenu() {
         overlay->setStyleSheet("background: rgba(0, 0, 0, 0.7);");
         overlay->setGeometry(QApplication::primaryScreen()->geometry());
         overlay->show();
-        
+
         QDialog *powerDialog = new QDialog();
         powerDialog->setWindowTitle("Power Options");
         powerDialog->setModal(true);
         powerDialog->setAttribute(Qt::WA_DeleteOnClose);
 
+        QString buttonStyle;
+        QString labelStyle;
+
+        if (isDarkMode) {
+            buttonStyle = R"(
+                QPushButton {
+                    background-color: #cfcfcf; 
+                    color: #595853;
+                    border: none;
+                    border-radius: 5px; 
+                    padding: 8px 16px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    min-width: 100px;
+                }
+                QPushButton:hover {
+                    color: #bab9b5;
+                    background-color: #52514e;
+                }
+            )";
+
+            labelStyle = R"(
+                QLabel {
+                    color: #bab9b5;
+                    font-size: 14px;
+                    font-weight: medium;
+                    margin-bottom: 10px;
+                    background-color: transparent;
+                }
+            )";
+        } else {
+            buttonStyle = R"(
+                QPushButton {
+                    background-color: #0078D4;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    padding: 8px 16px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    min-width: 100px; 
+                }
+                QPushButton:hover {
+                    background-color: #005A9E;
+                }
+            )";
+
+            labelStyle = R"(
+                QLabel {
+                    color: #333333;
+                    font-size: 14px;
+                    font-weight: medium;
+                    margin-bottom: 10px;
+                    background-color: transparent;
+                }
+            )";
+        }
+
         QVBoxLayout *dialogLayout = new QVBoxLayout(powerDialog);
         QLabel *infoLabel = new QLabel("Do you want to reboot or power off?", powerDialog);
+        infoLabel->setStyleSheet(labelStyle);
 
         QPushButton *rebootButton = new QPushButton("Reboot", powerDialog);
+        rebootButton->setStyleSheet(buttonStyle);
+
         QPushButton *powerOffButton = new QPushButton("Power Off", powerDialog);
+        powerOffButton->setStyleSheet(buttonStyle);
 
         connect(rebootButton, &QPushButton::clicked, [=]() {
-            qApp->exit(1); 
+            qApp->exit(1);
         });
 
         connect(powerOffButton, &QPushButton::clicked, [=]() {
@@ -115,7 +177,7 @@ void TaskBar::showPowerMenu() {
         dialogLayout->addWidget(infoLabel);
         dialogLayout->addWidget(rebootButton);
         dialogLayout->addWidget(powerOffButton);
-        
+
         powerDialog->adjustSize();
 
         QRect screenGeometry = QApplication::primaryScreen()->geometry();
