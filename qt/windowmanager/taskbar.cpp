@@ -8,6 +8,7 @@
 #include <QHBoxLayout>
 #include <QDialog>
 #include <QMessageBox>
+#include <QFile>
 
 TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -85,6 +86,10 @@ void TaskBar::closePopup() {
 }
 
 void TaskBar::showPowerMenu() {
+    if (QFile::exists("/usr/cydra/settings/darkmode")) {
+        isDarkMode = true;
+    }
+    
     if (powerMenuVisible) {
         closePowerMenu();
     } else {
