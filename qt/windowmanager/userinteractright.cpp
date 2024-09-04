@@ -140,8 +140,8 @@ void UserInteractRight::paintEvent(QPaintEvent *event) {
 }
 
 void UserInteractRight::button1Clicked() {
-    TerminalWindow window;
-    window.show();
+    TerminalWindow *window = new TerminalWindow();
+    window->show();
 }
 
 void UserInteractRight::closeIfClickedOutside(QMouseEvent *event) {
