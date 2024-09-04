@@ -6,6 +6,7 @@
 #include <QKeyEvent>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QDebug>
 
 TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -110,9 +111,8 @@ void TaskBar::showPowerMenu() {
         dialogLayout->addWidget(rebootButton);
         dialogLayout->addWidget(powerOffButton);
 
-        QHBoxLayout *popupLayout = new QHBoxLayout(popup);
-        popupLayout->addStretch();
-        popupLayout->addWidget(powerButton);
+        QVBoxLayout *popupLayout = new QVBoxLayout(popup);
+        popupLayout->addWidget(powerButton, 0, Qt::AlignBottom | Qt::AlignLeft);
         popupLayout->setContentsMargins(10, 10, 10, 10);
 
         connect(powerDialog, &QDialog::finished, [=]() {
