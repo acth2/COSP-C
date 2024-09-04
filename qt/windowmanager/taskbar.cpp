@@ -92,7 +92,7 @@ void TaskBar::showPowerMenu() {
         overlay->setStyleSheet("background: rgba(0, 0, 0, 0.7);");
         overlay->setGeometry(QApplication::primaryScreen()->geometry());
         overlay->show();
-
+        
         QDialog *powerDialog = new QDialog();
         powerDialog->setWindowTitle("Power Options");
         powerDialog->setModal(true);
@@ -105,7 +105,7 @@ void TaskBar::showPowerMenu() {
         QPushButton *powerOffButton = new QPushButton("Power Off", powerDialog);
 
         connect(rebootButton, &QPushButton::clicked, [=]() {
-            qApp->exit(1);
+            qApp->exit(1); 
         });
 
         connect(powerOffButton, &QPushButton::clicked, [=]() {
@@ -115,8 +115,9 @@ void TaskBar::showPowerMenu() {
         dialogLayout->addWidget(infoLabel);
         dialogLayout->addWidget(rebootButton);
         dialogLayout->addWidget(powerOffButton);
+        
+        powerDialog->adjustSize();
 
-        // Move the power dialog to the center of the screen
         QRect screenGeometry = QApplication::primaryScreen()->geometry();
         int x = (screenGeometry.width() - powerDialog->width()) / 2;
         int y = (screenGeometry.height() - powerDialog->height()) / 2;
