@@ -24,10 +24,12 @@ protected:
 private:
     QLabel *popup;
     QPushButton *startButton;
+    QPushButton *powerButton;
     void adjustSizeToScreen();
     void showPopup();
     void closePopup();
     void installEventFilter();
+    void showPowerMenu();
     bool isPopupVisible = false;
 };
 
