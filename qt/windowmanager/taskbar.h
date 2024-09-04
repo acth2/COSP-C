@@ -30,7 +30,6 @@ private:
     void adjustSizeToScreen();
     void showPopup();
     void hidePopup();
-    QLabel *popup;
     void installEventFilter();
     bool isPopupVisible = false;
 };
