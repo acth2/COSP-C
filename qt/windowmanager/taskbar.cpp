@@ -29,12 +29,17 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(startButton, 0, Qt::AlignLeft | Qt::AlignBottom);
+    if (!isDarkMode) {
+        setStyleSheet("background-color: #FFFFFF; border: 1px solid #DDDDDD;");
+    }
     layout->setContentsMargins(5, 5, 5, 5);
     setLayout(layout);
 
     popup = new QLabel(nullptr);
     popup->setFixedSize(500, 500);
-    popup->setStyleSheet("background-color: #333333; border: 1px solid gray;");
+    if (isDarkMode) {
+        popup->setStyleSheet("background-color: #333333; border: 1px solid gray;");
+    }
     popup->hide();
 
     powerButton = new QPushButton(popup);
