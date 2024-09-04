@@ -10,11 +10,13 @@ QT += core gui widgets
 SOURCES += main.cpp \
            windowmanager.cpp \
            konami_code_handler.cpp \
-           userinteractright.cpp
+           userinteractright.cpp \
+           taskbar.cpp
 
 HEADERS += windowmanager.h \
            konami_code_handler.h \
-           userinteractright.h
+           userinteractright.h \
+           taskbar.h
 
 DESTDIR = src
 
