@@ -39,7 +39,7 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     popup = new QLabel(nullptr);
     popup->setFixedSize(500, 500);
     if (isDarkMode) {
-        popup->setStyleSheet("background-color: #333333; border: 1px solid gray;");
+        popup->setStyleSheet("background-color: #333333; border: 1px solid #000000;");
     }
     popup->hide();
 
@@ -88,7 +88,7 @@ void TaskBar::showPopup() {
     if (isPopupVisible) {
         closePopup();
     } else {
-        popup->move(0, height() * 6);
+        popup->move(0, height() * 5.7);
         popup->show();
         isPopupVisible = true;
     }
