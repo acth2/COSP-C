@@ -29,6 +29,7 @@ private:
     QPushButton *startButton;
     void adjustSizeToScreen();
     void checkClickOutsidePopup(const QPoint &pos);
+    bool isPopupVisible;
 };
 
 #endif // TASKBAR_H
