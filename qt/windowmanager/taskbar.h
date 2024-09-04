@@ -3,33 +3,29 @@
 
 #include <QWidget>
 #include <QPushButton>
-#include <QLabel>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QResizeEvent>
 #include <QMouseEvent>
-#include <QEvent>
-
-class WindowManager;
+#include <QKeyEvent>
 
 class TaskBar : public QWidget {
     Q_OBJECT
 
 public:
-    explicit TaskBar(WindowManager *windowManager, QWidget *parent = nullptr);
+    explicit TaskBar(QWidget *parent = nullptr);
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
-    bool eventFilter(QObject *watched, QEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
 
 private:
     QLabel *popup;
     QPushButton *startButton;
-    WindowManager *windowManager;
-    bool popupVisible = false;
     void adjustSizeToScreen();
     void showPopup();
-    void hidePopup();
+    void closePopup();
     void installEventFilter();
     bool isPopupVisible = false;
 };
