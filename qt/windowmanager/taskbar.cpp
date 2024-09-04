@@ -1,8 +1,9 @@
 #include "taskbar.h"
 #include <QApplication>
 #include <QScreen>
-#include <QVBoxLayout>
 #include <QPropertyAnimation>
+#include <QMouseEvent>
+#include <QKeyEvent>
 
 TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -20,7 +21,7 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
 
     popup = new QLabel(nullptr);
     popup->setFixedSize(500, 500);
-    popup->setStyleSheet("background-color: #333333; border: 1px solid gray;");
+    popup->setStyleSheet("background-color: #333333; border: 1px solid gray;");  
     popup->hide();
 
     connect(startButton, &QPushButton::clicked, this, &TaskBar::showPopup);
@@ -33,6 +34,20 @@ void TaskBar::resizeEvent(QResizeEvent *event) {
     adjustSizeToScreen();
 }
 
+void TaskBar::mousePressEvent(QMouseEvent *event) {
+    if (popup->isVisible() && !popup->geometry().contains(event->globalPos())) {
+        closePopup();
+    }
+    QWidget::mousePressEvent(event);
+}
+
+void TaskBar::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Escape && popup->isVisible()) {
+        closePopup();
+    }
+    QWidget::keyPressEvent(event);
+}
+
 void TaskBar::adjustSizeToScreen() {
     QScreen *screen = QApplication::primaryScreen();
     if (screen) {
@@ -43,30 +58,16 @@ void TaskBar::adjustSizeToScreen() {
 }
 
 void TaskBar::showPopup() {
-    QRect screenGeometry = QApplication::primaryScreen()->geometry();
-    popup->setGeometry(startButton->x(), screenGeometry.height() - height() - popup->height(), popup->width(), popup->height());
-    popup->show();
-}
-
-void TaskBar::keyPressEvent(QKeyEvent *event) {
-    if (event->key() == Qt::Key_Escape) {
+    if (isPopupVisible) {
         closePopup();
     } else {
-        QWidget::keyPressEvent(event);
-    }
-}
-
-void TaskBar::mousePressEvent(QMouseEvent *event) {
-    checkClickOutsidePopup(event->globalPos());
-    QWidget::mousePressEvent(event);
-}
-
-void TaskBar::checkClickOutsidePopup(const QPoint &pos) {
-    if (popup->isVisible() && !popup->geometry().contains(pos)) {
-        closePopup();
+        popup->move(0, height());
+        popup->show();
+        isPopupVisible = true;
     }
 }
 
 void TaskBar::closePopup() {
     popup->hide();
+    isPopupVisible = false;
 }
