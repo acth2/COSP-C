@@ -4,10 +4,8 @@
 #include <QPropertyAnimation>
 #include <QMouseEvent>
 #include <QKeyEvent>
-#include <QDialog>
 #include <QVBoxLayout>
-#include <QPushButton>
-#include <QLabel>
+#include <QHBoxLayout>
 
 TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -18,24 +16,23 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     startButton->setIconSize(QSize(32, 32));
     startButton->setStyleSheet("border: none;");
 
-    powerButton = new QPushButton(this);
-    powerButton->setIcon(QIcon("/usr/cydra/icons/power.png"));
-    powerButton->setIconSize(QSize(32, 32));
-    powerButton->setStyleSheet("border: none;");
-
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(startButton, 0, Qt::AlignLeft | Qt::AlignBottom);
-    layout->addWidget(powerButton, 0, Qt::AlignRight | Qt::AlignBottom);
     layout->setContentsMargins(5, 5, 5, 5);
     setLayout(layout);
 
     popup = new QLabel(nullptr);
     popup->setFixedSize(500, 500);
-    popup->setStyleSheet("background-color: #333333; border: 1px solid gray;");
+    popup->setStyleSheet("background-color: #333333; border: 1px solid gray;"); 
     popup->hide();
 
-    connect(startButton, &QPushButton::clicked, this, &TaskBar::showPopup);
+    powerButton = new QPushButton(this);
+    powerButton->setIcon(QIcon("/usr/cydra/icons/power.png"));
+    powerButton->setIconSize(QSize(32, 32));
+    powerButton->setStyleSheet("border: none;");
     connect(powerButton, &QPushButton::clicked, this, &TaskBar::showPowerMenu);
+
+    connect(startButton, &QPushButton::clicked, this, &TaskBar::showPopup);
 
     adjustSizeToScreen();
     installEventFilter();
@@ -70,7 +67,7 @@ void TaskBar::showPopup() {
     if (isPopupVisible) {
         closePopup();
     } else {
-        popup->move(0, height() * 5.7);
+        popup->move(0, height() + 10);
         popup->show();
         isPopupVisible = true;
     }
@@ -81,50 +78,57 @@ void TaskBar::closePopup() {
     isPopupVisible = false;
 }
 
-void TaskBar::installEventFilter() {
-    qApp->installEventFilter(this);
-}
-
-bool TaskBar::eventFilter(QObject *object, QEvent *event) {
-    if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        if (popup->isVisible() && !popup->geometry().contains(mouseEvent->globalPos())) {
-            closePopup();
-            return true;
-        }
-    }
-    return QWidget::eventFilter(object, event);
-}
-
 void TaskBar::showPowerMenu() {
-    QWidget *overlay = new QWidget(this);
-    overlay->setStyleSheet("background: rgba(0, 0, 0, 0.7);");
-    overlay->setGeometry(QApplication::primaryScreen()->geometry());
-    overlay->show();
+    if (powerMenuVisible) {
+        closePowerMenu();
+    } else {
+        QWidget *overlay = new QWidget(this);
+        overlay->setStyleSheet("background: rgba(0, 0, 0, 0.7);");
+        overlay->setGeometry(QApplication::primaryScreen()->geometry());
+        overlay->show();
 
-    QDialog *powerDialog = new QDialog(this);
-    powerDialog->setWindowTitle("Power Options");
-    powerDialog->setModal(true);
-    QVBoxLayout *dialogLayout = new QVBoxLayout(powerDialog);
+        QDialog *powerDialog = new QDialog(popup);
+        powerDialog->setWindowTitle("Power Options");
+        powerDialog->setModal(true);
+        powerDialog->setAttribute(Qt::WA_DeleteOnClose);
 
-    QLabel *infoLabel = new QLabel("Do you want to reboot or power off?", powerDialog);
-    QPushButton *rebootButton = new QPushButton("Reboot", powerDialog);
-    QPushButton *powerOffButton = new QPushButton("Power Off", powerDialog);
+        QVBoxLayout *dialogLayout = new QVBoxLayout(powerDialog);
+        QLabel *infoLabel = new QLabel("Do you want to reboot or power off?", powerDialog);
 
-    connect(rebootButton, &QPushButton::clicked, [=]() {
-        qApp->exit(1);
-    });
+        QPushButton *rebootButton = new QPushButton("Reboot", powerDialog);
+        QPushButton *powerOffButton = new QPushButton("Power Off", powerDialog);
 
-    connect(powerOffButton, &QPushButton::clicked, [=]() {
-        qApp->exit(0);
-    });
+        connect(rebootButton, &QPushButton::clicked, [=]() {
+            qApp->exit(1);
+        });
 
-    dialogLayout->addWidget(infoLabel);
-    dialogLayout->addWidget(rebootButton);
-    dialogLayout->addWidget(powerOffButton);
+        connect(powerOffButton, &QPushButton::clicked, [=]() {
+            qApp->exit(0);
+        });
 
-    powerDialog->exec();
+        dialogLayout->addWidget(infoLabel);
+        dialogLayout->addWidget(rebootButton);
+        dialogLayout->addWidget(powerOffButton);
 
-    overlay->deleteLater();
-    powerDialog->deleteLater();
+        QHBoxLayout *popupLayout = new QHBoxLayout(popup);
+        popupLayout->addStretch();
+        popupLayout->addWidget(powerButton);
+        popupLayout->setContentsMargins(10, 10, 10, 10);
+
+        connect(powerDialog, &QDialog::finished, [=]() {
+            overlay->close();
+            overlay->deleteLater();
+        });
+
+        powerDialog->exec();
+
+        powerMenuVisible = true;
+        powerDialog->deleteLater();
+    }
+}
+
+void TaskBar::closePowerMenu() {
+    if (powerMenuVisible) {
+        powerMenuVisible = false;
+    }
 }
