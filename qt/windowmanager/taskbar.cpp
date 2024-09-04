@@ -116,58 +116,58 @@ void TaskBar::showPowerMenu() {
         QString labelStyle;
 
         if (isDarkMode) {
-            buttonStyle = R"(
-                QPushButton {
-                    background-color: #cfcfcf; 
-                    color: #595853;
-                    border: none;
-                    border-radius: 5px; 
-                    padding: 8px 16px;
-                    font-size: 12px;
-                    font-weight: bold;
-                    min-width: 100px;
-                }
-                QPushButton:hover {
-                    color: #bab9b5;
-                    background-color: #52514e;
-                }
-            )";
+                buttonStyle = R"(
+                    QPushButton {
+                        background-color: #cfcfcf; 
+                        color: #595853;
+                        border: none;
+                        border-radius: 5px; 
+                        padding: 8px 16px;
+                        font-size: 12px;
+                        font-weight: bold;
+                        min-width: 100px; width 
+                    }
+                    QPushButton:hover {
+                        color: #bab9b5;
+                        background-color: #52514e 
+                    }
+                )";
 
-            labelStyle = R"(
-                QLabel {
-                    color: #bab9b5;
-                    font-size: 14px;
-                    font-weight: medium;
-                    margin-bottom: 10px;
-                    background-color: transparent;
-                }
-            )";
-        } else {
-            buttonStyle = R"(
-                QPushButton {
-                    background-color: #0078D4;
-                    color: white;
-                    border: none;
-                    border-radius: 5px;
-                    padding: 8px 16px;
-                    font-size: 12px;
-                    font-weight: bold;
-                    min-width: 100px; 
-                }
-                QPushButton:hover {
-                    background-color: #005A9E;
-                }
-            )";
+                labelStyle = R"(
+                    QLabel {
+                       color: #bab9b5;
+                        font-size: 14px;
+                        font-weight: medium;
+                        margin-bottom: 10px;
+                        background-color: transparent;
+                    }
+                )";
+            } else {
+                buttonStyle = R"(
+                    QPushButton {
+                        background-color: #0078D4;
+                        color: white;
+                        border: none;
+                        border-radius: 5px;
+                        padding: 8px 16px;
+                        font-size: 12px;
+                        font-weight: bold;
+                        min-width: 100px; 
+                    }
+                    QPushButton:hover {
+                        background-color: #005A9E;
+                    }
+                )";
 
-            labelStyle = R"(
-                QLabel {
-                    color: #333333;
-                    font-size: 14px;
-                    font-weight: medium;
-                    margin-bottom: 10px;
-                    background-color: transparent;
-                }
-            )";
+                labelStyle = R"(
+                    QLabel {
+                        color: #333333;
+                        font-size: 14px;
+                        font-weight: medium;
+                        margin-bottom: 10px;
+                        background-color: transparent;
+                    }
+                )";
         }
 
         QVBoxLayout *dialogLayout = new QVBoxLayout(powerDialog);
