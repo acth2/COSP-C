@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QScreen>
 #include <QVBoxLayout>
+#include <QPropertyAnimation>
 
 TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -18,7 +19,7 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     setLayout(layout);
 
     popup = new QLabel(nullptr);
-    popup->setFixedSize(200, 200);
+    popup->setFixedSize(500, 500);
     popup->setStyleSheet("background-color: #333333; border: 1px solid gray;");
     popup->hide();
 
@@ -36,7 +37,7 @@ void TaskBar::adjustSizeToScreen() {
     QScreen *screen = QApplication::primaryScreen();
     if (screen) {
         QRect screenGeometry = screen->geometry();
-        setFixedSize(screenGeometry.width(), 60);
+        setFixedSize(screenGeometry.width(), 40);
         move(0, screenGeometry.height() - height());
     }
 }
@@ -56,10 +57,13 @@ void TaskBar::keyPressEvent(QKeyEvent *event) {
 }
 
 void TaskBar::mousePressEvent(QMouseEvent *event) {
-    if (popup->isVisible() && !popup->rect().contains(event->globalPos()) && !rect().contains(event->globalPos())) {
+    checkClickOutsidePopup(event->globalPos());
+    QWidget::mousePressEvent(event);
+}
+
+void TaskBar::checkClickOutsidePopup(const QPoint &pos) {
+    if (popup->isVisible() && !popup->geometry().contains(pos)) {
         closePopup();
-    } else {
-        QWidget::mousePressEvent(event);
     }
 }
 
