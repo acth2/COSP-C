@@ -116,7 +116,7 @@ void TaskBar::showPowerMenu() {
         powerDialog->setAttribute(Qt::WA_DeleteOnClose);
         powerDialog->setStyleSheet(R"(
             QDialog {
-                background-color: #73726f;
+                background-color: #2e2e2d;
                 border-radius: 10px;
             }
         )");
