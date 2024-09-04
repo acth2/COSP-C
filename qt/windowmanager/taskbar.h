@@ -22,12 +22,13 @@ protected:
 
 private slots:
     void showPopup();
+    void closePopup();
 
 private:
     QLabel *popup;
     QPushButton *startButton;
     void adjustSizeToScreen();
-    void closePopup();
+    void checkClickOutsidePopup(const QPoint &pos);
 };
 
 #endif // TASKBAR_H
