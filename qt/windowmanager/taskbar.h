@@ -10,12 +10,14 @@ class TaskBar : public QWidget {
     Q_OBJECT
 
 public:
+    explicit Taskbar(QWidget *parent = nullptr);
     explicit TaskBar(QWidget *parent = nullptr);
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
+    QLabel *popup;
     QPushButton *startButton;
     void adjustSizeToScreen();
 };
