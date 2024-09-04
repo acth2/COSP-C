@@ -12,6 +12,7 @@ class WindowManager : public QWidget {
 
 public:
     explicit WindowManager(QWidget *parent = nullptr);
+    void appendLog(const QString &message);
 
 protected:
     bool event(QEvent *event) override;
@@ -27,7 +28,6 @@ private:
     bool isConsoleVisible;
     UserInteractRight *userInteractRightWidget;
 
-    void appendLog(const QString &message);
     void toggleConsole();
 };
 
