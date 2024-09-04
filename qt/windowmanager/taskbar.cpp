@@ -13,10 +13,14 @@
 TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     if (QFile::exists("/usr/cydra/settings/darkmode")) {
         isDarkMode = true;
+    } else {
+        setStyleSheet("background-color: #cfcfcf; border: 1px solid #DDDDDD;");
     }
     
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    setStyleSheet("background-color: #333333;");
+    if (isDarkMode) {
+        setStyleSheet("background-color: #333333;");
+    }
 
     startButton = new QPushButton(this);
     if (!isDarkMode) {
@@ -29,9 +33,6 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(startButton, 0, Qt::AlignLeft | Qt::AlignBottom);
-    if (!isDarkMode) {
-        setStyleSheet("background-color: #cfcfcf; border: 1px solid #DDDDDD;");
-    }
     layout->setContentsMargins(5, 5, 5, 5);
     setLayout(layout);
 
