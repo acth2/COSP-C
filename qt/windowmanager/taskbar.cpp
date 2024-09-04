@@ -182,7 +182,7 @@ void TaskBar::showPowerMenu() {
         }
 
         QVBoxLayout *dialogLayout = new QVBoxLayout(powerDialog);
-        QLabel *infoLabel = new QLabel("Do you want to reboot or power off?", powerDialog);
+        QLabel *infoLabel = new QLabel("Press ESC to go back", powerDialog);
         infoLabel->setStyleSheet(labelStyle);
 
         QPushButton *rebootButton = new QPushButton("Reboot", powerDialog);
