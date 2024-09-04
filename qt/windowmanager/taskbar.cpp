@@ -1,11 +1,11 @@
 #include "taskbar.h"
-#include "windowmanager.h"
 #include <QApplication>
 #include <QScreen>
-#include <QDebug>
+#include <QPropertyAnimation>
+#include <QMouseEvent>
+#include <QKeyEvent>
 
-TaskBar::TaskBar(WindowManager *windowManager, QWidget *parent)
-    : QWidget(parent), windowManager(windowManager), popupVisible(false) {
+TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setStyleSheet("background-color: #333333;");
 
@@ -19,11 +19,15 @@ TaskBar::TaskBar(WindowManager *windowManager, QWidget *parent)
     layout->setContentsMargins(5, 5, 5, 5);
     setLayout(layout);
 
+    popup = new QLabel(nullptr);
+    popup->setFixedSize(500, 500);
+    popup->setStyleSheet("background-color: #333333; border: 1px solid gray;"); 
+    popup->hide();
+
     connect(startButton, &QPushButton::clicked, this, &TaskBar::showPopup);
 
     adjustSizeToScreen();
-
-    qApp->installEventFilter(this);
+    installEventFilter();
 }
 
 void TaskBar::resizeEvent(QResizeEvent *event) {
@@ -33,19 +37,13 @@ void TaskBar::resizeEvent(QResizeEvent *event) {
 
 void TaskBar::mousePressEvent(QMouseEvent *event) {
     QWidget::mousePressEvent(event);
-    if (popupVisible && !popup->geometry().contains(event->globalPos())) {
-        hidePopup();
-    }
 }
 
-bool TaskBar::eventFilter(QObject *watched, QEvent *event) {
-    if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        if (popupVisible && !popup->geometry().contains(mouseEvent->globalPos())) {
-            hidePopup();
-        }
+void TaskBar::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Escape && popup->isVisible()) {
+        closePopup();
     }
-    return QWidget::eventFilter(watched, event);
+    QWidget::keyPressEvent(event);
 }
 
 void TaskBar::adjustSizeToScreen() {
@@ -58,36 +56,31 @@ void TaskBar::adjustSizeToScreen() {
 }
 
 void TaskBar::showPopup() {
-    if (popupVisible) {
-        hidePopup();
-        return;
+    if (isPopupVisible) {
+        closePopup();
+    } else {
+        popup->move(0, height());
+        popup->show();
+        isPopupVisible = true;
     }
-
-    if (!popup) {
-        popup = new QLabel(this);
-        popup->setStyleSheet("background-color: #222222; color: #FFFFFF; border: 1px solid #444444;");
-        popup->setFixedSize(500, 500);
-        popup->setText("This is the popup content.");
-        popup->setAlignment(Qt::AlignCenter);
-    }
-
-    QRect taskbarGeometry = geometry();
-    QRect screenGeometry = QApplication::primaryScreen()->geometry();
-    popup->move(0, taskbarGeometry.top() - popup->height());
-
-    windowManager->appendLog("Taskbar opened.");
-    popup->show();
-    popupVisible = true;
-    isPopupVisible = true;
-
-    windowManager->appendLog("Popup shown.");
 }
 
-void TaskBar::hidePopup() {
-    if (popup) {
-        popup->hide();
-        popupVisible = false;
+void TaskBar::closePopup() {
+    popup->hide();
+    isPopupVisible = false;
+}
 
-        windowManager->appendLog("Taskbar hidden.");
+void TaskBar::installEventFilter() {
+    qApp->installEventFilter(this);
+}
+
+bool TaskBar::eventFilter(QObject *object, QEvent *event) {
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        if (popup->isVisible() && !popup->geometry().contains(mouseEvent->globalPos())) {
+            closePopup();
+            return true;
+        }
     }
+    return QWidget::eventFilter(object, event);
 }
