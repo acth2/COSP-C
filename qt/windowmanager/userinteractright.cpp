@@ -25,9 +25,9 @@ UserInteractRight::UserInteractRight(QWidget *parent)
 }
 
 void UserInteractRight::setupUI() {
-    button1 = new QPushButton("Hello", this);
-    button2 = new QPushButton("Your computer", this);
-    button3 = new QPushButton("has Virus.", this);
+    button1 = new QPushButton("Terminal", this);
+    button2 = new QPushButton("Object 2", this);
+    button3 = new QPushButton("Thing 3 bruh", this);
     textLabel = new QLabel("Control panel", this);
 
     textLabel->setAlignment(Qt::AlignCenter);
