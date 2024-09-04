@@ -30,7 +30,9 @@ private:
     void closePopup();
     void installEventFilter();
     void showPowerMenu();
+    void closePowerMenu();
     bool isPopupVisible = false;
+    bool powerMenuVisible = false;
 };
 
 #endif // TASKBAR_H
