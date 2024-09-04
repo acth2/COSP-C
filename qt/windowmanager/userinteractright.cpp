@@ -24,9 +24,9 @@ UserInteractRight::UserInteractRight(QWidget *parent)
 }
 
 void UserInteractRight::setupUI() {
-    button1 = new QPushButton("Exit system", this);
-    button2 = new QPushButton("Start Shell", this);
-    button3 = new QPushButton("Button 3", this);
+    button1 = new QPushButton("Hello", this);
+    button2 = new QPushButton("Your computer", this);
+    button3 = new QPushButton("has Virus.", this);
     textLabel = new QLabel("Control panel", this);
 
     textLabel->setAlignment(Qt::AlignCenter);
@@ -140,14 +140,7 @@ void UserInteractRight::paintEvent(QPaintEvent *event) {
 }
 
 void UserInteractRight::button1Clicked() {
-    QApplication::quit();
-}
-
-void UserInteractRight::button2Clicked() {
-    QProcess process;
-    QString command = "xterm";
-    QStringList arguments;
-    process.start(command, arguments);
+    // weeee
 }
 
 void UserInteractRight::closeIfClickedOutside(QMouseEvent *event) {
