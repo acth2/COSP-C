@@ -1,17 +1,16 @@
 #include "taskbar.h"
-#include <QPropertyAnimation>
+#include "windowmanager.h"
 #include <QApplication>
 #include <QScreen>
 #include <QDebug>
-#include <QEvent>
-#include <QHBoxLayout>
 
-TaskBar::TaskBar(QWidget *parent) : QWidget(parent), popupVisible(false) {
+TaskBar::TaskBar(WindowManager *windowManager, QWidget *parent)
+    : QWidget(parent), windowManager(windowManager), popupVisible(false) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setStyleSheet("background-color: #333333;");
 
     startButton = new QPushButton(this);
-    startButton->setIcon(QIcon("/usr/cydra/cydra.png")); 
+    startButton->setIcon(QIcon("/usr/cydra/cydra.png"));
     startButton->setIconSize(QSize(32, 32));
     startButton->setStyleSheet("border: none;");
 
@@ -23,7 +22,7 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent), popupVisible(false) {
     connect(startButton, &QPushButton::clicked, this, &TaskBar::showPopup);
 
     adjustSizeToScreen();
-    
+
     qApp->installEventFilter(this);
 }
 
@@ -63,25 +62,27 @@ void TaskBar::showPopup() {
         hidePopup();
         return;
     }
-
     if (!popup) {
         popup = new QLabel(this);
         popup->setStyleSheet("background-color: #222222; color: #FFFFFF;");
         popup->setFixedSize(500, 500);
         popup->setText("This is the popup content.");
+        popup->setAlignment(Qt::AlignCenter);
     }
 
     QRect taskbarGeometry = geometry();
-    qDebug() << "Taskbar Geometry:" << taskbarGeometry;
     popup->move(0, taskbarGeometry.top() - popup->height());
-    qDebug() << "Popup Position:" << popup->pos();
     popup->show();
     popupVisible = true;
+
+    windowManager->appendLog("Popup shown.");
 }
 
 void TaskBar::hidePopup() {
     if (popup) {
         popup->hide();
         popupVisible = false;
+
+        windowManager->appendLog("Popup hidden.");
     }
 }
