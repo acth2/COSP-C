@@ -18,10 +18,6 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     bool eventFilter(QObject *watched, QEvent *event) override;
-
-private slots:
-    void showPopup();
-
 private:
     QLabel *popup;
     QPushButton *startButton;
