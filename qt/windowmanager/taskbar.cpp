@@ -43,11 +43,32 @@ void TaskBar::adjustSizeToScreen() {
 }
 
 void TaskBar::showPopup() {
+    popup->setGeometry(startButton->x(), startButton->y() - popup->height(), popup->width(), popup->height());
     popup->show();
     
     QPropertyAnimation *animation = new QPropertyAnimation(popup, "geometry");
     animation->setDuration(500);
-    animation->setStartValue(QRect(popup->x(), popup->y(), popup->width(), popup->height()));
-    animation->setEndValue(QRect(popup->x(), 0, popup->width(), popup->height()));
+    animation->setStartValue(QRect(popup->x(), popup->y() + popup->height(), popup->width(), popup->height()));
+    animation->setEndValue(QRect(popup->x(), popup->y(), popup->width(), popup->height()));
     animation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void TaskBar::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Escape) {
+        closePopup();
+    } else {
+        QWidget::keyPressEvent(event);
+    }
+}
+
+void TaskBar::mousePressEvent(QMouseEvent *event) {
+    if (popup->isVisible() && !popup->rect().contains(event->pos()) && !startButton->rect().contains(event->pos())) {
+        closePopup();
+    } else {
+        QWidget::mousePressEvent(event);
+    }
+}
+
+void TaskBar::closePopup() {
+    popup->hide();
 }
