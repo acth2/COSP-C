@@ -31,7 +31,6 @@ private:
     void showPopup();
     void hidePopup();
     QLabel *popup;
-    QPushButton *startButton;
     void installEventFilter();
     bool isPopupVisible = false;
 };
