@@ -11,11 +11,19 @@
 #include <QFile>
 
 TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
+    if (QFile::exists("/usr/cydra/settings/darkmode")) {
+        isDarkMode = true;
+    }
+    
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setStyleSheet("background-color: #333333;");
 
     startButton = new QPushButton(this);
-    startButton->setIcon(QIcon("/usr/cydra/cydra.png"));
+    if (isDarkMode) {
+        startButton->setIcon(QIcon("/usr/cydra/cydradm.png"));
+    } else {
+        startButton->setIcon(QIcon("/usr/cydra/cydra.png"));
+    }
     startButton->setIconSize(QSize(32, 32));
     startButton->setStyleSheet("border: none;");
 
@@ -86,10 +94,6 @@ void TaskBar::closePopup() {
 }
 
 void TaskBar::showPowerMenu() {
-    if (QFile::exists("/usr/cydra/settings/darkmode")) {
-        isDarkMode = true;
-    }
-    
     if (powerMenuVisible) {
         closePowerMenu();
     } else {
