@@ -59,7 +59,7 @@ void TaskBar::showPopup() {
     if (isPopupVisible) {
         closePopup();
     } else {
-        popup->move(0, height());
+        popup->move(0, height() * 6);
         popup->show();
         isPopupVisible = true;
     }
