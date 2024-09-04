@@ -71,9 +71,7 @@ void TaskBar::showPopup() {
         popup->setText("This is the popup content.");
     }
 
-    QRect taskbarGeometry = geometry();
-    popup->move(0, taskbarGeometry.top() - popup->height());  
-    popup->show();
+    popup->setGeometry(0, -200, 200, 200);
     popupVisible = true;
 }
 
