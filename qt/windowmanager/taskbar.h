@@ -4,10 +4,10 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QHBoxLayout>
-#include <QScreen>
 #include <QLabel>
-#include <QKeyEvent>
+#include <QResizeEvent>
 #include <QMouseEvent>
+#include <QKeyEvent>
 
 class TaskBar : public QWidget {
     Q_OBJECT
@@ -17,19 +17,17 @@ public:
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
-    void keyPressEvent(QKeyEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
-
-private slots:
-    void showPopup();
-    void closePopup();
+    void keyPressEvent(QKeyEvent *event) override;
 
 private:
     QLabel *popup;
     QPushButton *startButton;
     void adjustSizeToScreen();
-    void checkClickOutsidePopup(const QPoint &pos);
-    bool isPopupVisible;
+    void showPopup();
+    void closePopup();
+    void installEventFilter();
+    bool isPopupVisible = false;
 };
 
 #endif // TASKBAR_H
