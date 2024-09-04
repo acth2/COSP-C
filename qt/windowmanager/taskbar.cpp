@@ -30,7 +30,7 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(startButton, 0, Qt::AlignLeft | Qt::AlignBottom);
     if (!isDarkMode) {
-        setStyleSheet("background-color: #FFFFFF; border: 1px solid #DDDDDD;");
+        setStyleSheet("background-color: #cfcfcf; border: 1px solid #DDDDDD;");
     }
     layout->setContentsMargins(5, 5, 5, 5);
     setLayout(layout);
