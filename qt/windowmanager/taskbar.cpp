@@ -21,12 +21,13 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
 
     popup = new QLabel(nullptr);
     popup->setFixedSize(500, 500);
-    popup->setStyleSheet("background-color: #333333; border: 1px solid gray;");  
+    popup->setStyleSheet("background-color: #333333; border: 1px solid gray;");
     popup->hide();
 
     connect(startButton, &QPushButton::clicked, this, &TaskBar::showPopup);
 
     adjustSizeToScreen();
+    installEventFilter();
 }
 
 void TaskBar::resizeEvent(QResizeEvent *event) {
@@ -35,9 +36,6 @@ void TaskBar::resizeEvent(QResizeEvent *event) {
 }
 
 void TaskBar::mousePressEvent(QMouseEvent *event) {
-    if (popup->isVisible() && !popup->geometry().contains(event->globalPos())) {
-        closePopup();
-    }
     QWidget::mousePressEvent(event);
 }
 
@@ -70,4 +68,19 @@ void TaskBar::showPopup() {
 void TaskBar::closePopup() {
     popup->hide();
     isPopupVisible = false;
+}
+
+void TaskBar::installEventFilter() {
+    qApp->installEventFilter(this);
+}
+
+bool TaskBar::eventFilter(QObject *object, QEvent *event) {
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        if (popup->isVisible() && !popup->geometry().contains(mouseEvent->globalPos())) {
+            closePopup();
+            return true;
+        }
+    }
+    return QWidget::eventFilter(object, event);
 }
