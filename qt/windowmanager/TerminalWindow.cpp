@@ -68,8 +68,8 @@ void TerminalWindow::setupUI() {
     QHBoxLayout *topBarLayout = new QHBoxLayout(topBar);
     topBarLayout->setContentsMargins(0, 0, 0, 0);
 
-    closeButton = new QPushButton("X", topBar);
-    fullscreenButton = new QPushButton("[ ]", topBar);
+    closeButton = new QPushButton("✕", topBar);
+    fullscreenButton = new QPushButton("⛶", topBar);
 
     topBarLayout->addWidget(fullscreenButton);
     topBarLayout->addStretch();
