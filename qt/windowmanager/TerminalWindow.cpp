@@ -18,8 +18,7 @@ TerminalWindow::TerminalWindow(QWidget *parent)
 }
 
 void TerminalWindow::setupUI() {
-    centralWidget = new QWidget(this);
-    QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
+    QVBoxLayout *mainLayout = new QVBoxLayout(terminalWidget);
     mainLayout->setContentsMargins(0, 0, 0, 0);
 
     QWidget *topBar = new QWidget(this);
@@ -43,7 +42,7 @@ void TerminalWindow::setupUI() {
 
     mainLayout->addWidget(terminalWidget);
 
-    setCentralWidget(centralWidget);
+    setCentralWidget(terminalWidget);
 }
 
 void TerminalWindow::toggleFullScreen() {
