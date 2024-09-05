@@ -5,13 +5,15 @@
 #include <QDebug>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
-    : QWidget(parent), terminalProcess(new QProcess(this)) {
+    : QMainWindow(parent), terminalProcess(new QProcess(this)) {
 
     setFixedSize(500, 500);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    QLabel *infoLabel = new QLabel("Terminal running xterm...", this);
-    layout->addWidget(infoLabel);
+    setWindowFlags(Qt::Window);
+
+    QWidget *centralWidget = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(centralWidget);
+    setCentralWidget(centralWidget);
 
     terminalProcess->start("xterm");
 
