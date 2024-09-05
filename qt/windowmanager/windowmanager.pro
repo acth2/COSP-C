@@ -5,7 +5,7 @@ CONFIG += qt
 CONFIG += release
 CONFIG += no_accessibility
 CONFIG += no_pro
-QT += core gui widgets x11extras
+QT += core gui widgets
 
 SOURCES += main.cpp \
            windowmanager.cpp \
