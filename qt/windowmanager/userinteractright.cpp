@@ -143,6 +143,7 @@ void UserInteractRight::button1Clicked() {
     TerminalWindow *window = new TerminalWindow();
     window->show();
     window->raise();
+    window->setFixedSize(500, 500);
     window->activateWindow();
 }
 
