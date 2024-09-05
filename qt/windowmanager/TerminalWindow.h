@@ -18,7 +18,7 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
 
 private:
-    QWidget *terminalWidget;
+    QWidget *centralWidget;
     QProcess *terminalProcess;
     QVBoxLayout *layout;
     QWidget *customTitleBar;
