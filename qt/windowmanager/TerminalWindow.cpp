@@ -1,25 +1,27 @@
 #include "TerminalWindow.h"
-#include <QApplication>
 #include <QVBoxLayout>
+#include <QLabel>
 #include <QProcess>
-#include <QX11Info>
+#include <QDebug>
 
-TerminalWindow::TerminalWindow(QWidget *parent) : QWidget(parent) {
+TerminalWindow::TerminalWindow(QWidget *parent)
+    : QWidget(parent), terminalProcess(new QProcess(this)) {
+
     QVBoxLayout *layout = new QVBoxLayout(this);
-    containerWidget = new QWidget(this);
-    layout->addWidget(containerWidget);
-    setLayout(layout);
+    QLabel *infoLabel = new QLabel("Terminal running xterm...", this);
+    layout->addWidget(infoLabel);
 
-    terminalProcess = new QProcess(this);
-    
-    QStringList arguments;
-    arguments << "-into" << QString::number(containerWidget->winId());
-    
-    terminalProcess->start("xterm", arguments);
+    terminalProcess->start("xterm");
+
+    if (!terminalProcess->waitForStarted()) {
+        qDebug() << "Failed to start xterm process!";
+    } else {
+        qDebug() << "xterm started!";
+    }
 }
 
 TerminalWindow::~TerminalWindow() {
-    if (terminalProcess) {
+    if (terminalProcess->state() == QProcess::Running) {
         terminalProcess->terminate();
         terminalProcess->waitForFinished();
     }
