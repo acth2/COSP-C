@@ -1,6 +1,7 @@
 #include "TerminalWindow.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QApplication>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false) {
@@ -63,27 +64,24 @@ void TerminalWindow::setupUI() {
     mainLayout->setContentsMargins(0, 0, 0, 0);
 
     topBar = new QWidget(this);
-    topBar->setFixedHeight(30);
+    topBar->setFixedHeight(30); // Set a fixed height for the top bar
     topBar->setStyleSheet("background-color: #333; color: white;");
-
-    QHBoxLayout *topBarLayout = new QHBoxLayout(topBar);
-    topBarLayout->setContentsMargins(0, 0, 0, 0);
-
+    topBar->setLayout(new QHBoxLayout(topBar));
+    
     closeButton = new QPushButton("X", topBar);
     fullscreenButton = new QPushButton("[ ]", topBar);
 
-    topBarLayout->addWidget(fullscreenButton);
-    topBarLayout->addStretch();
-    topBarLayout->addWidget(closeButton);
+    topBar->layout()->addWidget(fullscreenButton);
+    topBar->layout()->addStretch();
+    topBar->layout()->addWidget(closeButton);
 
     connect(closeButton, &QPushButton::clicked, this, &TerminalWindow::close);
     connect(fullscreenButton, &QPushButton::clicked, this, &TerminalWindow::toggleFullScreen);
 
-    mainLayout->addWidget(topBar);
-
     terminalWidget = new QTextEdit(this);
     terminalWidget->setText("This is a simulated terminal.");
     terminalWidget->setReadOnly(true);
+    mainLayout->addWidget(topBar);
     mainLayout->addWidget(terminalWidget);
 
     setCentralWidget(centralWidget);
