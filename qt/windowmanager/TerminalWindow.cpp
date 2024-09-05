@@ -1,32 +1,62 @@
 #include "TerminalWindow.h"
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QProcess>
-#include <QDebug>
+#include <QApplication>
+#include <QScreen>
 
-TerminalWindow::TerminalWindow(QWidget *parent)
-    : QWidget(parent), terminalProcess(new QProcess(this)) {
+TerminalWindow::TerminalWindow(QWidget *parent) 
+    : QMainWindow(parent), terminalProcess(new QProcess(this)), isFullScreenMode(false) {
 
-    setFixedSize(500, 500);
+    setupUI();
 
-    setWindowFlags(Qt::Window | Qt::WindowStaysOnBottomHint);
-
-    QVBoxLayout *layout = new QVBoxLayout(this);
-
-    terminalProcess->start("xterm");
-
-    if (!terminalProcess->waitForStarted()) {
-        qDebug() << "Failed to start xterm process!";
-    } else {
-        qDebug() << "xterm started!";
-    }
-
-    setLayout(layout);
+    terminalProcess->start("xterm", QStringList() << "-into" << QString::number(centralWidget->winId()));
 }
 
-TerminalWindow::~TerminalWindow() {
-    if (terminalProcess->state() == QProcess::Running) {
-        terminalProcess->terminate(); 
-        terminalProcess->waitForFinished();
+void TerminalWindow::setupUI() {
+    centralWidget = new QWidget(this);
+    layout = new QVBoxLayout(centralWidget);
+
+    QMenuBar *menuBar = new QMenuBar(this);
+    setMenuBar(menuBar);
+
+    QAction *fullscreenAction = new QAction("Toggle Full Screen", this);
+    connect(fullscreenAction, &QAction::triggered, this, &TerminalWindow::toggleFullScreen);
+    menuBar->addAction(fullscreenAction);
+
+    centralWidget->setLayout(layout);
+    setCentralWidget(centralWidget);
+    
+    resize(500, 500);
+    centerWindow();
+}
+
+void TerminalWindow::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_F11) {
+        toggleFullScreen();
+    } else if (event->key() == Qt::Key_Escape && isFullScreenMode) {
+        toggleFullScreen();
+    } else {
+        QMainWindow::keyPressEvent(event);
+    }
+}
+
+void TerminalWindow::toggleFullScreen() {
+    if (isFullScreenMode) {
+        setGeometry(normalGeometry);
+        isFullScreenMode = false;
+        menuBar()->show();
+    } else {
+        normalGeometry = geometry();
+        showFullScreen();
+        isFullScreenMode = true;
+        menuBar()->hide();
+    }
+}
+
+void TerminalWindow::centerWindow() {
+    QScreen *screen = QApplication::primaryScreen();
+    if (screen) {
+        QRect screenGeometry = screen->geometry();
+        int x = (screenGeometry.width() - width()) / 2;
+        int y = (screenGeometry.height() - height()) / 2;
+        move(x, y);
     }
 }
