@@ -7,8 +7,8 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QLabel>
-#include <QProcess>
 #include <QTextEdit>
+#include <QMouseEvent>
 
 class TerminalWindow : public QMainWindow {
     Q_OBJECT
@@ -18,6 +18,9 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
 private slots:
     void toggleFullScreen();
@@ -31,6 +34,9 @@ private:
     QPushButton *fullscreenButton;
     QTextEdit *terminalWidget;
     bool isFullScreenMode;
+    
+    bool dragging;
+    QPoint dragStartPosition;
 };
 
 #endif // TERMINALWINDOW_H
