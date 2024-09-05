@@ -2,13 +2,11 @@
 #define TERMINALWINDOW_H
 
 #include <QMainWindow>
-#include <QKeyEvent>
-#include <QWidget>
 #include <QPushButton>
-#include <QVBoxLayout>
-#include <QLabel>
+#include <QWidget>
 #include <QTextEdit>
 #include <QMouseEvent>
+#include <QKeyEvent>
 
 class TerminalWindow : public QMainWindow {
     Q_OBJECT
@@ -26,18 +24,17 @@ private slots:
     void toggleFullScreen();
 
 private:
-    void setupUI();
-    void updateTopBarVisibility();
-    
     QWidget *centralWidget;
     QWidget *topBar;
     QPushButton *closeButton;
     QPushButton *fullscreenButton;
     QTextEdit *terminalWidget;
     bool isFullScreenMode;
-    
     bool dragging;
     QPoint dragStartPosition;
+
+    void setupUI();
+    void updateTopBarVisibility();
 };
 
 #endif // TERMINALWINDOW_H
