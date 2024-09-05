@@ -8,9 +8,7 @@ TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), terminalProcess(new QProcess(this)) {
 
     setFixedSize(500, 500);
-
-    setWindowFlags(Qt::Window);
-
+    setWindowFlags(Qt::Window | Qt::WindowStaysOnBottomHint | Qt::FramelessWindowHint);
     QWidget *centralWidget = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
     setCentralWidget(centralWidget);
