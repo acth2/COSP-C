@@ -4,6 +4,7 @@
 #include <QHBoxLayout>
 #include <QKeyEvent>
 #include <QLabel>
+#include <QMenuBar>
 
 TerminalWindow::TerminalWindow(QWidget *parent) 
     : QMainWindow(parent), terminalProcess(new QProcess(this)), isFullScreenMode(false) {
