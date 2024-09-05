@@ -1,9 +1,10 @@
 #include "TerminalWindow.h"
-#include <QPushButton>
 #include <QVBoxLayout>
-#include <QLabel>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QTextEdit>
 
-TerminalWindow::TerminalWindow(QWidget *parent) 
+TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false) {
     setupUI();
 }
@@ -32,12 +33,12 @@ void TerminalWindow::setupUI() {
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
     mainLayout->setContentsMargins(0, 0, 0, 0);
 
-    QWidget *topBar = new QWidget(this);
+    topBar = new QWidget(this);
     QHBoxLayout *topBarLayout = new QHBoxLayout(topBar);
-    topBarLayout->setContentsMargins(5, 5, 5, 5);
+    topBarLayout->setContentsMargins(0, 0, 0, 0);
 
-    QPushButton *closeButton = new QPushButton("X", this);
-    QPushButton *fullscreenButton = new QPushButton("[ ]", this);
+    closeButton = new QPushButton("X", topBar);
+    fullscreenButton = new QPushButton("[ ]", topBar);
 
     topBarLayout->addWidget(fullscreenButton);
     topBarLayout->addStretch();
@@ -48,8 +49,11 @@ void TerminalWindow::setupUI() {
 
     mainLayout->addWidget(topBar);
 
-    QLabel *label = new QLabel("Regular window", this);
-    mainLayout->addWidget(label);
+    terminalWidget = new QTextEdit(this);
+    terminalWidget->setText("This is a simulated terminal.");
+    terminalWidget->setReadOnly(true);
+    mainLayout->addWidget(terminalWidget);
 
     setCentralWidget(centralWidget);
+    setWindowTitle("Window");
 }
