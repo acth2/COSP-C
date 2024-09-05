@@ -1,12 +1,10 @@
 #ifndef TERMINALWINDOW_H
 #define TERMINALWINDOW_H
 
-#include <QWidget>
 #include <QMainWindow>
 #include <QProcess>
-#include <QMenuBar>
-#include <QKeyEvent>
 #include <QVBoxLayout>
+#include <QWidget>
 #include <QPushButton>
 
 class TerminalWindow : public QMainWindow {
@@ -23,11 +21,15 @@ private:
     QWidget *centralWidget;
     QProcess *terminalProcess;
     QVBoxLayout *layout;
+    QWidget *customTitleBar;
+    QPushButton *closeButton;
+    QPushButton *fullscreenButton;
     bool isFullScreenMode;
     QRect normalGeometry;
 
     void setupUI();
     void centerWindow();
+    void setupCustomTitleBar();
 };
 
 #endif // TERMINALWINDOW_H
