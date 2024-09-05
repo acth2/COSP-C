@@ -5,13 +5,13 @@
 #include <QDebug>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
-    : QMainWindow(parent), terminalProcess(new QProcess(this)) {
+    : QWidget(parent), terminalProcess(new QProcess(this)) {
 
     setFixedSize(500, 500);
-    setWindowFlags(Qt::Window | Qt::WindowStaysOnBottomHint | Qt::FramelessWindowHint);
-    QWidget *centralWidget = new QWidget(this);
-    QVBoxLayout *layout = new QVBoxLayout(centralWidget);
-    setCentralWidget(centralWidget);
+
+    setWindowFlags(Qt::Window | Qt::WindowStaysOnBottomHint);
+
+    QVBoxLayout *layout = new QVBoxLayout(this);
 
     terminalProcess->start("xterm");
 
@@ -20,11 +20,13 @@ TerminalWindow::TerminalWindow(QWidget *parent)
     } else {
         qDebug() << "xterm started!";
     }
+
+    setLayout(layout);
 }
 
 TerminalWindow::~TerminalWindow() {
     if (terminalProcess->state() == QProcess::Running) {
-        terminalProcess->terminate();
+        terminalProcess->terminate(); 
         terminalProcess->waitForFinished();
     }
 }
