@@ -5,6 +5,7 @@
 #include <QTextEdit>
 #include <QPushButton>
 #include <QDebug>
+#include <QScreen>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false) {
