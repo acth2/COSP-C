@@ -27,6 +27,7 @@ private slots:
 
 private:
     void setupUI();
+    void updateTopBarVisibility();
     
     QWidget *centralWidget;
     QWidget *topBar;
