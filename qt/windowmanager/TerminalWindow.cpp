@@ -7,6 +7,8 @@
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QWidget(parent), terminalProcess(new QProcess(this)) {
 
+    setFixedSize(500, 500);
+
     QVBoxLayout *layout = new QVBoxLayout(this);
     QLabel *infoLabel = new QLabel("Terminal running xterm...", this);
     layout->addWidget(infoLabel);
