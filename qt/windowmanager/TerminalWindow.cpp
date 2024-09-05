@@ -5,7 +5,7 @@
 #include <QTextEdit>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
-    : QMainWindow(parent), isFullScreenMode(false) {
+    : QMainWindow(parent), isFullScreenMode(false), dragging(false) {
     setupUI();
 }
 
@@ -16,6 +16,28 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
         toggleFullScreen();
     }
     QMainWindow::keyPressEvent(event);
+}
+
+void TerminalWindow::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton && topBar->rect().contains(event->pos())) {
+        dragging = true;
+        dragStartPosition = event->globalPos() - frameGeometry().topLeft();
+    }
+    QMainWindow::mousePressEvent(event);
+}
+
+void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
+    if (dragging) {
+        move(event->globalPos() - dragStartPosition);
+    }
+    QMainWindow::mouseMoveEvent(event);
+}
+
+void TerminalWindow::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        dragging = false;
+    }
+    QMainWindow::mouseReleaseEvent(event);
 }
 
 void TerminalWindow::toggleFullScreen() {
@@ -55,5 +77,5 @@ void TerminalWindow::setupUI() {
     mainLayout->addWidget(terminalWidget);
 
     setCentralWidget(centralWidget);
-    setWindowTitle("Window");
+    setWindowTitle("Terminal Window");
 }
