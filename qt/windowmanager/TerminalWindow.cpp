@@ -1,8 +1,6 @@
 #include "TerminalWindow.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QPushButton>
-#include <QTextEdit>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false) {
@@ -65,6 +63,9 @@ void TerminalWindow::setupUI() {
     mainLayout->setContentsMargins(0, 0, 0, 0);
 
     topBar = new QWidget(this);
+    topBar->setFixedHeight(30);
+    topBar->setStyleSheet("background-color: #333; color: white;");
+
     QHBoxLayout *topBarLayout = new QHBoxLayout(topBar);
     topBarLayout->setContentsMargins(0, 0, 0, 0);
 
@@ -87,4 +88,6 @@ void TerminalWindow::setupUI() {
 
     setCentralWidget(centralWidget);
     setWindowTitle("Terminal Window");
+
+    updateTopBarVisibility();
 }
