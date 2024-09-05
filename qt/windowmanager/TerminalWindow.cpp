@@ -1,6 +1,9 @@
 #include "TerminalWindow.h"
 #include <QApplication>
 #include <QScreen>
+#include <QHBoxLayout>
+#include <QKeyEvent>
+#include <QLabel>
 
 TerminalWindow::TerminalWindow(QWidget *parent) 
     : QMainWindow(parent), terminalProcess(new QProcess(this)), isFullScreenMode(false) {
@@ -13,19 +16,40 @@ TerminalWindow::TerminalWindow(QWidget *parent)
 void TerminalWindow::setupUI() {
     centralWidget = new QWidget(this);
     layout = new QVBoxLayout(centralWidget);
-
-    QMenuBar *menuBar = new QMenuBar(this);
-    setMenuBar(menuBar);
-
-    QAction *fullscreenAction = new QAction("Toggle Full Screen", this);
-    connect(fullscreenAction, &QAction::triggered, this, &TerminalWindow::toggleFullScreen);
-    menuBar->addAction(fullscreenAction);
-
+    layout->setContentsMargins(0, 0, 0, 0);
     centralWidget->setLayout(layout);
+
     setCentralWidget(centralWidget);
+
+    setupCustomTitleBar();
     
     resize(500, 500);
     centerWindow();
+}
+
+void TerminalWindow::setupCustomTitleBar() {
+    customTitleBar = new QWidget(this);
+    customTitleBar->setStyleSheet("background-color: #2c3e50; padding: 5px;");
+
+    QHBoxLayout *titleBarLayout = new QHBoxLayout(customTitleBar);
+    titleBarLayout->setContentsMargins(5, 0, 5, 0);
+
+    fullscreenButton = new QPushButton("⛶", this);
+    fullscreenButton->setFixedSize(30, 30);
+    connect(fullscreenButton, &QPushButton::clicked, this, &TerminalWindow::toggleFullScreen);
+    titleBarLayout->addWidget(fullscreenButton);
+
+    QLabel *titleLabel = new QLabel("Terminal", this);
+    titleLabel->setStyleSheet("color: white; font-size: 14px;");
+    titleLabel->setAlignment(Qt::AlignCenter);
+    titleBarLayout->addWidget(titleLabel);
+
+    closeButton = new QPushButton("✕", this);
+    closeButton->setFixedSize(30, 30);
+    connect(closeButton, &QPushButton::clicked, this, &TerminalWindow::close);
+    titleBarLayout->addWidget(closeButton);
+
+    layout->addWidget(customTitleBar);
 }
 
 void TerminalWindow::keyPressEvent(QKeyEvent *event) {
@@ -43,11 +67,12 @@ void TerminalWindow::toggleFullScreen() {
         setGeometry(normalGeometry);
         isFullScreenMode = false;
         menuBar()->show();
+        customTitleBar->show();
     } else {
         normalGeometry = geometry();
         showFullScreen();
         isFullScreenMode = true;
-        menuBar()->hide();
+        customTitleBar->hide();
     }
 }
 
