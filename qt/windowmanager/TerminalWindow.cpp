@@ -48,6 +48,15 @@ void TerminalWindow::toggleFullScreen() {
         showFullScreen();
         isFullScreenMode = true;
     }
+    updateTopBarVisibility();
+}
+
+void TerminalWindow::updateTopBarVisibility() {
+    if (isFullScreenMode) {
+        topBar->show();
+    } else {
+        topBar->show();
+    }
 }
 
 void TerminalWindow::setupUI() {
