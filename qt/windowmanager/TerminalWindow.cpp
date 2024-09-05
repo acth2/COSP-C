@@ -45,15 +45,15 @@ void TerminalWindow::mouseReleaseEvent(QMouseEvent *event) {
 void TerminalWindow::toggleFullScreen() {
     if (isFullScreenMode) {
         showNormal();
-        window.lower();
+        QMainWindow::lower();
         isFullScreenMode = false;
     } else {
         QScreen *screenResolution = QApplication::primaryScreen();
         if (screenResolution) {
             QRect screenResolutionGeometry = screenResolution->geometry();
         
-            window.setGeometry(screenResolutionGeometry.width() / 2, screenResolutionGeometry.height() /2, screenResolutionGeometry.width(), screenResolutionGeometry.height());
-            window.setWindowFlags(Qt::WindowStaysOnTopHint);
+            QMainWindow::setGeometry(screenResolutionGeometry.width() / 2, screenResolutionGeometry.height() /2, screenResolutionGeometry.width(), screenResolutionGeometry.height());
+            QMainWindow::setWindowFlags(Qt::WindowStaysOnTopHint);
         }
         isFullScreenMode = true;
     }
