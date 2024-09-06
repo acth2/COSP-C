@@ -16,13 +16,10 @@ int main(int argc, char *argv[]) {
         manager.setGeometry(screenGeometry);
     }
     
-    TaskBar taskbar;
-    GlobalKeyListener listener(&taskbar);
 
     manager.setWindowTitle("CWM");
     manager.showFullScreen();
-
-    listener.startListening();
+    
     taskBar.show();
     return app.exec();
 }
