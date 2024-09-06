@@ -12,27 +12,6 @@ TerminalWindow::TerminalWindow(QWidget *parent)
     setupUI();
 }
 
-void TerminalWindow::windowedFullScreen() {
-    if (!windowedFull) {
-        QScreen *screen = QApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
-
-        int screenWidth = screenGeometry.width();
-        int screenHeight = screenGeometry.height();
-
-        setGeometry(0, 0, screenWidth, screenHeight);
-    } else {
-        QScreen *screen = QApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
-
-        int screenWidth = screenGeometry.width();
-        int screenHeight = screenGeometry.height();
-
-        setGeometry(screenWidth / 2, screenHeight / 2, 800, 500);
-        windowedFull = false;
-    }
-}
-
 void TerminalWindow::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_F11) {
         if (isFullScreenMode) {
@@ -106,6 +85,27 @@ void TerminalWindow::toggleFullScreen() {
 
 void TerminalWindow::updateTopBarVisibility() {
     topBar->setVisible(!isFullScreenMode);
+}
+
+void TerminalWindow::windowedFullScreen() {
+    if (!windowedFull) {
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+
+        int screenWidth = screenGeometry.width();
+        int screenHeight = screenGeometry.height();
+
+        setGeometry(0, 0, screenWidth, screenHeight);
+    } else {
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+
+        int screenWidth = screenGeometry.width();
+        int screenHeight = screenGeometry.height();
+
+        setGeometry(screenWidth / 2, screenHeight / 2, 800, 500);
+        windowedFull = false;
+    }
 }
 
 void TerminalWindow::setupUI() {
