@@ -2,6 +2,7 @@
 #include <QScreen>
 #include "windowmanager.h"
 #include "taskbar.h"
+#include "global_key_hook.cpp"
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
@@ -14,10 +15,14 @@ int main(int argc, char *argv[]) {
         QRect screenGeometry = screen->geometry();
         manager.setGeometry(screenGeometry);
     }
+    
+    TaskBar taskbar;
+    GlobalKeyListener listener(&taskbar);
 
     manager.setWindowTitle("CWM");
     manager.showFullScreen();
 
+    listener.startListening();
     taskBar.show();
     return app.exec();
 }
