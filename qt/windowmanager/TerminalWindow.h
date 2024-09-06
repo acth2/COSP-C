@@ -7,6 +7,7 @@
 #include <QTextEdit>
 #include <QMouseEvent>
 #include <QKeyEvent>
+#include <QPoint>
 
 class TerminalWindow : public QMainWindow {
     Q_OBJECT
@@ -38,6 +39,9 @@ private:
 
     void setupUI();
     void updateTopBarVisibility();
+    bool resizing;
+    QPoint resizeStartPosition;
+    QSize resizeStartSize;
 };
 
 #endif // TERMINALWINDOW_H
