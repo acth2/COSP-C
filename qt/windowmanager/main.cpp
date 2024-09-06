@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 
 void TaskBar::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Meta || event->key() == Qt::Key_Super_L || event->key() == Qt::Key_Super_R) {
-        showPopup = !showPopup;
+        showPopUPK = !showPopUPK;
     }
     QWidget::keyPressEvent(event);
 }
