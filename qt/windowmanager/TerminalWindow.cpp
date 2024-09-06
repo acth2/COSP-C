@@ -10,7 +10,6 @@
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
     setupUI();
-    setWindowFlags(windowFlags() | Qt::WindowResizeButtonHint);
 }
 
 void TerminalWindow::keyPressEvent(QKeyEvent *event) {
@@ -63,8 +62,14 @@ void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
     if (dragging) {
         move(event->globalPos() - dragStartPosition);
     } else if (resizing) {
-        QSize newSize = resizeStartSize + (event->globalPos() - resizeStartPosition);
-        resize(newSize.width(), newSize.height());
+        QSize newSize = resizeStartSize;
+        newSize.setWidth(newSize.width() + (event->globalPos().x() - resizeStartPosition.x()));
+        newSize.setHeight(newSize.height() + (event->globalPos().y() - resizeStartPosition.y()));
+
+        newSize.setWidth(qMax(newSize.width(), 100));
+        newSize.setHeight(qMax(newSize.height(), 100));
+
+        resize(newSize);
     }
     QMainWindow::mouseMoveEvent(event);
 }
