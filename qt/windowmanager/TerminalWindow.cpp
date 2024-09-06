@@ -6,38 +6,15 @@
 #include <QPushButton>
 #include <QDebug>
 #include <QScreen>
+#include <QCursor>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
     setupUI();
-    setMouseTracking(true);    
-}
-
-void TerminalWindow::keyPressEvent(QKeyEvent *event) {
-    if (event->key() == Qt::Key_F11) {
-        if (isFullScreenMode) {
-            showNormal();
-            isFullScreenMode = false;
-        } else {
-            QScreen *screen = QApplication::primaryScreen();
-            QRect screenGeometry = screen->geometry();
-            setGeometry(screenGeometry);
-            showFullScreen();
-            isFullScreenMode = true;
-        }
-        updateTopBarVisibility();
-    } else if (event->key() == Qt::Key_Escape && isFullScreenMode) {
-        isFullScreenMode = false;
-        QScreen *screen = QApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
-        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
-    }
-    
-    QMainWindow::keyPressEvent(event);
+    setMouseTracking(true); 
 }
 
 void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
-    // Define margins near the edges for resizing
     const int resizeMargin = 8;
     QRect windowRect = rect();
 
@@ -48,38 +25,43 @@ void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
 
     if (nearLeft || nearRight || nearTop || nearBottom) {
         if (nearLeft && nearBottom) {
-            setCursor(Qt::SizeBDiagCursor);
+            setCursor(Qt::SizeBDiagCursor);  
         } else if (nearRight && nearBottom) {
-            setCursor(Qt::SizeFDiagCursor);
+            setCursor(Qt::SizeFDiagCursor);  
         } else if (nearLeft && nearTop) {
-            setCursor(Qt::SizeFDiagCursor);
+            setCursor(Qt::SizeFDiagCursor); 
         } else if (nearRight && nearTop) {
-            setCursor(Qt::SizeBDiagCursor);
+            setCursor(Qt::SizeBDiagCursor); 
         } else if (nearLeft || nearRight) {
-            setCursor(Qt::SizeHorCursor);
+            setCursor(Qt::SizeHorCursor); 
         } else if (nearTop || nearBottom) {
-            setCursor(Qt::SizeVerCursor);
+            setCursor(Qt::SizeVerCursor);  
         }
         resizing = true;
     } else {
-        setCursor(Qt::ArrowCursor);
+        setCursor(Qt::ArrowCursor); 
         resizing = false;
     }
 
-    if (resizing) {
-        if (event->buttons() & Qt::LeftButton) {
-            if (nearRight) {
-                setGeometry(x(), y(), event->pos().x(), height());
-            } else if (nearLeft) {
-                int diff = event->pos().x();
-                setGeometry(x() + diff, y(), width() - diff, height());
-            } else if (nearBottom) {
-                setGeometry(x(), y(), width(), event->pos().y());
-            } else if (nearTop) {
-                int diff = event->pos().y();
-                setGeometry(x(), y() + diff, width(), height() - diff);
-            }
+    if (resizing && (event->buttons() & Qt::LeftButton)) {
+        QRect newGeometry = geometry();
+
+        if (nearRight) {
+            newGeometry.setWidth(event->globalX() - frameGeometry().left());
+        } else if (nearLeft) {
+            int diff = event->globalX() - frameGeometry().left();
+            newGeometry.setLeft(event->globalX());
+            newGeometry.setWidth(newGeometry.width() - diff);
         }
+        if (nearBottom) {
+            newGeometry.setHeight(event->globalY() - frameGeometry().top());
+        } else if (nearTop) {
+            int diff = event->globalY() - frameGeometry().top();
+            newGeometry.setTop(event->globalY());
+            newGeometry.setHeight(newGeometry.height() - diff);
+        }
+
+        setGeometry(newGeometry);
     }
 
     QMainWindow::mouseMoveEvent(event);
@@ -99,69 +81,4 @@ void TerminalWindow::mouseReleaseEvent(QMouseEvent *event) {
         resizing = false;
     }
     QMainWindow::mouseReleaseEvent(event);
-}
-
-void TerminalWindow::toggleFullScreen() {
-    if (isFullMode) {
-        QScreen *screen = QApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
-        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
-        isFullMode = false;
-    } else {
-        setGeometry(0, 0, 800, 500);
-        isFullMode = true;
-    }
-    updateTopBarVisibility();
-}
-
-void TerminalWindow::updateTopBarVisibility() {
-    topBar->setVisible(!isFullScreenMode);
-}
-
-void TerminalWindow::windowedFullScreen() {
-    if (!windowedFull) {
-        QScreen *screen = QApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
-        setGeometry(screenGeometry);
-        windowedFull = true;
-    } else {
-        QScreen *screen = QApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
-        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 350, 350);
-        windowedFull = false;
-    }
-}
-
-void TerminalWindow::setupUI() {
-    centralWidget = new QWidget(this);
-    QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
-    mainLayout->setContentsMargins(0, 0, 0, 0);
-
-    topBar = new QWidget(this);
-    topBar->setFixedHeight(30);
-    topBar->setStyleSheet("background-color: #333; color: white;");
-    QHBoxLayout *topBarLayout = new QHBoxLayout(topBar);
-    topBarLayout->setContentsMargins(0, 0, 0, 0);
-
-    closeButton = new QPushButton("✕", topBar);
-    fullscreenButton = new QPushButton("❐", topBar);
-
-    topBarLayout->addWidget(fullscreenButton);
-    topBarLayout->addStretch();
-    topBarLayout->addWidget(closeButton);
-
-    connect(closeButton, &QPushButton::clicked, this, &TerminalWindow::close);
-    connect(fullscreenButton, &QPushButton::clicked, this, &TerminalWindow::windowedFullScreen);
-
-    terminalWidget = new QTextEdit(this);
-    terminalWidget->setText("This is a simulated terminal.");
-    terminalWidget->setReadOnly(true);
-
-    mainLayout->addWidget(topBar);
-    mainLayout->addWidget(terminalWidget);
-
-    setCentralWidget(centralWidget);
-    setWindowTitle("Terminal Window");
-
-    updateTopBarVisibility();
 }
