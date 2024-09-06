@@ -9,7 +9,11 @@ void checkForSignalFile() {
     QFile file("/usr/cydra/temp/centralSign");
     if (file.exists()) {
         TaskBar taskBar;
-        taskBar.show_popup();
+        if(TaskBar.isPopupVisible) {
+            taskBar.closePopup();
+        } else {
+            taskBar.showPopup();
+        }
         file.remove();
     }
 }
