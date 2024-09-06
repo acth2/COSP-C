@@ -22,6 +22,7 @@ protected:
 
 private slots:
     void toggleFullScreen();
+    void windowedFullScreen();
 
 private:
     QWidget *centralWidget;
