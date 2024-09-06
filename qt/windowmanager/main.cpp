@@ -2,20 +2,6 @@
 #include <QScreen>
 #include "windowmanager.h"
 #include "taskbar.h"
-#include <QFile>
-#include <QTimer>
-
-void checkForSignalFile(TaskBar &taskBar) {
-    QFile file("/usr/cydra/temp/centralSign");
-    if (file.exists()) {
-        if (taskBar.isPopupVisible) {
-            taskBar.closePopup();
-        } else {
-            taskBar.showPopup();
-        }
-        file.remove();
-    }
-}
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
@@ -31,11 +17,6 @@ int main(int argc, char *argv[]) {
 
     manager.setWindowTitle("CWM");
     manager.showFullScreen();
-
-    QTimer timer;
-
-    QObject::connect(&timer, &QTimer::timeout, [&taskBar]() { checkForSignalFile(taskBar); });
-    timer.start(500);
 
     taskBar.show();
     return app.exec();
