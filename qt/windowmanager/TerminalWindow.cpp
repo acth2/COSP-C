@@ -10,7 +10,6 @@
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
     setupUI();
-    setWindowFlags(windowFlags() | Qt::WindowResizeButtonHint);
 }
 
 void TerminalWindow::keyPressEvent(QKeyEvent *event) {
