@@ -43,13 +43,6 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     } else {
         popup->setStyleSheet("background-color: #fff; border: 1px solid #000000;"); 
     }
-
-    if (showPopUPK) {
-        popup->move(0, height() * 5.7);
-        popup->show();
-        popup->setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
-        isPopupVisible = true;
-    }
     
     popup->hide();
 
@@ -81,6 +74,11 @@ void TaskBar::mousePressEvent(QMouseEvent *event) {
 void TaskBar::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Escape && popup->isVisible()) {
         closePopup();
+    }
+
+    if (event->key() == Qt::Key_Meta || event->key() == Qt::Key_Super_L || event->key() == Qt::Key_Super_R) {
+        showPopup();
+        isPopupVisible = true;
     }
     QWidget::keyPressEvent(event);
 }
