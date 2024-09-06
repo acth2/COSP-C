@@ -16,6 +16,8 @@ class TaskBar : public QWidget {
 
 public:
     explicit TaskBar(QWidget *parent = nullptr);
+    void showPopup();
+    void closePopup();
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
@@ -28,8 +30,6 @@ private:
     QPushButton *startButton;
     QPushButton *powerButton;
     void adjustSizeToScreen();
-    void showPopup();
-    void closePopup();
     void showPowerMenu();
     void closePowerMenu();
     void installEventFilter();
