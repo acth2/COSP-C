@@ -43,6 +43,14 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     } else {
         popup->setStyleSheet("background-color: #fff; border: 1px solid #000000;"); 
     }
+
+    if (showPopUPK) {
+        popup->move(0, height() * 5.7);
+        popup->show();
+        popup->setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+        isPopupVisible = true;
+    }
+    
     popup->hide();
 
     powerButton = new QPushButton(popup);
