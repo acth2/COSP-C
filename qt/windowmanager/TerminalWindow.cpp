@@ -14,10 +14,33 @@ TerminalWindow::TerminalWindow(QWidget *parent)
 
 void TerminalWindow::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_F11) {
-        toggleFullScreen();
-    } else if (event->key() == Qt::Key_Escape && isFullScreenMode) {
-        toggleFullScreen();
+        if (isFullScreenMode) {
+            showNormal();
+            isFullScreenMode = false;
+    } else {
+            QScreen *screen = QApplication::primaryScreen();
+            QRect screenGeometry = screen->geometry();
+
+            int screenWidth = screenGeometry.width();
+            int screenHeight = screenGeometry.height();
+
+            setGeometry(0, 0, screenWidth, screenHeight);
+            showFullScreen();       
+        
+            isFullScreenMode = true;
     }
+    updateTopBarVisibility();
+    } else if (event->key() == Qt::Key_Escape && isFullScreenMode) {
+        isFullScreenMode = false;
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+
+        int screenWidth = screenGeometry.width();
+        int screenHeight = screenGeometry.height();
+
+        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
+    }
+    
     QMainWindow::keyPressEvent(event);
 }
 
@@ -44,9 +67,15 @@ void TerminalWindow::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void TerminalWindow::toggleFullScreen() {
-    if (isFullScreenMode) {
-        showNormal();
-        isFullScreenMode = false;
+    if (isFullMode) {
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+
+        int screenWidth = screenGeometry.width();
+        int screenHeight = screenGeometry.height();
+
+        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
+        isFullMode = false;
     } else {
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
@@ -55,9 +84,7 @@ void TerminalWindow::toggleFullScreen() {
         int screenHeight = screenGeometry.height();
 
         setGeometry(0, 0, screenWidth, screenHeight);
-        showFullScreen();
-        
-        isFullScreenMode = true;
+        isFullMode = true;
     }
     updateTopBarVisibility();
 }
