@@ -1,59 +1,14 @@
 #include "TerminalWindow.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QApplication>
-#include <QTextEdit>
-#include <QPushButton>
-#include <QDebug>
 #include <QScreen>
+#include <QMouseEvent>
+#include <QCursor>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
     setupUI();
-    setMouseTracking(true);    
 }
 
-void TerminalWindow::keyPressEvent(QKeyEvent *event) {
-    if (event->key() == Qt::Key_F11) {
-        if (isFullScreenMode) {
-            showNormal();
-            isFullScreenMode = false;
-        } else {
-            QScreen *screen = QApplication::primaryScreen();
-            QRect screenGeometry = screen->geometry();
-            setGeometry(0, 0, screenGeometry.width(), screenGeometry.height());
-            showFullScreen();
-            isFullScreenMode = true;
-        }
-        updateTopBarVisibility();
-    } else if (event->key() == Qt::Key_Escape && isFullScreenMode) {
-        isFullScreenMode = false;
-        setGeometry(geometry().width() / 2, geometry().height() / 2, 800, 600);
-    }
-    QMainWindow::keyPressEvent(event);
-}
-
-void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
-    int padding = 10;
-    QRect windowRect = this->rect();
-
-    if (event->pos().x() >= windowRect.right() - padding && event->pos().y() >= windowRect.bottom() - padding) {
-        setCursor(Qt::SizeFDiagCursor);
-    } else {
-        setCursor(Qt::ArrowCursor);
-    }
-
-    if (resizing) {
-        QSize newSize = resizeStartSize + (event->globalPos() - resizeStartPosition);
-        newSize.setWidth(std::max(newSize.width(), minimumWidth()));
-        newSize.setHeight(std::max(newSize.height(), minimumHeight()));
-        resize(newSize);
-    } else if (dragging) {
-        move(event->globalPos() - dragStartPosition);
-    }
-
-    QMainWindow::mouseMoveEvent(event);
-}
 void TerminalWindow::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         QRect windowRect = this->rect();
@@ -71,43 +26,37 @@ void TerminalWindow::mousePressEvent(QMouseEvent *event) {
     QMainWindow::mousePressEvent(event);
 }
 
+void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
+    int padding = 10;
+    QRect windowRect = this->rect();
+
+    if (event->pos().x() >= windowRect.right() - padding && event->pos().y() >= windowRect.bottom() - padding) {
+        setCursor(Qt::SizeFDiagCursor);
+    } else {
+        setCursor(Qt::ArrowCursor);
+    }
+
+    if (resizing) {
+        int newWidth = resizeStartSize.width() + (event->globalPos().x() - resizeStartPosition.x());
+        int newHeight = resizeStartSize.height() + (event->globalPos().y() - resizeStartPosition.y());
+
+        newWidth = std::max(newWidth, minimumWidth());
+        newHeight = std::max(newHeight, minimumHeight());
+
+        resize(newWidth, newHeight);
+    } else if (dragging) {
+        move(event->globalPos() - dragStartPosition);
+    }
+
+    QMainWindow::mouseMoveEvent(event);
+}
+
 void TerminalWindow::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         resizing = false;
         dragging = false;
     }
     QMainWindow::mouseReleaseEvent(event);
-}
-
-void TerminalWindow::toggleFullScreen() {
-    if (isFullMode) {
-        QScreen *screen = QApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
-        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
-        isFullMode = false;
-    } else {
-        setGeometry(0, 0, 800, 500);
-        isFullMode = true;
-    }
-    updateTopBarVisibility();
-}
-
-void TerminalWindow::updateTopBarVisibility() {
-    topBar->setVisible(!isFullScreenMode);
-}
-
-void TerminalWindow::windowedFullScreen() {
-    if (!windowedFull) {
-        QScreen *screen = QApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
-        setGeometry(screenGeometry);
-        windowedFull = true;
-    } else {
-        QScreen *screen = QApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
-        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 350, 350);
-        windowedFull = false;
-    }
 }
 
 void TerminalWindow::setupUI() {
@@ -142,4 +91,8 @@ void TerminalWindow::setupUI() {
     setWindowTitle("Terminal Window");
 
     updateTopBarVisibility();
+}
+
+void TerminalWindow::updateTopBarVisibility() {
+    topBar->setVisible(!isFullScreenMode);
 }
