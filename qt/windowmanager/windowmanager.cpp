@@ -72,15 +72,6 @@ bool WindowManager::event(QEvent *event) {
             userInteractRightWidget->show();
         }
     }
-
-    TaskBar tb;
-    if (event->type() == Qt::Key_Meta || event->type() == Qt::Key_Super_L || event->type() == Qt::Key_Super_R) {
-        if (!tb.isPopupVisible) {
-            tb.showPopup();
-        } else {
-            tb.closePopup();
-        }
-    }
     
     return QWidget::event(event);
 }
