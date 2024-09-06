@@ -104,7 +104,7 @@ void TerminalWindow::windowedFullScreen() {
         int screenWidth = screenGeometry.width();
         int screenHeight = screenGeometry.height();
 
-        setGeometry(screenWidth / 2, screenHeight / 2, 800, 500);
+        setGeometry(screenWidth / 2, screenHeight / 2, 350, 350);
         windowedFull = false;
     }
 }
