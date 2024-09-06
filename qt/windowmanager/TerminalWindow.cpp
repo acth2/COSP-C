@@ -46,16 +46,20 @@ void TerminalWindow::mouseReleaseEvent(QMouseEvent *event) {
 void TerminalWindow::toggleFullScreen() {
     if (isFullScreenMode) {
         showNormal();
-        QMainWindow::lower();
         isFullScreenMode = false;
     } else {
-        QScreen *screenResolution = QApplication::primaryScreen();
-        if (screenResolution) {
-            QRect screenResolutionGeometry = screenResolution->geometry();
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+
+        int screenWidth = screenGeometry.width();
+        int screenHeight = screenGeometry.height();
+
+        int x = (screenWidth - width()) / 2;
+        int y = (screenHeight - height()) / 2;
+
+        setGeometry(x, y, screenWidth, screenHeight);
+        showFullScreen();
         
-            QMainWindow::setGeometry(screenResolutionGeometry.width() / 2, screenResolutionGeometry.height() /2, screenResolutionGeometry.width(), screenResolutionGeometry.height());
-            QMainWindow::setWindowFlags(Qt::WindowStaysOnTopHint);
-        }
         isFullScreenMode = true;
     }
     updateTopBarVisibility();
