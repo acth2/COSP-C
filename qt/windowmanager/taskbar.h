@@ -18,6 +18,7 @@ public:
     explicit TaskBar(QWidget *parent = nullptr);
     void showPopup();
     void closePopup();
+    bool isPopupVisible = false;
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
@@ -33,7 +34,6 @@ private:
     void showPowerMenu();
     void closePowerMenu();
     void installEventFilter();
-    bool isPopupVisible = false;
     bool powerMenuVisible = false;
     bool isDarkMode;
 };
