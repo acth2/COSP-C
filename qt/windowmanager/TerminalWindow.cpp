@@ -11,7 +11,6 @@
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false), isFullMode(false), windowedFull(false), resizing(false) {
     setupUI();
-    setCursor(Qt::ArrowCursor);
 }
 
 void TerminalWindow::keyPressEvent(QKeyEvent *event) {
@@ -41,7 +40,7 @@ void TerminalWindow::mousePressEvent(QMouseEvent *event) {
         dragging = true;
         dragStartPosition = event->globalPos() - frameGeometry().topLeft();
     } else if (event->button() == Qt::LeftButton) {
-        if (event->globalPos().x() >= (width() - 10) && event->globalPos().y() >= (height() - 10)) {
+        if (event->globalPos().x() >= (width() - 20) && event->globalPos().y() >= (height() - 10)) {
             resizing = true;
             resizeStartSize = size();
             resizeStartPosition = event->globalPos();
@@ -57,7 +56,7 @@ void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
         QPoint delta = event->globalPos() - resizeStartPosition;
         QSize newSize = resizeStartSize + QSize(delta.x(), delta.y());
         resize(newSize);
-    } else if (event->globalPos().x() >= (width() - 10) && event->globalPos().y() >= (height() - 10)) {
+    } else if (event->globalPos().x() >= (width() - 20) && event->globalPos().y() >= (height() - 10)) {
         setCursor(Qt::SizeFDiagCursor);
     } else {
         setCursor(Qt::ArrowCursor);
@@ -114,7 +113,7 @@ void TerminalWindow::setupUI() {
     topBarLayout->setContentsMargins(0, 0, 0, 0);
 
     closeButton = new QPushButton("✕", topBar);
-    fullscreenButton = new QPushButton("⛶", topBar);
+    fullscreenButton = new QPushButton("❐", topBar);
 
     topBarLayout->addWidget(fullscreenButton);
     topBarLayout->addStretch();
