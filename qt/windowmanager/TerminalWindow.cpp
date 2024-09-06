@@ -61,6 +61,28 @@ void TerminalWindow::mouseReleaseEvent(QMouseEvent *event) {
     QMainWindow::mouseReleaseEvent(event);
 }
 
+void TerminalWindow::windowedFullScreen() {
+    if (!windowedFull) {
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+
+        int screenWidth = screenGeometry.width();
+        int screenHeight = screenGeometry.height();
+
+        setGeometry(0, 0, screenWidth, screenHeight);
+        windowedFull = true;
+    } else {
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+
+        int screenWidth = screenGeometry.width();
+        int screenHeight = screenGeometry.height();
+
+        setGeometry(screenWidth / 2, screenHeight / 2, 350, 350);
+        windowedFull = false;
+    }
+}
+
 void TerminalWindow::setupUI() {
     centralWidget = new QWidget(this);
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
