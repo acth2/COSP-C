@@ -54,10 +54,7 @@ void TerminalWindow::toggleFullScreen() {
         int screenWidth = screenGeometry.width();
         int screenHeight = screenGeometry.height();
 
-        int x = (screenWidth - width()) / 2;
-        int y = (screenHeight - height()) / 2;
-
-        setGeometry(x, y, screenWidth, screenHeight);
+        setGeometry(0, 0, screenWidth, screenHeight);
         showFullScreen();
         
         isFullScreenMode = true;
