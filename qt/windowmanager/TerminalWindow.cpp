@@ -77,7 +77,7 @@ void TerminalWindow::toggleFullScreen() {
         setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
         isFullMode = false;
     } else {
-        setGeometry(0, 0, screenWidth, screenHeight);
+        setGeometry(0, 0, 800, 500);
         isFullMode = true;
     }
     updateTopBarVisibility();
