@@ -8,7 +8,7 @@
 #include <QScreen>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
-    : QMainWindow(parent), isFullScreenMode(false), dragging(false) {
+    : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
     setupUI();
 }
 
