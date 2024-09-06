@@ -3,6 +3,8 @@
 #include <QScreen>
 #include <QMouseEvent>
 #include <QCursor>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
