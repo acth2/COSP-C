@@ -32,7 +32,7 @@ private:
     bool isFullScreenMode;
     bool dragging;
     bool isFullMode;
-    bool windowedFull;
+    bool windowedFullScreen;
     QPoint dragStartPosition;
 
     void setupUI();
