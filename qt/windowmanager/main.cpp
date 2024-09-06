@@ -1,6 +1,5 @@
 #include <QApplication>
 #include <QScreen>
-#include <QKeyEvent>
 #include "windowmanager.h"
 #include "taskbar.h"
 
@@ -21,11 +20,4 @@ int main(int argc, char *argv[]) {
 
     taskBar.show();
     return app.exec();
-}
-
-void TaskBar::keyPressEvent(QKeyEvent *event) {
-    if (event->key() == Qt::Key_Meta || event->key() == Qt::Key_Super_L || event->key() == Qt::Key_Super_R) {
-        showPopUPK = !showPopUPK;
-    }
-    QWidget::keyPressEvent(event);
 }
