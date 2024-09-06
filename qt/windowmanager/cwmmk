@@ -1,9 +1,10 @@
 #!/bin/bash
 
+#SKD = Super Key Detector
 SIGNAL_FILE="/usr/cydra/temp/centralSign"
   
 while true; do
-    xdotool search --onlyvisible --name "" key --clearmodifiers --window 0x0 Super_L
+    xdotool search --onlyvisible --name "SKD for CWM" key --clearmodifiers --window 0x0 Super_L
     if [ $? -eq 0 ]; then
         touch "$SIGNAL_FILE"
         
