@@ -8,6 +8,7 @@
 #include <QHBoxLayout>
 #include <QDialog>
 #include <QMessageBox>
+#include <QWidget>
 #include <QFile>
 
 TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
@@ -58,6 +59,7 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     connect(powerButton, &QPushButton::clicked, this, &TaskBar::showPowerMenu);
     connect(startButton, &QPushButton::clicked, this, &TaskBar::showPopup);
 
+    setWindowFlags(window.windowFlags() | Qt::WindowStaysOnTopHint);
     adjustSizeToScreen();
     installEventFilter();
 }
