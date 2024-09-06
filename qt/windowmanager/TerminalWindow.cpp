@@ -11,6 +11,7 @@
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false), isFullMode(false), windowedFull(false), resizing(false) {
     setupUI();
+    setCursor(Qt::ArrowCursor);
 }
 
 void TerminalWindow::keyPressEvent(QKeyEvent *event) {
