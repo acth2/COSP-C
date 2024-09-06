@@ -120,7 +120,7 @@ void TerminalWindow::windowedFullScreen() {
         int screenWidth = screenGeometry.width();
         int screenHeight = screenGeometry.height();
 
-        setGeometry(screenWidth / 2, screenHeight / 2, 350, 350);
+        setGeometry(screenWidth / 3, screenHeight / 3, 350, 350);
         windowedFull = false;
     }
 }
@@ -137,7 +137,7 @@ void TerminalWindow::setupUI() {
     topBarLayout->setContentsMargins(0, 0, 0, 0);
 
     closeButton = new QPushButton("✕", topBar);
-    fullscreenButton = new QPushButton("⛶", topBar);
+    fullscreenButton = new QPushButton("❐", topBar);
 
     topBarLayout->addWidget(fullscreenButton);
     topBarLayout->addStretch();
