@@ -5,14 +5,13 @@
 #include <QFile>
 #include <QTimer>
 
-void checkForSignalFile() {
+void checkForSignalFile(Taskbar &taskBar) {
     QFile file("/usr/cydra/temp/centralSign");
     if (file.exists()) {
-        TaskBar taskBar;
-        if(TaskBar->isPopupVisible) {
-            taskBar->closePopup();
+        if(taskBar.isPopupVisible) {
+            taskBar.closePopup();
         } else {
-            taskBar->showPopup();
+            taskBar.showPopup();
         }
         file.remove();
     }
