@@ -59,7 +59,7 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     connect(powerButton, &QPushButton::clicked, this, &TaskBar::showPowerMenu);
     connect(startButton, &QPushButton::clicked, this, &TaskBar::showPopup);
 
-    setWindowFlags(window.windowFlags() | Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     adjustSizeToScreen();
     installEventFilter();
 }
