@@ -40,7 +40,7 @@ void TerminalWindow::mousePressEvent(QMouseEvent *event) {
         dragging = true;
         dragStartPosition = event->globalPos() - frameGeometry().topLeft();
     } else if (event->button() == Qt::LeftButton) {
-        if (event->globalPos().x() >= (width() - 20) && event->globalPos().y() >= (height() - 10)) {
+        if (event->globalPos().x() >= (width() - 50) && event->globalPos().y() >= (height() - 10)) {
             resizing = true;
             resizeStartSize = size();
             resizeStartPosition = event->globalPos();
@@ -56,7 +56,7 @@ void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
         QPoint delta = event->globalPos() - resizeStartPosition;
         QSize newSize = resizeStartSize + QSize(delta.x(), delta.y());
         resize(newSize);
-    } else if (event->globalPos().x() >= (width() - 20) && event->globalPos().y() >= (height() - 10)) {
+    } else if (event->globalPos().x() >= (width() - 50) && event->globalPos().y() >= (height() - 10)) {
         setCursor(Qt::SizeFDiagCursor);
     } else {
         setCursor(Qt::ArrowCursor);
