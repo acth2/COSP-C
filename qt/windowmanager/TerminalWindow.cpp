@@ -17,27 +17,18 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
         if (isFullScreenMode) {
             showNormal();
             isFullScreenMode = false;
-    } else {
+        } else {
             QScreen *screen = QApplication::primaryScreen();
             QRect screenGeometry = screen->geometry();
-
-            int screenWidth = screenGeometry.width();
-            int screenHeight = screenGeometry.height();
-
-            setGeometry(0, 0, screenWidth, screenHeight);
-            showFullScreen();       
-        
+            setGeometry(screenGeometry);
+            showFullScreen();
             isFullScreenMode = true;
-    }
-    updateTopBarVisibility();
+        }
+        updateTopBarVisibility();
     } else if (event->key() == Qt::Key_Escape && isFullScreenMode) {
         isFullScreenMode = false;
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
-
-        int screenWidth = screenGeometry.width();
-        int screenHeight = screenGeometry.height();
-
         setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
     }
     
@@ -46,13 +37,16 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
 
 void TerminalWindow::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
-        if (topBar->rect().contains(event->pos())) {
+        // Check if resizing should start
+        QRect rect = this->rect();
+        QRect resizeHandle(0, 0, 10, 10);
+        if (resizeHandle.adjusted(rect.width() - 10, rect.height() - 10, 0, 0).contains(event->pos())) {
+            resizing = true;
+            resizeStartSize = size();
+            resizeStartPosition = event->globalPos();
+        } else if (topBar->rect().contains(event->pos())) {
             dragging = true;
             dragStartPosition = event->globalPos() - frameGeometry().topLeft();
-        } else if (event->pos().x() > width() - 10 && event->pos().y() > height() - 10) {
-            resizing = true;
-            resizeStartPosition = event->globalPos();
-            resizeStartSize = size();
         }
     }
     QMainWindow::mousePressEvent(event);
@@ -66,8 +60,9 @@ void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
         newSize.setWidth(newSize.width() + (event->globalPos().x() - resizeStartPosition.x()));
         newSize.setHeight(newSize.height() + (event->globalPos().y() - resizeStartPosition.y()));
 
-        newSize.setWidth(qMax(newSize.width(), 100));
-        newSize.setHeight(qMax(newSize.height(), 100));
+        // Ensure the new size is within reasonable bounds
+        newSize.setWidth(qMax(newSize.width(), 100)); // Minimum width of 100 pixels
+        newSize.setHeight(qMax(newSize.height(), 100)); // Minimum height of 100 pixels
 
         resize(newSize);
     }
@@ -86,10 +81,6 @@ void TerminalWindow::toggleFullScreen() {
     if (isFullMode) {
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
-
-        int screenWidth = screenGeometry.width();
-        int screenHeight = screenGeometry.height();
-
         setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
         isFullMode = false;
     } else {
@@ -107,20 +98,12 @@ void TerminalWindow::windowedFullScreen() {
     if (!windowedFull) {
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
-
-        int screenWidth = screenGeometry.width();
-        int screenHeight = screenGeometry.height();
-
-        setGeometry(0, 0, screenWidth, screenHeight);
+        setGeometry(screenGeometry);
         windowedFull = true;
     } else {
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
-
-        int screenWidth = screenGeometry.width();
-        int screenHeight = screenGeometry.height();
-
-        setGeometry(screenWidth / 3, screenHeight / 3, 350, 350);
+        setGeometry(screenGeometry.width() / 3, screenGeometry.height() / 3, 350, 350);
         windowedFull = false;
     }
 }
