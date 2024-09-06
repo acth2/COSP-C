@@ -1,5 +1,6 @@
 #include "windowmanager.h"
 #include "userinteractright.h"
+#include "taskbar.h"
 #include <QApplication>
 #include <QScreen>
 #include <QDebug>
@@ -71,6 +72,16 @@ bool WindowManager::event(QEvent *event) {
             userInteractRightWidget->show();
         }
     }
+
+    TaskBar tb;
+    if (event->key() == Qt::Key_Meta || event->key() == Qt::Key_Super_L || event->key() == Qt::Key_Super_R) {
+        if (!isPopupVisible) {
+            tb.showPopup();
+        } else {
+            tb.closePopup();
+        }
+    }
+    
     return QWidget::event(event);
 }
 
