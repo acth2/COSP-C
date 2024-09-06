@@ -1,84 +1,100 @@
 #include "TerminalWindow.h"
-#include <QApplication>
-#include <QScreen>
-#include <QMouseEvent>
-#include <QCursor>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QApplication>
+#include <QTextEdit>
+#include <QPushButton>
+#include <QDebug>
+#include <QScreen>
+#include <QCursor>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
-    : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
+    : QMainWindow(parent), isFullScreenMode(false), dragging(false), isFullMode(false), windowedFull(false), resizing(false) {
     setupUI();
 }
 
-void TerminalWindow::mousePressEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
-        QRect windowRect = this->rect();
-        int padding = 10;
+void TerminalWindow::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_F11) {
+        if (isFullScreenMode) {
+            showNormal();
+            isFullScreenMode = false;
+        } else {
+            QScreen *screen = QApplication::primaryScreen();
+            QRect screenGeometry = screen->geometry();
+            setGeometry(screenGeometry);
+            showFullScreen();
+            isFullScreenMode = true;
+        }
+        updateTopBarVisibility();
+    } else if (event->key() == Qt::Key_Escape && isFullScreenMode) {
+        isFullScreenMode = false;
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
+    }
+    QMainWindow::keyPressEvent(event);
+}
 
-        if (event->pos().x() >= windowRect.right() - padding && event->pos().y() >= windowRect.bottom() - padding) {
+void TerminalWindow::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton && topBar->rect().contains(event->pos())) {
+        dragging = true;
+        dragStartPosition = event->globalPos() - frameGeometry().topLeft();
+    } else if (event->button() == Qt::LeftButton) {
+        if (event->globalPos().x() >= (width() - 10) && event->globalPos().y() >= (height() - 10)) {
             resizing = true;
+            resizeStartSize = size();
             resizeStartPosition = event->globalPos();
-            resizeStartSize = this->size();
-        } else if (topBar->rect().contains(event->pos())) {
-            dragging = true;
-            dragStartPosition = event->globalPos() - frameGeometry().topLeft();
         }
     }
     QMainWindow::mousePressEvent(event);
 }
 
 void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
-    int padding = 10;
-    QRect windowRect = this->rect();
-
-    if (event->pos().x() >= windowRect.right() - padding && event->pos().y() >= windowRect.bottom() - padding) {
+    if (dragging) {
+        move(event->globalPos() - dragStartPosition);
+    } else if (resizing) {
+        QSize newSize = resizeStartSize + (event->globalPos() - resizeStartPosition).toSize();
+        resize(newSize);
+    } else if (event->globalPos().x() >= (width() - 10) && event->globalPos().y() >= (height() - 10)) {
         setCursor(Qt::SizeFDiagCursor);
     } else {
         setCursor(Qt::ArrowCursor);
     }
-
-    if (resizing) {
-        int newWidth = resizeStartSize.width() + (event->globalPos().x() - resizeStartPosition.x());
-        int newHeight = resizeStartSize.height() + (event->globalPos().y() - resizeStartPosition.y());
-
-        newWidth = std::max(newWidth, minimumWidth());
-        newHeight = std::max(newHeight, minimumHeight());
-
-        resize(newWidth, newHeight);
-    } else if (dragging) {
-        move(event->globalPos() - dragStartPosition);
-    }
-
     QMainWindow::mouseMoveEvent(event);
 }
 
 void TerminalWindow::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
-        resizing = false;
         dragging = false;
+        resizing = false;
+        setCursor(Qt::ArrowCursor);
     }
     QMainWindow::mouseReleaseEvent(event);
+}
+
+void TerminalWindow::toggleFullScreen() {
+    if (isFullMode) {
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
+        isFullMode = false;
+    } else {
+        setGeometry(0, 0, 800, 500);
+        isFullMode = true;
+    }
+    updateTopBarVisibility();
 }
 
 void TerminalWindow::windowedFullScreen() {
     if (!windowedFull) {
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
-
-        int screenWidth = screenGeometry.width();
-        int screenHeight = screenGeometry.height();
-
-        setGeometry(0, 0, screenWidth, screenHeight);
+        setGeometry(screenGeometry);
         windowedFull = true;
     } else {
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
-
-        int screenWidth = screenGeometry.width();
-        int screenHeight = screenGeometry.height();
-
-        setGeometry(screenWidth / 2, screenHeight / 2, 350, 350);
+        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 350, 350);
         windowedFull = false;
     }
 }
@@ -95,7 +111,7 @@ void TerminalWindow::setupUI() {
     topBarLayout->setContentsMargins(0, 0, 0, 0);
 
     closeButton = new QPushButton("✕", topBar);
-    fullscreenButton = new QPushButton("❐", topBar);
+    fullscreenButton = new QPushButton("⛶", topBar);
 
     topBarLayout->addWidget(fullscreenButton);
     topBarLayout->addStretch();
@@ -114,23 +130,6 @@ void TerminalWindow::setupUI() {
     setCentralWidget(centralWidget);
     setWindowTitle("Terminal Window");
 
-    updateTopBarVisibility();
-}
-
-void TerminalWindow::toggleFullScreen() {
-    if (isFullMode) {
-        QScreen *screen = QApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
-
-        int screenWidth = screenGeometry.width();
-        int screenHeight = screenGeometry.height();
-
-        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
-        isFullMode = false;
-    } else {
-        setGeometry(0, 0, 800, 500);
-        isFullMode = true;
-    }
     updateTopBarVisibility();
 }
 
