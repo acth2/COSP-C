@@ -77,12 +77,6 @@ void TerminalWindow::toggleFullScreen() {
         setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
         isFullMode = false;
     } else {
-        QScreen *screen = QApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
-
-        int screenWidth = screenGeometry.width();
-        int screenHeight = screenGeometry.height();
-
         setGeometry(0, 0, screenWidth, screenHeight);
         isFullMode = true;
     }
