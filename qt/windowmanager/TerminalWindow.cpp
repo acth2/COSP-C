@@ -12,7 +12,7 @@ TerminalWindow::TerminalWindow(QWidget *parent)
     setupUI();
 }
 
-void TerminalWindow::windowedFullscreen() {
+void TerminalWindow::windowedFullScreen() {
     if (!windowedFull) {
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
