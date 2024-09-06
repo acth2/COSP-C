@@ -12,13 +12,15 @@ SOURCES += main.cpp \
            konami_code_handler.cpp \
            userinteractright.cpp \
            taskbar.cpp \
-           TerminalWindow.cpp
+           TerminalWindow.cpp \
+           global_key_hook.cpp
 
 HEADERS += windowmanager.h \
            konami_code_handler.h \
            userinteractright.h \
            taskbar.h \
-           TerminalWindow.h
+           TerminalWindow.h \
+           global_key_hook.h
 
 DESTDIR = src
 
