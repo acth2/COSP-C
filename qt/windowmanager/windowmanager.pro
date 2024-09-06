@@ -19,8 +19,7 @@ HEADERS += windowmanager.h \
            konami_code_handler.h \
            userinteractright.h \
            taskbar.h \
-           TerminalWindow.h \
-           global_key_hook.h
+           TerminalWindow.h 
 
 DESTDIR = src
 
