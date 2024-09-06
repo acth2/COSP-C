@@ -35,7 +35,6 @@ private:
     void installEventFilter();
     bool isPopupVisible = false;
     bool powerMenuVisible = false;
-    bool showPopUPK;
     bool isDarkMode;
 };
 
