@@ -96,6 +96,7 @@ void TerminalWindow::windowedFullScreen() {
         int screenHeight = screenGeometry.height();
 
         setGeometry(0, 0, screenWidth, screenHeight);
+        windowedFull = true;
     } else {
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
