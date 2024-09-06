@@ -31,6 +31,7 @@ private:
     QTextEdit *terminalWidget;
     bool isFullScreenMode;
     bool dragging;
+    bool isFullMode;
     QPoint dragStartPosition;
 
     void setupUI();
