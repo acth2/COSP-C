@@ -10,6 +10,7 @@
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
     setupUI();
+    setWindowFlags(windowFlags() | Qt::WindowResizeButtonHint);
 }
 
 void TerminalWindow::keyPressEvent(QKeyEvent *event) {
@@ -37,16 +38,17 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
 
 void TerminalWindow::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
-        // Check if resizing should start
-        QRect rect = this->rect();
-        QRect resizeHandle(0, 0, 10, 10);
-        if (resizeHandle.adjusted(rect.width() - 10, rect.height() - 10, 0, 0).contains(event->pos())) {
-            resizing = true;
-            resizeStartSize = size();
-            resizeStartPosition = event->globalPos();
-        } else if (topBar->rect().contains(event->pos())) {
+        if (topBar->rect().contains(event->pos())) {
             dragging = true;
             dragStartPosition = event->globalPos() - frameGeometry().topLeft();
+        } else {
+            QRect rect = this->rect();
+            if (event->pos().x() >= rect.width() - 10 || event->pos().y() >= rect.height() - 10 ||
+                event->pos().x() <= 10 || event->pos().y() <= 10) {
+                resizing = true;
+                resizeStartSize = size();
+                resizeStartPosition = event->globalPos();
+            }
         }
     }
     QMainWindow::mousePressEvent(event);
@@ -56,13 +58,13 @@ void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
     if (dragging) {
         move(event->globalPos() - dragStartPosition);
     } else if (resizing) {
+        
         QSize newSize = resizeStartSize;
         newSize.setWidth(newSize.width() + (event->globalPos().x() - resizeStartPosition.x()));
         newSize.setHeight(newSize.height() + (event->globalPos().y() - resizeStartPosition.y()));
-
-        // Ensure the new size is within reasonable bounds
-        newSize.setWidth(qMax(newSize.width(), 100)); // Minimum width of 100 pixels
-        newSize.setHeight(qMax(newSize.height(), 100)); // Minimum height of 100 pixels
+        
+        newSize.setWidth(qMax(newSize.width(), 100));
+        newSize.setHeight(qMax(newSize.height(), 100));
 
         resize(newSize);
     }
@@ -103,7 +105,7 @@ void TerminalWindow::windowedFullScreen() {
     } else {
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
-        setGeometry(screenGeometry.width() / 3, screenGeometry.height() / 3, 350, 350);
+        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 350, 350);
         windowedFull = false;
     }
 }
