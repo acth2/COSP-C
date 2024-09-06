@@ -117,6 +117,23 @@ void TerminalWindow::setupUI() {
     updateTopBarVisibility();
 }
 
+void TerminalWindow::toggleFullScreen() {
+    if (isFullMode) {
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+
+        int screenWidth = screenGeometry.width();
+        int screenHeight = screenGeometry.height();
+
+        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
+        isFullMode = false;
+    } else {
+        setGeometry(0, 0, 800, 500);
+        isFullMode = true;
+    }
+    updateTopBarVisibility();
+}
+
 void TerminalWindow::updateTopBarVisibility() {
     topBar->setVisible(!isFullScreenMode);
 }
