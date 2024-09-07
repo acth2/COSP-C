@@ -42,32 +42,27 @@ void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
     int marginIconing = 20;
 
     bool onRightEdge = event->x() > (width() - marginIconing);
-    bool onLeftEdge = event->x() < marginIconing;
     bool onBottomEdge = event->y() > (height() - marginIconing);
-    bool onTopEdge = event->y() < marginIconing;
+    
+    bool onLeftEdge = false;
+    bool onTopEdge = false;
 
     if (onRightEdge && onBottomEdge) {
         setCursor(Qt::SizeFDiagCursor); 
-    } else if (onRightEdge && onTopEdge) {
-        setCursor(Qt::SizeBDiagCursor);
-    } else if (onLeftEdge && onBottomEdge) {
-        setCursor(Qt::SizeBDiagCursor); 
-    } else if (onLeftEdge && onTopEdge) {
-        setCursor(Qt::SizeFDiagCursor);
     } else if (onRightEdge) {
-        setCursor(Qt::SizeHorCursor); 
-    } else if (onLeftEdge) {
         setCursor(Qt::SizeHorCursor); 
     } else if (onBottomEdge) {
         setCursor(Qt::SizeVerCursor); 
     } else {
-        setCursor(Qt::ArrowCursor);   
+        setCursor(Qt::ArrowCursor);
     }
 
     if (resizing) {
         QSize newSize = resizeStartSize + QSize(event->globalPos().x() - resizeStartPosition.x(),
                                                 event->globalPos().y() - resizeStartPosition.y());
-        resize(newSize);
+        if (onRightEdge || onBottomEdge) {
+            resize(newSize);
+        }
     } else if (dragging) {
         move(event->globalPos() - dragStartPosition);
     }
@@ -78,8 +73,10 @@ void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
 void TerminalWindow::mousePressEvent(QMouseEvent *event) {
     int margin = 10;
 
-    if ((event->x() > (width() - margin) || event->x() < margin) || 
-        (event->y() > (height() - margin) || event->y() < margin)) {
+    bool onRightEdge = event->x() > (width() - margin);
+    bool onBottomEdge = event->y() > (height() - margin);
+
+    if (onRightEdge || onBottomEdge) {
         resizing = true;
         resizeStartPosition = event->globalPos();
         resizeStartSize = size();
