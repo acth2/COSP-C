@@ -26,6 +26,7 @@ private slots:
     void windowedFullScreen();
     void handleTerminalOutput();
     void handleTerminalErrorOutput();
+    void launchXTerm();
 
 private:
     QWidget *centralWidget;
