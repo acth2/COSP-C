@@ -8,6 +8,7 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QProcess>
+#include <QPlainTextEdit>
 
 class TerminalWindow : public QMainWindow {
     Q_OBJECT
