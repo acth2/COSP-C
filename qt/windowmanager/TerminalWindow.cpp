@@ -2,16 +2,18 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QApplication>
-#include <QTextEdit>
 #include <QPushButton>
-#include <QDebug>
 #include <QScreen>
 #include <QCursor>
+#include <QProcess>
+#include <QDebug>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
     setupUI();
     setCursor(Qt::ArrowCursor);
+
+    startTerminalProcess();
 }
 
 void TerminalWindow::keyPressEvent(QKeyEvent *event) {
@@ -32,6 +34,9 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
         setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
+    } else if (!event->text().isEmpty()) {
+        currentCommand.append(event->text());
+        processInput();
     }
 
     QMainWindow::keyPressEvent(event);
@@ -146,8 +151,7 @@ void TerminalWindow::setupUI() {
     connect(closeButton, &QPushButton::clicked, this, &TerminalWindow::close);
     connect(fullscreenButton, &QPushButton::clicked, this, &TerminalWindow::windowedFullScreen);
 
-    terminalWidget = new QTextEdit(this);
-    terminalWidget->setText("Nanomachines, son");
+    terminalWidget = new QPlainTextEdit(this);
     terminalWidget->setReadOnly(true);
 
     mainLayout->addWidget(topBar);
@@ -157,4 +161,22 @@ void TerminalWindow::setupUI() {
     setWindowTitle("Terminal Window");
 
     updateTopBarVisibility();
+}
+
+void TerminalWindow::startTerminalProcess() {
+    terminalProcess = new QProcess(this);
+    connect(terminalProcess, &QProcess::readyReadStandardOutput, this, &TerminalWindow::handleTerminalOutput);
+    terminalProcess->start("bash");
+}
+
+void TerminalWindow::handleTerminalOutput() {
+    QByteArray output = terminalProcess->readAllStandardOutput();
+    terminalWidget->appendPlainText(QString::fromLocal8Bit(output));
+}
+
+void TerminalWindow::processInput() {
+    if (!currentCommand.isEmpty()) {
+        terminalProcess->write(currentCommand.toLocal8Bit() + "\n");
+        currentCommand.clear();
+    }
 }
