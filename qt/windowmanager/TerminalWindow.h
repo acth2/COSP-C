@@ -49,6 +49,8 @@ private:
     void updateTopBarVisibility();
     void startTerminalProcess();
     void processInput();
+    void sendCommandToTerminal(const QString &command);
+    QString inputBuffer;
 };
 
 #endif // TERMINALWINDOW_H
