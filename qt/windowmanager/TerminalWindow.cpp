@@ -9,7 +9,7 @@
 #include <QDebug>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
-    : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
+    : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false), terminalProcess(nullptr) {
     setupUI();
     setCursor(Qt::ArrowCursor);
 
@@ -130,6 +130,17 @@ void TerminalWindow::windowedFullScreen() {
     }
 }
 
+void TerminalWindow::handleTerminalOutput() {
+    QByteArray output = terminalProcess->readAllStandardOutput();
+    terminalWidget->appendPlainText(QString::fromLocal8Bit(output));
+}
+
+void TerminalWindow::handleTerminalErrorOutput() {
+    QByteArray errorOutput = terminalProcess->readAllStandardError();
+    terminalWidget->appendPlainText(QString::fromLocal8Bit(errorOutput));
+}
+
+
 void TerminalWindow::setupUI() {
     centralWidget = new QWidget(this);
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
@@ -165,13 +176,17 @@ void TerminalWindow::setupUI() {
 
 void TerminalWindow::startTerminalProcess() {
     terminalProcess = new QProcess(this);
+    
     connect(terminalProcess, &QProcess::readyReadStandardOutput, this, &TerminalWindow::handleTerminalOutput);
-    terminalProcess->start("bash");
-}
-
-void TerminalWindow::handleTerminalOutput() {
-    QByteArray output = terminalProcess->readAllStandardOutput();
-    terminalWidget->appendPlainText(QString::fromLocal8Bit(output));
+    connect(terminalProcess, &QProcess::readyReadStandardError, this, &TerminalWindow::handleTerminalErrorOutput);
+    
+    terminalProcess->start("bash", QStringList() << "-i");
+    
+    if (!terminalProcess->waitForStarted()) {
+        qDebug() << "Failed to start terminal process!";
+    } else {
+        qDebug() << "Terminal process started successfully!";
+    }
 }
 
 void TerminalWindow::processInput() {
