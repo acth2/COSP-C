@@ -130,6 +130,17 @@ void TerminalWindow::windowedFullScreen() {
     }
 }
 
+void TerminalWindow::handleTerminalOutput() {
+    QByteArray output = terminalProcess->readAllStandardOutput();
+    terminalWidget->appendPlainText(QString::fromLocal8Bit(output));
+}
+
+void TerminalWindow::handleTerminalErrorOutput() {
+    QByteArray errorOutput = terminalProcess->readAllStandardError();
+    terminalWidget->appendPlainText(QString::fromLocal8Bit(errorOutput));
+}
+
+
 void TerminalWindow::setupUI() {
     centralWidget = new QWidget(this);
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
@@ -176,16 +187,6 @@ void TerminalWindow::startTerminalProcess() {
     } else {
         qDebug() << "Terminal process started successfully!";
     }
-}
-
-void TerminalWindow::handleTerminalOutput() {
-    QByteArray output = terminalProcess->readAllStandardOutput();
-    terminalWidget->appendPlainText(QString::fromLocal8Bit(output));
-}
-
-void TerminalWindow::handleTerminalErrorOutput() {
-    QByteArray errorOutput = terminalProcess->readAllStandardError();
-    terminalWidget->appendPlainText(QString::fromLocal8Bit(errorOutput));
 }
 
 void TerminalWindow::processInput() {
