@@ -39,11 +39,12 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
 
 void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
     int margin = 35;
+    int marginIconing = 20;
 
-    bool onRightEdge = event->x() > (width() - margin);
-    bool onLeftEdge = event->x() < margin;
-    bool onBottomEdge = event->y() > (height() - margin);
-    bool onTopEdge = event->y() < margin;
+    bool onRightEdge = event->x() > (width() - marginIconing);
+    bool onLeftEdge = event->x() < marginIconing;
+    bool onBottomEdge = event->y() > (height() - marginIconing);
+    bool onTopEdge = event->y() < marginIconing;
 
     if (onRightEdge && onBottomEdge) {
         setCursor(Qt::SizeFDiagCursor); 
@@ -59,8 +60,6 @@ void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
         setCursor(Qt::SizeHorCursor); 
     } else if (onBottomEdge) {
         setCursor(Qt::SizeVerCursor); 
-    } else if (onTopEdge) {
-        setCursor(Qt::SizeVerCursor);  
     } else {
         setCursor(Qt::ArrowCursor);   
     }
