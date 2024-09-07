@@ -37,44 +37,32 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
     QMainWindow::keyPressEvent(event);
 }
 
-void TerminalWindow::mousePressEvent(QMouseEvent *event) {
+void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
     int margin = 10;
 
-    if (event->button() == Qt::LeftButton) {
-        if (event->x() > (width() - margin) && event->y() > (height() - margin)) {
-            resizing = true;
-            resizeStartSize = size();
-            resizeStartPosition = event->globalPos();
-        } else if (topBar->rect().contains(event->pos())) {
-            dragging = true;
-            dragStartPosition = event->globalPos() - frameGeometry().topLeft();
-        }
-    }
+    bool onRightEdge = event->x() > (width() - margin);
+    bool onLeftEdge = event->x() < margin;
+    bool onBottomEdge = event->y() > (height() - margin);
+    bool onTopEdge = event->y() < margin;
 
-    QMainWindow::mousePressEvent(event);
-}
-
-void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
-    int margin = 10; 
-
-    if (event->x() > (width() - margin) && event->y() > (height() - margin)) {
-        setCursor(Qt::SizeFDiagCursor);
-    } else if (event->x() > (width() - margin) && event->y() < margin) {
+    if (onRightEdge && onBottomEdge) {
+        setCursor(Qt::SizeFDiagCursor); 
+    } else if (onRightEdge && onTopEdge) {
         setCursor(Qt::SizeBDiagCursor);
-    } else if (event->x() < margin && event->y() > (height() - margin)) {
-        setCursor(Qt::SizeBDiagCursor);
-    } else if (event->x() < margin && event->y() < margin) {
+    } else if (onLeftEdge && onBottomEdge) {
+        setCursor(Qt::SizeBDiagCursor); 
+    } else if (onLeftEdge && onTopEdge) {
         setCursor(Qt::SizeFDiagCursor);
-    } else if (event->x() > (width() - margin)) {
-        setCursor(Qt::SizeHorCursor);
-    } else if (event->x() < margin) {
-        setCursor(Qt::SizeHorCursor);
-    } else if (event->y() > (height() - margin)) {
-        setCursor(Qt::SizeVerCursor);
-    } else if (event->y() < margin) {
-        setCursor(Qt::SizeVerCursor);
+    } else if (onRightEdge) {
+        setCursor(Qt::SizeHorCursor); 
+    } else if (onLeftEdge) {
+        setCursor(Qt::SizeHorCursor); 
+    } else if (onBottomEdge) {
+        setCursor(Qt::SizeVerCursor); 
+    } else if (onTopEdge) {
+        setCursor(Qt::SizeVerCursor);  
     } else {
-        setCursor(Qt::ArrowCursor);
+        setCursor(Qt::ArrowCursor);   
     }
 
     if (resizing) {
@@ -88,13 +76,25 @@ void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
     QMainWindow::mouseMoveEvent(event);
 }
 
+void TerminalWindow::mousePressEvent(QMouseEvent *event) {
+    int margin = 10;
+
+    if ((event->x() > (width() - margin) || event->x() < margin) || 
+        (event->y() > (height() - margin) || event->y() < margin)) {
+        resizing = true;
+        resizeStartPosition = event->globalPos();
+        resizeStartSize = size();
+    } else {
+        dragging = true;
+        dragStartPosition = event->globalPos() - frameGeometry().topLeft();
+    }
+
+    QMainWindow::mousePressEvent(event);
+}
 
 void TerminalWindow::mouseReleaseEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
-        dragging = false;
-        resizing = false;
-        setCursor(Qt::ArrowCursor);
-    }
+    resizing = false;
+    dragging = false;
     QMainWindow::mouseReleaseEvent(event);
 }
 
