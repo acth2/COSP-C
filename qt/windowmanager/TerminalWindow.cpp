@@ -2,18 +2,25 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QApplication>
+#include <QTextEdit>
 #include <QPushButton>
+#include <QDebug>
 #include <QScreen>
 #include <QCursor>
 #include <QProcess>
-#include <QDebug>
+#include <QKeyEvent>
+#include <QMouseEvent>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
-    : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false), terminalProcess(nullptr) {
+    : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false), terminalProcess(new QProcess(this)) {
     setupUI();
     setCursor(Qt::ArrowCursor);
     
-    startTerminalProcess();
+    terminalProcess->setProgram("/bin/bash");
+    terminalProcess->setArguments({"--login"});
+    connect(terminalProcess, &QProcess::readyReadStandardOutput, this, &TerminalWindow::handleTerminalOutput);
+    connect(terminalProcess, &QProcess::readyReadStandardError, this, &TerminalWindow::handleTerminalErrorOutput);
+    terminalProcess->start();
 }
 
 void TerminalWindow::keyPressEvent(QKeyEvent *event) {
@@ -34,9 +41,11 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
         setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
-    } else if (!event->text().isEmpty()) {
-        currentCommand.append(event->text());
-        processInput();
+    } else if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+        sendCommandToTerminal(inputBuffer);
+        inputBuffer.clear();
+    } else {
+        inputBuffer += event->text();
     }
 
     QMainWindow::keyPressEvent(event);
@@ -49,9 +58,6 @@ void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
     bool onRightEdge = event->x() > (width() - marginIconing);
     bool onBottomEdge = event->y() > (height() - marginIconing);
     
-    bool onLeftEdge = false;
-    bool onTopEdge = false;
-
     if (onRightEdge && onBottomEdge) {
         setCursor(Qt::SizeFDiagCursor); 
     } else if (onRightEdge) {
@@ -65,7 +71,7 @@ void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
     if (resizing) {
         QSize newSize = resizeStartSize + QSize(event->globalPos().x() - resizeStartPosition.x(),
                                                 event->globalPos().y() - resizeStartPosition.y());
-        if (onRightEdge || onBottomEdge) {
+        if (newSize.width() > minimumWidth() && newSize.height() > minimumHeight()) {
             resize(newSize);
         }
     } else if (dragging) {
@@ -130,17 +136,6 @@ void TerminalWindow::windowedFullScreen() {
     }
 }
 
-void TerminalWindow::handleTerminalOutput() {
-    QByteArray output = terminalProcess->readAllStandardOutput();
-    terminalWidget->appendPlainText(QString::fromLocal8Bit(output));
-}
-
-void TerminalWindow::handleTerminalErrorOutput() {
-    QByteArray errorOutput = terminalProcess->readAllStandardError();
-    terminalWidget->appendPlainText(QString::fromLocal8Bit(errorOutput));
-}
-
-
 void TerminalWindow::setupUI() {
     centralWidget = new QWidget(this);
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
@@ -162,7 +157,8 @@ void TerminalWindow::setupUI() {
     connect(closeButton, &QPushButton::clicked, this, &TerminalWindow::close);
     connect(fullscreenButton, &QPushButton::clicked, this, &TerminalWindow::windowedFullScreen);
 
-    terminalWidget = new QPlainTextEdit(this);
+    terminalWidget = new QTextEdit(this);
+    terminalWidget->setText("Nanomachines, son");
     terminalWidget->setReadOnly(true);
 
     mainLayout->addWidget(topBar);
@@ -174,22 +170,18 @@ void TerminalWindow::setupUI() {
     updateTopBarVisibility();
 }
 
-void TerminalWindow::startTerminalProcess() {
-    terminalProcess = new QProcess(this);
-    terminalProcess->start("/bin/bash");
-
-    connect(terminalProcess, &QProcess::readyReadStandardOutput, this, &TerminalWindow::handleTerminalOutput);
-    connect(terminalProcess, &QProcess::readyReadStandardError, this, &TerminalWindow::handleTerminalErrorOutput);
-    connect(terminalProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-            this, [](int exitCode, QProcess::ExitStatus status) {
-                qDebug() << "Terminal process finished with exit code" << exitCode;
-            });
+void TerminalWindow::sendCommandToTerminal(const QString &command) {
+    if (terminalProcess->state() == QProcess::Running) {
+        terminalProcess->write(command.toUtf8() + "\n");
+    }
 }
 
+void TerminalWindow::handleTerminalOutput() {
+    QByteArray output = terminalProcess->readAllStandardOutput();
+    terminalWidget->append(QString::fromUtf8(output));
+}
 
-void TerminalWindow::processInput() {
-    if (!currentCommand.isEmpty()) {
-        terminalProcess->write(currentCommand.toLocal8Bit() + "\n");
-        currentCommand.clear();
-    }
+void TerminalWindow::handleTerminalErrorOutput() {
+    QByteArray errorOutput = terminalProcess->readAllStandardError();
+    terminalWidget->append(QString::fromUtf8(errorOutput));
 }
