@@ -41,6 +41,16 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
     QMainWindow::keyPressEvent(event);
 }
 
+void TerminalWindow::handleTerminalOutput() {
+    QByteArray output = terminalProcess->readAllStandardOutput();
+    terminalWidget->append(QString::fromUtf8(output));
+}
+
+void TerminalWindow::handleTerminalErrorOutput() {
+    QByteArray errorOutput = terminalProcess->readAllStandardError();
+    terminalWidget->append(QString::fromUtf8(errorOutput));
+}
+
 void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
     int margin = 35;
     int marginIconing = 20;
