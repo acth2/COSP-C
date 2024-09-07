@@ -115,6 +115,20 @@ void TerminalWindow::updateTopBarVisibility() {
     topBar->setVisible(!isFullScreenMode);
 }
 
+void TerminalWindow::windowedFullScreen() {
+    if (!windowedFull) {
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+        setGeometry(screenGeometry);
+        windowedFull = true;
+    } else {
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 350, 350);
+        windowedFull = false;
+    }
+}
+
 void TerminalWindow::setupUI() {
     centralWidget = new QWidget(this);
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
