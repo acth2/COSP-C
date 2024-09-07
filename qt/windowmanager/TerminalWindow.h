@@ -4,10 +4,9 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QWidget>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QMouseEvent>
 #include <QKeyEvent>
-#include <QProcess>
 
 class TerminalWindow : public QMainWindow {
     Q_OBJECT
@@ -24,8 +23,6 @@ protected:
 private slots:
     void toggleFullScreen();
     void windowedFullScreen();
-    void handleTerminalOutput();
-    void handleTerminalErrorOutput();
     void launchXTerm();
 
 private:
@@ -33,8 +30,7 @@ private:
     QWidget *topBar;
     QPushButton *closeButton;
     QPushButton *fullscreenButton;
-    QTextEdit *terminalWidget;
-    QProcess *terminalProcess;
+    QPlainTextEdit *terminalWidget;
     bool isFullScreenMode;
     bool dragging;
     bool isFullMode;
@@ -46,8 +42,6 @@ private:
 
     void setupUI();
     void updateTopBarVisibility();
-    void sendCommandToTerminal(const QString &command);
-    QString inputBuffer;
 };
 
 #endif // TERMINALWINDOW_H
