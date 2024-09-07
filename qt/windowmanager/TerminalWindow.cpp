@@ -2,19 +2,14 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QApplication>
-#include <QPushButton>
-#include <QDebug>
+#include <QProcess>
 #include <QScreen>
 #include <QCursor>
-#include <QProcess>
-#include <QKeyEvent>
-#include <QMouseEvent>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
     setupUI();
     setCursor(Qt::ArrowCursor);
-
     launchXTerm();
 }
 
@@ -41,16 +36,6 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
     QMainWindow::keyPressEvent(event);
 }
 
-void TerminalWindow::handleTerminalOutput() {
-    QByteArray output = terminalProcess->readAllStandardOutput();
-    terminalWidget->append(QString::fromUtf8(output));
-}
-
-void TerminalWindow::handleTerminalErrorOutput() {
-    QByteArray errorOutput = terminalProcess->readAllStandardError();
-    terminalWidget->append(QString::fromUtf8(errorOutput));
-}
-
 void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
     int margin = 35;
     int marginIconing = 20;
@@ -71,7 +56,7 @@ void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
     if (resizing) {
         QSize newSize = resizeStartSize + QSize(event->globalPos().x() - resizeStartPosition.x(),
                                                 event->globalPos().y() - resizeStartPosition.y());
-        if (newSize.width() > minimumWidth() && newSize.height() > minimumHeight()) {
+        if (onRightEdge || onBottomEdge) {
             resize(newSize);
         }
     } else if (dragging) {
@@ -157,8 +142,8 @@ void TerminalWindow::setupUI() {
     connect(closeButton, &QPushButton::clicked, this, &TerminalWindow::close);
     connect(fullscreenButton, &QPushButton::clicked, this, &TerminalWindow::windowedFullScreen);
 
-    terminalWidget = new QTextEdit(this);
-    terminalWidget->setText("Nanomachines, son");
+    terminalWidget = new QPlainTextEdit(this);
+    terminalWidget->setPlainText("Nanomachines, son");
     terminalWidget->setReadOnly(true);
 
     mainLayout->addWidget(topBar);
@@ -176,5 +161,5 @@ void TerminalWindow::launchXTerm() {
     arguments << "-e" << "bash";
 
     QProcess *xtermProcess = new QProcess(this);
-    xtermProcess->start(xtermPath, arguments);
+    xtermProcess->startDetached(xtermPath, arguments);
 }
