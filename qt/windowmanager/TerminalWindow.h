@@ -8,7 +8,6 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QProcess>
-#include <QPlainTextEdit>
 
 class TerminalWindow : public QMainWindow {
     Q_OBJECT
@@ -25,7 +24,7 @@ protected:
 private slots:
     void toggleFullScreen();
     void windowedFullScreen();
-    void handleTerminalOutput();      
+    void handleTerminalOutput();
     void handleTerminalErrorOutput();
 
 private:
@@ -33,8 +32,8 @@ private:
     QWidget *topBar;
     QPushButton *closeButton;
     QPushButton *fullscreenButton;
-    QPlainTextEdit *terminalWidget;
-    QProcess *terminalProcess;          
+    QTextEdit *terminalWidget;
+    QProcess *terminalProcess;
     bool isFullScreenMode;
     bool dragging;
     bool isFullMode;
@@ -43,12 +42,9 @@ private:
     QPoint dragStartPosition;
     QSize resizeStartSize;
     QPoint resizeStartPosition;
-    QString currentCommand;          
 
     void setupUI();
     void updateTopBarVisibility();
-    void startTerminalProcess();
-    void processInput();
     void sendCommandToTerminal(const QString &command);
     QString inputBuffer;
 };
