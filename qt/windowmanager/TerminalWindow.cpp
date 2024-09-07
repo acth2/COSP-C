@@ -9,7 +9,7 @@
 #include <QDebug>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
-    : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
+    : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false), terminalProcess(nullptr) {
     setupUI();
     setCursor(Qt::ArrowCursor);
 
@@ -165,12 +165,27 @@ void TerminalWindow::setupUI() {
 
 void TerminalWindow::startTerminalProcess() {
     terminalProcess = new QProcess(this);
+    
+    connect(terminalProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+            this, [](int exitCode, QProcess::ExitStatus exitStatus) {
+                qDebug() << "Terminal process finished with code" << exitCode << ", status:" << exitStatus;
+            });
+
     connect(terminalProcess, &QProcess::readyReadStandardOutput, this, &TerminalWindow::handleTerminalOutput);
-    terminalProcess->start("bash");
+    
+    terminalProcess->start("bash", QStringList() << "-i");
+    
+    if (!terminalProcess->waitForStarted()) {
+        qDebug() << "Failed to start terminal process!";
+    } else {
+        qDebug() << "Terminal process started!";
+    }
 }
 
 void TerminalWindow::handleTerminalOutput() {
     QByteArray output = terminalProcess->readAllStandardOutput();
+    qDebug() << "Terminal output:" << output;
+
     terminalWidget->appendPlainText(QString::fromLocal8Bit(output));
 }
 
