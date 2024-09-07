@@ -2,7 +2,6 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QApplication>
-#include <QTextEdit>
 #include <QPushButton>
 #include <QDebug>
 #include <QScreen>
@@ -12,15 +11,11 @@
 #include <QMouseEvent>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
-    : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false), terminalProcess(new QProcess(this)) {
+    : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
     setupUI();
     setCursor(Qt::ArrowCursor);
-    
-    terminalProcess->setProgram("/bin/bash");
-    terminalProcess->setArguments({"--login"});
-    connect(terminalProcess, &QProcess::readyReadStandardOutput, this, &TerminalWindow::handleTerminalOutput);
-    connect(terminalProcess, &QProcess::readyReadStandardError, this, &TerminalWindow::handleTerminalErrorOutput);
-    terminalProcess->start();
+
+    launchXTerm();
 }
 
 void TerminalWindow::keyPressEvent(QKeyEvent *event) {
@@ -41,11 +36,6 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
         setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
-    } else if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
-        sendCommandToTerminal(inputBuffer);
-        inputBuffer.clear();
-    } else {
-        inputBuffer += event->text();
     }
 
     QMainWindow::keyPressEvent(event);
@@ -170,18 +160,11 @@ void TerminalWindow::setupUI() {
     updateTopBarVisibility();
 }
 
-void TerminalWindow::sendCommandToTerminal(const QString &command) {
-    if (terminalProcess->state() == QProcess::Running) {
-        terminalProcess->write(command.toUtf8() + "\n");
-    }
-}
+void TerminalWindow::launchXTerm() {
+    QString xtermPath = "/usr/bin/xterm";
+    QStringList arguments;
+    arguments << "-e" << "bash";
 
-void TerminalWindow::handleTerminalOutput() {
-    QByteArray output = terminalProcess->readAllStandardOutput();
-    terminalWidget->append(QString::fromUtf8(output));
-}
-
-void TerminalWindow::handleTerminalErrorOutput() {
-    QByteArray errorOutput = terminalProcess->readAllStandardError();
-    terminalWidget->append(QString::fromUtf8(errorOutput));
+    QProcess *xtermProcess = new QProcess(this);
+    xtermProcess->start(xtermPath, arguments);
 }
