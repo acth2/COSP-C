@@ -24,6 +24,8 @@ protected:
 private slots:
     void toggleFullScreen();
     void windowedFullScreen();
+    void handleTerminalOutput();
+    void handleTerminalErrorOutput();
 
 private:
     QWidget *centralWidget;
@@ -31,6 +33,7 @@ private:
     QPushButton *closeButton;
     QPushButton *fullscreenButton;
     QPlainTextEdit *terminalWidget;
+    QProcess *terminalProcess;
     bool isFullScreenMode;
     bool dragging;
     bool isFullMode;
