@@ -38,7 +38,7 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
 }
 
 void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
-    int margin = 10;
+    int margin = 35;
 
     bool onRightEdge = event->x() > (width() - margin);
     bool onLeftEdge = event->x() < margin;
@@ -141,7 +141,7 @@ void TerminalWindow::setupUI() {
     topBarLayout->setContentsMargins(0, 0, 0, 0);
 
     closeButton = new QPushButton("✕", topBar);
-    fullscreenButton = new QPushButton("⛶", topBar);
+    fullscreenButton = new QPushButton("❐", topBar);
 
     topBarLayout->addWidget(fullscreenButton);
     topBarLayout->addStretch();
