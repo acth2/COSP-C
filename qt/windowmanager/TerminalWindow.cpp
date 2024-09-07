@@ -12,7 +12,7 @@ TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false), terminalProcess(nullptr) {
     setupUI();
     setCursor(Qt::ArrowCursor);
-
+    
     startTerminalProcess();
 }
 
@@ -176,18 +176,16 @@ void TerminalWindow::setupUI() {
 
 void TerminalWindow::startTerminalProcess() {
     terminalProcess = new QProcess(this);
-    
+    terminalProcess->start("/bin/bash");
+
     connect(terminalProcess, &QProcess::readyReadStandardOutput, this, &TerminalWindow::handleTerminalOutput);
     connect(terminalProcess, &QProcess::readyReadStandardError, this, &TerminalWindow::handleTerminalErrorOutput);
-    
-    terminalProcess->start("bash", QStringList() << "-i");
-    
-    if (!terminalProcess->waitForStarted()) {
-        qDebug() << "Failed to start terminal process!";
-    } else {
-        qDebug() << "Terminal process started successfully!";
-    }
+    connect(terminalProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+            this, [](int exitCode, QProcess::ExitStatus status) {
+                qDebug() << "Terminal process finished with exit code" << exitCode;
+            });
 }
+
 
 void TerminalWindow::processInput() {
     if (!currentCommand.isEmpty()) {
