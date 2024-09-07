@@ -166,27 +166,26 @@ void TerminalWindow::setupUI() {
 void TerminalWindow::startTerminalProcess() {
     terminalProcess = new QProcess(this);
     
-    connect(terminalProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-            this, [](int exitCode, QProcess::ExitStatus exitStatus) {
-                qDebug() << "Terminal process finished with code" << exitCode << ", status:" << exitStatus;
-            });
-
     connect(terminalProcess, &QProcess::readyReadStandardOutput, this, &TerminalWindow::handleTerminalOutput);
+    connect(terminalProcess, &QProcess::readyReadStandardError, this, &TerminalWindow::handleTerminalErrorOutput);
     
     terminalProcess->start("bash", QStringList() << "-i");
     
     if (!terminalProcess->waitForStarted()) {
         qDebug() << "Failed to start terminal process!";
     } else {
-        qDebug() << "Terminal process started!";
+        qDebug() << "Terminal process started successfully!";
     }
 }
 
 void TerminalWindow::handleTerminalOutput() {
     QByteArray output = terminalProcess->readAllStandardOutput();
-    qDebug() << "Terminal output:" << output;
-
     terminalWidget->appendPlainText(QString::fromLocal8Bit(output));
+}
+
+void TerminalWindow::handleTerminalErrorOutput() {
+    QByteArray errorOutput = terminalProcess->readAllStandardError();
+    terminalWidget->appendPlainText(QString::fromLocal8Bit(errorOutput));
 }
 
 void TerminalWindow::processInput() {
