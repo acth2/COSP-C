@@ -5,12 +5,13 @@
 #include <QProcess>
 #include <QScreen>
 #include <QCursor>
+#include <QKeyEvent>
+#include <QScrollBar>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
     setupUI();
     setCursor(Qt::ArrowCursor);
-    launchXTerm();
 }
 
 void TerminalWindow::keyPressEvent(QKeyEvent *event) {
@@ -31,9 +32,44 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
         setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
+    } else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
+        // Execute command when Enter is pressed
+        QString command = currentCommand.trimmed();
+        executeCommand(command);
+        currentCommand.clear();
+    } else if (event->key() == Qt::Key_Backspace) {
+        if (!currentCommand.isEmpty()) {
+            currentCommand.chop(1);
+            terminalWidget->setPlainText(currentText + currentCommand);
+            terminalWidget->moveCursor(QTextCursor::End);
+        }
+    } else {
+        currentCommand += event->text();
+        terminalWidget->setPlainText(currentText + currentCommand);
+        terminalWidget->moveCursor(QTextCursor::End);
     }
+}
 
-    QMainWindow::keyPressEvent(event);
+void TerminalWindow::executeCommand(const QString &command) {
+    if (command == "clear") {
+        terminalWidget->clear();
+        currentText.clear();
+    } else {
+        QProcess process;
+        process.start("/bin/bash", QStringList() << "-c" << command);
+        process.waitForFinished();
+        QString output = process.readAllStandardOutput();
+        QString error = process.readAllStandardError();
+        if (!output.isEmpty()) {
+            currentText += output;
+        }
+        if (!error.isEmpty()) {
+            currentText += error;
+        }
+        currentText += "\n$ ";
+        terminalWidget->setPlainText(currentText);
+        terminalWidget->moveCursor(QTextCursor::End);
+    }
 }
 
 void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
@@ -107,20 +143,6 @@ void TerminalWindow::updateTopBarVisibility() {
     topBar->setVisible(!isFullScreenMode);
 }
 
-void TerminalWindow::windowedFullScreen() {
-    if (!windowedFull) {
-        QScreen *screen = QApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
-        setGeometry(screenGeometry);
-        windowedFull = true;
-    } else {
-        QScreen *screen = QApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
-        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 350, 350);
-        windowedFull = false;
-    }
-}
-
 void TerminalWindow::setupUI() {
     centralWidget = new QWidget(this);
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
@@ -140,11 +162,13 @@ void TerminalWindow::setupUI() {
     topBarLayout->addWidget(closeButton);
 
     connect(closeButton, &QPushButton::clicked, this, &TerminalWindow::close);
-    connect(fullscreenButton, &QPushButton::clicked, this, &TerminalWindow::windowedFullScreen);
+    connect(fullscreenButton, &QPushButton::clicked, this, &TerminalWindow::toggleFullScreen);
 
     terminalWidget = new QPlainTextEdit(this);
-    terminalWidget->setPlainText("Nanomachines, son");
+    terminalWidget->setPlainText("$ ");
     terminalWidget->setReadOnly(true);
+
+    currentText = "$ ";
 
     mainLayout->addWidget(topBar);
     mainLayout->addWidget(terminalWidget);
@@ -153,13 +177,4 @@ void TerminalWindow::setupUI() {
     setWindowTitle("Terminal Window");
 
     updateTopBarVisibility();
-}
-
-void TerminalWindow::launchXTerm() {
-    QString xtermPath = "/usr/bin/xterm";
-    QStringList arguments;
-    arguments << "-e" << "bash";
-
-    QProcess *xtermProcess = new QProcess(this);
-    xtermProcess->startDetached(xtermPath, arguments);
 }
