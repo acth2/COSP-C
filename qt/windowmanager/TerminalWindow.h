@@ -4,10 +4,10 @@
 #include <QMainWindow>
 #include <QProcess>
 #include <QWidget>
-#include <QPushButton>
-#include <QResizeEvent>
-#include <QMouseEvent>
 #include <QFocusEvent>
+#include <QMouseEvent>
+#include <QResizeEvent>
+#include <QKeyEvent>
 
 class TerminalWindow : public QMainWindow {
     Q_OBJECT
@@ -18,10 +18,10 @@ public:
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
+    void focusInEvent(QFocusEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    void focusInEvent(QFocusEvent *event) override;
 
 private:
     void setupUI();
@@ -29,9 +29,10 @@ private:
     void updateTopBarVisibility();
     void toggleFullScreen();
 
-    QWidget *centralWidget;
     QWidget *topBar;
+    QWidget *centralWidget;
     QWidget *xtermWidget;
+
     QProcess *xtermProcess;
     bool isFullScreenMode;
     bool dragging;
