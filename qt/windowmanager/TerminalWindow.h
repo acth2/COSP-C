@@ -18,6 +18,7 @@ protected:
 private:
     void setupUI();
     void startXterm();
+    void launchXTerm();
     QWidget *topBar;
 
     QProcess *terminalProcess;
