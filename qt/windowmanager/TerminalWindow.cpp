@@ -11,6 +11,7 @@
 #include <QSocketNotifier>
 #include <pty.h>
 #include <unistd.h>
+#include <QClipboard>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
@@ -82,12 +83,12 @@ void TerminalWindow::executeCommand(const QString &command) {
 
         pid_t pid = fork();
         if (pid == 0) {
-            close(master_fd);
+            ::close(master_fd);
             login_tty(slave_fd);
             execl("/bin/bash", "bash", "-c", command.toUtf8().constData(), NULL);
             exit(0);
         } else {
-            close(slave_fd);
+            ::close(slave_fd);
             QSocketNotifier *notifier = new QSocketNotifier(master_fd, QSocketNotifier::Read, this);
             connect(notifier, &QSocketNotifier::activated, [this, master_fd]() {
                 char buffer[1024];
