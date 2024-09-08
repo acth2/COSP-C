@@ -15,7 +15,7 @@ TerminalWindow::TerminalWindow(QWidget *parent)
     setupUI();
     setCursor(Qt::ArrowCursor);
 
-    startXterm();
+    launchXTerm();
 }
 
 void TerminalWindow::setupUI() {
