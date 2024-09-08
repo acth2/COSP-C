@@ -156,3 +156,13 @@ void TerminalWindow::focusInEvent(QFocusEvent *event) {
     QMainWindow::focusInEvent(event);
     xtermWidget->setFocus();
 }
+
+void TerminalWindow::executeCommand(const QString &command) {
+    if (command == "clear") {
+        xtermProcess->write("clear\n");
+        xtermProcess->waitForBytesWritten();
+    } else {
+        xtermProcess->write(command.toUtf8() + "\n");
+        xtermProcess->waitForBytesWritten();
+    }
+}
