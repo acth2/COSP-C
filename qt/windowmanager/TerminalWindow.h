@@ -14,6 +14,8 @@ public:
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
+    void toggleFullScreen();
+    void focusInEvent(QFocusEvent* event);
 
 private:
     void setupUI();
@@ -28,6 +30,8 @@ private:
     QWidget *xtermWidget;
     QProcess *xtermProcess;
     bool isFullScreenMode;
+
+    int 
 
     void updateTopBarVisibility();
 };
