@@ -8,6 +8,7 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QFocusEvent>
+#include <QTimer>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), 
