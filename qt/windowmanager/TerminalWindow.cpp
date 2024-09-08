@@ -6,19 +6,15 @@
 #include <QScreen>
 #include <QCursor>
 #include <QKeyEvent>
-#include <QWidget>
 #include <QResizeEvent>
-#include <QTimer>
-#include <QDebug>
 #include <QMouseEvent>
-#include <QPushButton>
+#include <QDebug>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), xtermProcess(new QProcess(this)), isFullScreenMode(false), dragging(false) {
     setupUI();
     setCursor(Qt::ArrowCursor);
-    
-    QTimer::singleShot(100, this, &TerminalWindow::launchXTerm);
+    launchXTerm();
 }
 
 void TerminalWindow::setupUI() {
@@ -34,7 +30,7 @@ void TerminalWindow::setupUI() {
 
     QPushButton *closeButton = new QPushButton("✕", topBar);
     QPushButton *fullscreenButton = new QPushButton("❐", topBar);
-    
+
     topBarLayout->addWidget(fullscreenButton);
     topBarLayout->addStretch();
     topBarLayout->addWidget(closeButton);
@@ -47,6 +43,7 @@ void TerminalWindow::setupUI() {
 
     mainLayout->addWidget(topBar);
     mainLayout->addWidget(xtermWidget);
+
     setCentralWidget(centralWidget);
     setWindowTitle("Terminal Window");
 
@@ -60,7 +57,6 @@ void TerminalWindow::launchXTerm() {
     QStringList arguments;
     arguments << "-into" << QString::number(winId) << "-geometry" << "80x24";
 
-    xtermProcess = new QProcess(this);
     xtermProcess->start(program, arguments);
 }
 
@@ -69,6 +65,7 @@ void TerminalWindow::resizeEvent(QResizeEvent *event) {
 
     if (xtermProcess->state() == QProcess::Running) {
         xtermWidget->resize(event->size());
+
         QString command = QString("printf '\\e[8;%d;%dt' %1 %2")
                             .arg(xtermWidget->height())
                             .arg(xtermWidget->width());
@@ -88,34 +85,23 @@ void TerminalWindow::closeEvent(QCloseEvent *event) {
     QMainWindow::closeEvent(event);
 }
 
-void TerminalWindow::toggleFullScreen() {
-    if (isFullScreenMode) {
-        showNormal();
-        setGeometry(QApplication::primaryScreen()->availableGeometry());
-        isFullScreenMode = false;
-    } else {
-        setGeometry(QApplication::primaryScreen()->availableGeometry());
-        showFullScreen();
-        isFullScreenMode = true;
-    }
-    updateTopBarVisibility();
-}
-
 void TerminalWindow::mousePressEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton && event->y() <= topBar->height()) {
+    if (event->y() < topBar->height()) {
         dragging = true;
         dragStartPosition = event->globalPos() - frameGeometry().topLeft();
         event->accept();
+    } else {
+        QMainWindow::mousePressEvent(event);
     }
-    QMainWindow::mousePressEvent(event);
 }
 
 void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
-    if (dragging && event->buttons() & Qt::LeftButton) {
+    if (dragging) {
         move(event->globalPos() - dragStartPosition);
         event->accept();
+    } else {
+        QMainWindow::mouseMoveEvent(event);
     }
-    QMainWindow::mouseMoveEvent(event);
 }
 
 void TerminalWindow::mouseReleaseEvent(QMouseEvent *event) {
@@ -123,9 +109,16 @@ void TerminalWindow::mouseReleaseEvent(QMouseEvent *event) {
     QMainWindow::mouseReleaseEvent(event);
 }
 
-void TerminalWindow::focusInEvent(QFocusEvent *event) {
-    QMainWindow::focusInEvent(event);
-    if (xtermProcess->state() == QProcess::Running) {
-        xtermWidget->setFocus();
+void TerminalWindow::toggleFullScreen() {
+    if (isFullScreenMode) {
+        showNormal();
+        isFullScreenMode = false;
+    } else {
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+        setGeometry(screenGeometry);
+        showFullScreen();
+        isFullScreenMode = true;
     }
+    updateTopBarVisibility();
 }
