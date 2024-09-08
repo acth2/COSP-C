@@ -7,6 +7,8 @@
 #include <QPlainTextEdit>
 #include <QMouseEvent>
 #include <QKeyEvent>
+#include <QProcess>
+#include <QSocketNotifier>
 
 class TerminalWindow : public QMainWindow {
     Q_OBJECT
@@ -42,8 +44,13 @@ private:
     QString currentText;
     QString currentCommand;
 
+    int master_fd;
+    QSocketNotifier *ptyNotifier;
+
     void setupUI();
     void updateTopBarVisibility();
+    void setupPTY();
+    void handlePTYInput();
 };
 
 #endif // TERMINALWINDOW_H
