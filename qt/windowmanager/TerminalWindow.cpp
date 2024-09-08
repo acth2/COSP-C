@@ -2,6 +2,7 @@
 #include <QVBoxLayout>
 #include <QResizeEvent>
 #include <QDebug>
+#include <QTimer>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), xtermProcess(new QProcess(this)) {
