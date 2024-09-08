@@ -18,10 +18,12 @@ protected:
 private:
     void setupUI();
     void startXterm();
+    QWidget *topBar;
 
     QWidget *centralWidget;
     QWidget *xtermWidget;
     QProcess *xtermProcess;
+    bool isFullScreenMode;
 
     void updateTopBarVisibility();
 };
