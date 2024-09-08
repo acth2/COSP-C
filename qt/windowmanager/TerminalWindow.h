@@ -9,6 +9,9 @@
 #include <QKeyEvent>
 #include <QProcess>
 #include <QSocketNotifier>
+#include <unistd.h>
+#include <utmp.h>
+#include <QProcess>
 
 class TerminalWindow : public QMainWindow {
     Q_OBJECT
