@@ -109,6 +109,10 @@ void TerminalWindow::mouseReleaseEvent(QMouseEvent *event) {
     QMainWindow::mouseReleaseEvent(event);
 }
 
+void TerminalWindow::focusInEvent(QFocusEvent *event) {
+    QMainWindow::focusInEvent(event);
+}
+
 void TerminalWindow::toggleFullScreen() {
     if (isFullScreenMode) {
         showNormal();
