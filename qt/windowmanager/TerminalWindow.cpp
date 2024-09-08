@@ -5,10 +5,11 @@
 #include <QProcess>
 #include <QScreen>
 #include <QCursor>
-#include <QKeyEvent>
-#include <QResizeEvent>
-#include <QMouseEvent>
 #include <QDebug>
+#include <QCloseEvent>
+#include <QResizeEvent>
+#include <QFocusEvent>
+#include <QMouseEvent>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), xtermProcess(new QProcess(this)), isFullScreenMode(false), dragging(false) {
@@ -109,10 +110,6 @@ void TerminalWindow::mouseReleaseEvent(QMouseEvent *event) {
     QMainWindow::mouseReleaseEvent(event);
 }
 
-void TerminalWindow::focusInEvent(QFocusEvent *event) {
-    QMainWindow::focusInEvent(event);
-}
-
 void TerminalWindow::toggleFullScreen() {
     if (isFullScreenMode) {
         showNormal();
@@ -125,4 +122,8 @@ void TerminalWindow::toggleFullScreen() {
         isFullScreenMode = true;
     }
     updateTopBarVisibility();
+}
+
+void TerminalWindow::focusInEvent(QFocusEvent *event) {
+    QMainWindow::focusInEvent(event);
 }
