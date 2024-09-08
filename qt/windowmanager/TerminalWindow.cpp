@@ -10,9 +10,10 @@
 #include <QResizeEvent>
 #include <QTimer>
 #include <QDebug>
+#include <QMouseEvent>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
-    : QMainWindow(parent), xtermProcess(new QProcess(this)), isFullScreenMode(false) {
+    : QMainWindow(parent), xtermProcess(new QProcess(this)), isFullScreenMode(false), dragging(false) {
     setupUI();
     setCursor(Qt::ArrowCursor);
     
@@ -89,12 +90,36 @@ void TerminalWindow::closeEvent(QCloseEvent *event) {
 void TerminalWindow::toggleFullScreen() {
     if (isFullScreenMode) {
         showNormal();
+        setGeometry(QApplication::primaryScreen()->availableGeometry());
         isFullScreenMode = false;
     } else {
+        setGeometry(QApplication::primaryScreen()->availableGeometry());
         showFullScreen();
         isFullScreenMode = true;
     }
     updateTopBarVisibility();
+}
+
+void TerminalWindow::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton && event->y() <= topBar->height()) {
+        dragging = true;
+        dragStartPosition = event->globalPos() - frameGeometry().topLeft();
+        event->accept();
+    }
+    QMainWindow::mousePressEvent(event);
+}
+
+void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
+    if (dragging && event->buttons() & Qt::LeftButton) {
+        move(event->globalPos() - dragStartPosition);
+        event->accept();
+    }
+    QMainWindow::mouseMoveEvent(event);
+}
+
+void TerminalWindow::mouseReleaseEvent(QMouseEvent *event) {
+    dragging = false;
+    QMainWindow::mouseReleaseEvent(event);
 }
 
 void TerminalWindow::focusInEvent(QFocusEvent *event) {
