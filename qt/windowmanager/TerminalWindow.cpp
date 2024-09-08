@@ -34,16 +34,17 @@ void TerminalWindow::setupUI() {
     updateTopBarVisibility();
 }
 
-void TerminalWindow::startXterm() {
-    QStringList arguments;
-    arguments << "-into" << QString::number(xtermWidget->winId());
-    arguments << "-geometry" << QString("%dx%d+0+0").arg(xtermWidget->width()).arg(xtermWidget->height());
-    xtermProcess->start("xterm", arguments);
+void TerminalWindow::launchXTerm() {
+    WId winId = terminalWidget->winId();
 
-    if (!xtermProcess->waitForStarted()) {
-        qWarning() << "Failed to start xterm!";
-    }
+    QString program = "xterm";
+    QStringList arguments;
+    arguments << "-into" << QString::number(winId) << "-geometry" << "80x24";
+
+    terminalProcess = new QProcess(this);
+    terminalProcess->start(program, arguments);
 }
+
 
 void TerminalWindow::resizeEvent(QResizeEvent *event) {
     QMainWindow::resizeEvent(event);
