@@ -33,7 +33,6 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
         QRect screenGeometry = screen->geometry();
         setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
     } else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
-        // Execute command when Enter is pressed
         QString command = currentCommand.trimmed();
         executeCommand(command);
         currentCommand.clear();
@@ -100,6 +99,20 @@ void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
     }
 
     QMainWindow::mouseMoveEvent(event);
+}
+
+void TerminalWindow::windowedFullScreen() {
+    if (!windowedFull) {
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+        setGeometry(screenGeometry);
+        windowedFull = true;
+    } else {
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 350, 350);
+        windowedFull = false;
+    }
 }
 
 void TerminalWindow::mousePressEvent(QMouseEvent *event) {
