@@ -8,6 +8,7 @@
 #include <QKeyEvent>
 #include <QWidget>
 #include <QResizeEvent>
+#include <QDebug>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), xtermProcess(new QProcess(this)) {
