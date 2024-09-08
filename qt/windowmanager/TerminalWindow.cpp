@@ -157,6 +157,20 @@ void TerminalWindow::focusInEvent(QFocusEvent *event) {
     xtermWidget->setFocus();
 }
 
+void TerminalWindow::windowedFullScreen() {
+    if (!windowedFull) {
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+        setGeometry(screenGeometry.width() / 4, screenGeometry.height() / 4, screenGeometry.width() / 2, screenGeometry.height() / 2);
+        windowedFull = true;
+    } else {
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+        setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
+        windowedFull = false;
+    }
+}
+
 void TerminalWindow::executeCommand(const QString &command) {
     if (command == "clear") {
         xtermProcess->write("clear\n");
