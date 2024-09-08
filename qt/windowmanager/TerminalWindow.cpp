@@ -7,6 +7,10 @@
 #include <QCursor>
 #include <QKeyEvent>
 #include <QScrollBar>
+#include <QFile>
+#include <QSocketNotifier>
+#include <pty.h>
+#include <unistd.h>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), isFullScreenMode(false), dragging(false), resizing(false) {
@@ -34,14 +38,28 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
         setGeometry(screenGeometry.width() / 2, screenGeometry.height() / 2, 800, 600);
     } else if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
         QString command = currentCommand.trimmed();
-        executeCommand(command);
-        currentCommand.clear();
+        if (!command.isEmpty()) {
+            executeCommand(command);
+            currentCommand.clear();
+        }
     } else if (event->key() == Qt::Key_Backspace) {
+
         if (!currentCommand.isEmpty()) {
             currentCommand.chop(1);
             terminalWidget->setPlainText(currentText + currentCommand);
             terminalWidget->moveCursor(QTextCursor::End);
         }
+    } else if (event->matches(QKeySequence::Copy)) {
+        terminalWidget->copy();
+    } else if (event->matches(QKeySequence::Paste)) {
+        QString clipboardText = QApplication::clipboard()->text();
+        currentCommand += clipboardText;
+        terminalWidget->setPlainText(currentText + currentCommand);
+        terminalWidget->moveCursor(QTextCursor::End);
+    } else if (event->key() == Qt::Key_Space) {
+        currentCommand += ' ';
+        terminalWidget->setPlainText(currentText + currentCommand);
+        terminalWidget->moveCursor(QTextCursor::End);
     } else {
         currentCommand += event->text();
         terminalWidget->setPlainText(currentText + currentCommand);
@@ -49,25 +67,39 @@ void TerminalWindow::keyPressEvent(QKeyEvent *event) {
     }
 }
 
+
 void TerminalWindow::executeCommand(const QString &command) {
     if (command == "clear") {
         terminalWidget->clear();
         currentText.clear();
     } else {
-        QProcess process;
-        process.start("/bin/bash", QStringList() << "-c" << command);
-        process.waitForFinished();
-        QString output = process.readAllStandardOutput();
-        QString error = process.readAllStandardError();
-        if (!output.isEmpty()) {
-            currentText += output;
+        int master_fd, slave_fd;
+        char slaveName[100];
+        if (openpty(&master_fd, &slave_fd, slaveName, NULL, NULL) == -1) {
+            qWarning("Unable to create PTY");
+            return;
         }
-        if (!error.isEmpty()) {
-            currentText += error;
+
+        pid_t pid = fork();
+        if (pid == 0) {
+            close(master_fd);
+            login_tty(slave_fd);
+            execl("/bin/bash", "bash", "-c", command.toUtf8().constData(), NULL);
+            exit(0);
+        } else {
+            close(slave_fd);
+            QSocketNotifier *notifier = new QSocketNotifier(master_fd, QSocketNotifier::Read, this);
+            connect(notifier, &QSocketNotifier::activated, [this, master_fd]() {
+                char buffer[1024];
+                ssize_t bytesRead = read(master_fd, buffer, sizeof(buffer) - 1);
+                if (bytesRead > 0) {
+                    buffer[bytesRead] = '\0';
+                    currentText += QString::fromUtf8(buffer);
+                    terminalWidget->setPlainText(currentText);
+                    terminalWidget->moveCursor(QTextCursor::End);
+                }
+            });
         }
-        currentText += "\n$ ";
-        terminalWidget->setPlainText(currentText);
-        terminalWidget->moveCursor(QTextCursor::End);
     }
 }
 
@@ -178,10 +210,15 @@ void TerminalWindow::setupUI() {
     connect(fullscreenButton, &QPushButton::clicked, this, &TerminalWindow::toggleFullScreen);
 
     terminalWidget = new QPlainTextEdit(this);
-    terminalWidget->setPlainText("$ ");
     terminalWidget->setReadOnly(true);
 
-    currentText = "$ ";
+    QProcess ps1Process;
+    ps1Process.start("/bin/bash", QStringList() << "-c" << "echo $PS1");
+    ps1Process.waitForFinished();
+    QString ps1 = ps1Process.readAllStandardOutput().trimmed();
+    
+    currentText = ps1 + " ";
+    terminalWidget->setPlainText(currentText);
 
     mainLayout->addWidget(topBar);
     mainLayout->addWidget(terminalWidget);
@@ -191,3 +228,4 @@ void TerminalWindow::setupUI() {
 
     updateTopBarVisibility();
 }
+
