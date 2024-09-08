@@ -37,7 +37,6 @@ void TerminalWindow::startXterm() {
     QStringList arguments;
     arguments << "-into" << QString::number(xtermWidget->winId());
     arguments << "-geometry" << QString("%dx%d+0+0").arg(xtermWidget->width()).arg(xtermWidget->height());
-
     xtermProcess->start("xterm", arguments);
 
     if (!xtermProcess->waitForStarted()) {
