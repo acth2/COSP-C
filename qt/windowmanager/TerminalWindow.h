@@ -20,6 +20,9 @@ private:
     void startXterm();
     QWidget *topBar;
 
+    QProcess *terminalProcess;
+    QWidget *terminalWidget;
+
     QWidget *centralWidget;
     QWidget *xtermWidget;
     QProcess *xtermProcess;
