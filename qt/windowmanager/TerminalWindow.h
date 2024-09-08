@@ -23,7 +23,7 @@ protected:
 private slots:
     void toggleFullScreen();
     void windowedFullScreen();
-    void launchXTerm();
+    void executeCommand(const QString &command);
 
 private:
     QWidget *centralWidget;
@@ -39,6 +39,8 @@ private:
     QPoint dragStartPosition;
     QSize resizeStartSize;
     QPoint resizeStartPosition;
+    QString currentText;
+    QString currentCommand;
 
     void setupUI();
     void updateTopBarVisibility();
