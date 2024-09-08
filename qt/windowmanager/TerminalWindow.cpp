@@ -11,6 +11,7 @@
 #include <QTimer>
 #include <QDebug>
 #include <QMouseEvent>
+#include <QPushButton>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), xtermProcess(new QProcess(this)), isFullScreenMode(false), dragging(false) {
