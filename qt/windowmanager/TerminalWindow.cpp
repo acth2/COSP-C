@@ -57,6 +57,10 @@ void TerminalWindow::resizeEvent(QResizeEvent *event) {
     }
 }
 
+void TerminalWindow::updateTopBarVisibility() {
+    topBar->setVisible(!isFullScreenMode);
+}
+
 void TerminalWindow::closeEvent(QCloseEvent *event) {
     if (xtermProcess->state() == QProcess::Running) {
         xtermProcess->terminate();
