@@ -1,46 +1,34 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
-#include <X11/Xutil.h>
-#include <QObject>
-#include <QWidget>
+#include <QMainWindow>
 #include <QProcess>
+#include <QPushButton>
+#include <QWidget>
 
-class Window : public QWidget {
+class Window : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit Window(Display *display, Window rootWindow, QWidget *parent = nullptr);
+    Window(QWidget *parent = nullptr);
     ~Window();
 
-    void detectWindows();
-    void attachToWindow(Window targetWindow);
+private:
+    QWidget *centralWidget;
+    QProcess *xtermProcess;
+    QPushButton *closeButton;
+    QPushButton *fullscreenButton;
+    QWidget *xtermWidget;
+
+    void setupUI();
+    void launchXTerm();
 
 protected:
+    void resizeEvent(QResizeEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override;
-    void detectWindows();
-    void attachToWindow(Window targetWindow);
-
-private:
-    Display *display;
-    Window rootWindow;
-
-    Window targetWindow;
-    bool dragging;
-    QPoint dragStartPosition;
-
-    QWidget *topBar;
-    QPushButton *closeButton;
-    QPushButton *fullscreenButton;
-    bool isFullScreenMode;
-
-    void addTopBar();
-    void sendConfigureEvent(Window win, int x, int y, int width, int height);
+    void toggleFullScreen();
 };
 
 #endif // WINDOW_H
