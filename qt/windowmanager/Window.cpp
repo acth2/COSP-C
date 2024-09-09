@@ -19,7 +19,6 @@ void Window::setupUI() {
     centralWidget = new QWidget(this);
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
 
-    // Custom top bar
     QWidget *topBar = new QWidget(this);
     topBar->setFixedHeight(30);
     QHBoxLayout *topBarLayout = new QHBoxLayout(topBar);
