@@ -27,6 +27,14 @@ TerminalWindow::TerminalWindow(QWidget *parent)
 void TerminalWindow::setupUI() {
     centralWidget = new QWidget(this);
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
+
+
+    QSpacerItem *topSpacer = new QSpacerItem(0, 10, QSizePolicy::Minimum, QSizePolicy::Fixed);
+    QSpacerItem *bottomSpacer = new QSpacerItem(0, 10, QSizePolicy::Minimum, QSizePolicy::Fixed);
+    QSpacerItem *leftSpacer = new QSpacerItem(10, 0, QSizePolicy::Fixed, QSizePolicy::Minimum);
+    QSpacerItem *rightSpacer = new QSpacerItem(10, 0, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+    
     mainLayout->setContentsMargins(0, 0, 0, 0);
 
     topBar = new QWidget(this);
@@ -50,7 +58,16 @@ void TerminalWindow::setupUI() {
 
     mainLayout->addWidget(topBar);
     mainLayout->addWidget(xtermWidget);
-    mainLayout->setContentsMargins(10, 10, 20, 10);
+    QHBoxLayout *hLayout = new QHBoxLayout();
+    
+    hLayout->addItem(leftSpacer);
+    hLayout->addWidget(xtermWidget);
+    hLayout->addItem(rightSpacer);
+
+    mainLayout->addItem(topSpacer);      
+    mainLayout->addWidget(topBar);     
+    mainLayout->addLayout(hLayout);    
+    mainLayout->addItem(bottomSpacer); 
 
     setCentralWidget(centralWidget);
     setWindowTitle("Terminal Window");
