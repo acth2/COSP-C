@@ -43,13 +43,14 @@ void TerminalWindow::setupUI() {
     topBarLayout->addWidget(closeButton);
 
     connect(closeButton, &QPushButton::clicked, this, &TerminalWindow::close);
-    connect(fullscreenButton, &QPushButton::clicked, this, &TerminalWindow::toggleFullScreen);
+    connect(fullscreenButton, &QPushButton::clicked, this, &TerminalWindow::windowedFullScreen);
 
     xtermWidget = new QWidget(this);
     xtermWidget->setStyleSheet("background-color: black;");
 
     mainLayout->addWidget(topBar);
     mainLayout->addWidget(xtermWidget);
+    mainLayout->setContentsMargins(10, 10, 20, 10);
 
     setCentralWidget(centralWidget);
     setWindowTitle("Terminal Window");
