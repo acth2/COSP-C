@@ -21,8 +21,6 @@ private slots:
     void launchXTerm();
     void resizeXTerm();
     void toggleFullScreen();
-    void windowedFullScreen();
-    void executeCommand(const QString &command);
 
 private:
     void setupUI();
