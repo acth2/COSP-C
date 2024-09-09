@@ -23,6 +23,8 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
+    void detectWindows();
+    void attachToWindow(Window targetWindow);
 
 private:
     Display *display;
@@ -31,6 +33,11 @@ private:
     Window targetWindow;
     bool dragging;
     QPoint dragStartPosition;
+
+    QWidget *topBar;
+    QPushButton *closeButton;
+    QPushButton *fullscreenButton;
+    bool isFullScreenMode;
 
     void addTopBar();
     void sendConfigureEvent(Window win, int x, int y, int width, int height);
