@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 #include <QResizeEvent>
 #include <QMouseEvent>
+#include <QDebug>
 
 Window::Window(QWidget *parent) : QMainWindow(parent), xtermProcess(new QProcess(this)) {
     setupUI();
