@@ -35,6 +35,9 @@ private:
     bool isFullScreenMode;
     QPoint dragStartPosition;
     bool dragging;
+    bool resizing;
+    QPoint resizeStartPosition;
+    QSize resizeStartSize;
 };
 
 #endif // TERMINALWINDOW_H
