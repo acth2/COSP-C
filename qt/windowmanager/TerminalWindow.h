@@ -8,6 +8,8 @@
 #include <QResizeEvent>
 #include <QMouseEvent>
 #include <QTimer>
+#include <QFocusEvent>
+#include <QCloseEvent>
 
 class TerminalWindow : public QMainWindow {
     Q_OBJECT
@@ -19,6 +21,8 @@ private slots:
     void launchXTerm();
     void resizeXTerm();
     void toggleFullScreen();
+    void windowedFullScreen();
+    void executeCommand(const QString &command);
 
 private:
     void setupUI();
@@ -26,16 +30,21 @@ private:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
+    void focusInEvent(QFocusEvent *event) override;
+    void updateTopBarVisibility();
 
     QWidget *centralWidget;
     QWidget *xtermWidget;
-    QProcess *xtermProcess;
+    QWidget *topBar;
     QPushButton *closeButton;
     QPushButton *fullscreenButton;
+    QProcess *xtermProcess;
     bool isFullScreenMode;
-    QPoint dragStartPosition;
+    bool windowedFull;
     bool dragging;
     bool resizing;
+    QPoint dragStartPosition;
     QPoint resizeStartPosition;
     QSize resizeStartSize;
 };
