@@ -140,7 +140,20 @@ void UserInteractRight::paintEvent(QPaintEvent *event) {
 }
 
 void UserInteractRight::button1Clicked() {
-     // Not for now :(
+    QProcess *xtermProcess = new QProcess(this);
+
+    QString program = "xterm";
+    QStringList arguments;
+
+    xtermProcess->start(program, arguments);
+
+    connect(xtermProcess, &QProcess::errorOccurred, [](QProcess::ProcessError error) {
+        qDebug() << "Error occurred:" << error;
+    });
+
+    connect(xtermProcess, &QProcess::started, []() {
+        qDebug() << "xterm started successfully";
+    });
 }
 
 void UserInteractRight::closeIfClickedOutside(QMouseEvent *event) {
