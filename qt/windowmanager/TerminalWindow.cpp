@@ -9,6 +9,7 @@
 #include <QKeyEvent>
 #include <QFocusEvent>
 #include <QTimer>
+#include <QResizeEvent>
 
 TerminalWindow::TerminalWindow(QWidget *parent)
     : QMainWindow(parent), 
@@ -66,14 +67,19 @@ void TerminalWindow::launchXTerm() {
     xtermProcess->start(program, arguments);
 }
 
+const int CHAR_WIDTH = 9;
+const int CHAR_HEIGHT = 18;
+
 void TerminalWindow::resizeEvent(QResizeEvent *event) {
     QMainWindow::resizeEvent(event);
+
     if (xtermProcess->state() == QProcess::Running) {
-        xtermWidget->resize(event->size());
-        QString command = QString("printf '\\e[8;%d;%dt' %1 %2")
-                            .arg(xtermWidget->height())
-                            .arg(xtermWidget->width());
-        xtermProcess->write(command.toUtf8());
+        int newColumns = event->size().width() / CHAR_WIDTH;
+        int newRows = event->size().height() / CHAR_HEIGHT;
+
+        QString resizeCommand = QString("printf '\\e[8;%1;%2t'").arg(newRows).arg(newColumns);
+        xtermProcess->write(resizeCommand.toUtf8());
+        xtermProcess->waitForBytesWritten();
     }
 }
 
