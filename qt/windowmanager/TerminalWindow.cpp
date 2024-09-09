@@ -22,6 +22,12 @@ TerminalWindow::TerminalWindow(QWidget *parent)
     setupUI();
     setCursor(Qt::ArrowCursor);
     QTimer::singleShot(100, this, &TerminalWindow::launchXTerm);
+
+    QTimer::singleShot(100, this, &TerminalWindow::launchXTerm);
+
+    QTimer *resizeTimer = new QTimer(this);
+    connect(resizeTimer, &QTimer::timeout, this, &TerminalWindow::resizeXTerm);
+    resizeTimer->start(500);
 }
 
 void TerminalWindow::setupUI() {
@@ -85,7 +91,16 @@ void TerminalWindow::launchXTerm() {
     xtermProcess->start(program, arguments);
 }
 
+void TerminalWindow::resizeXTerm() {
+    if (xtermProcess->state() == QProcess::Running) {
+        int columns = this->width() / 9;
+        int rows = this->height() / 18;
 
+        QString resizeCommand = QString("printf '\\e[8;%1;%2t'").arg(rows).arg(columns);
+        xtermProcess->write(resizeCommand.toUtf8());
+        xtermProcess->waitForBytesWritten();
+    }
+}
 
 void TerminalWindow::resizeEvent(QResizeEvent *event) {
     QMainWindow::resizeEvent(event);
