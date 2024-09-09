@@ -31,6 +31,7 @@ private:
     void setupUI();
     void launchXTerm();
     void updateTopBarVisibility();
+    void resizeXTerm();
 
     QWidget *topBar;
     QPushButton *closeButton;
