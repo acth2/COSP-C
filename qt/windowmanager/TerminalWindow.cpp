@@ -153,8 +153,10 @@ void TerminalWindow::closeEvent(QCloseEvent *event) {
 }
 
 void TerminalWindow::focusInEvent(QFocusEvent *event) {
+    if (xtermProcess && xtermProcess->state() == QProcess::Running) {
+        xtermWidget->setFocus(); 
+    }
     QMainWindow::focusInEvent(event);
-    xtermWidget->setFocus();
 }
 
 void TerminalWindow::windowedFullScreen() {
