@@ -7,6 +7,7 @@ CONFIG += no_accessibility
 CONFIG += no_pro
 QT += core gui widgets
 
+LIBS += -lX11
 SOURCES += main.cpp \
            windowmanager.cpp \
            konami_code_handler.cpp \
