@@ -20,6 +20,12 @@ private:
     QPushButton *fullscreenButton;
     QWidget *xtermWidget;
 
+    bool resizing;
+    bool dragging;
+    QPoint dragStartPosition;
+    QPoint resizeStartPosition;
+    QSize resizeStartSize;
+
     void setupUI();
     void launchXTerm();
 
