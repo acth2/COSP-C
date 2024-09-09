@@ -1,37 +1,39 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <QMainWindow>
-#include <QX11Info>
-#include <QProcess>
-#include <QPushButton>
-#include <QWidget>
 #include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include <X11/Xutil.h>
+#include <QObject>
+#include <QWidget>
+#include <QProcess>
 
-class Window : public QMainWindow {
+class Window : public QWidget {
     Q_OBJECT
 
 public:
-    explicit Window(QWidget *parent = nullptr);
-    void monitorWindows();
+    explicit Window(Display *display, Window rootWindow, QWidget *parent = nullptr);
+    ~Window();
+
+    void detectWindows();
+    void attachToWindow(Window targetWindow);
+
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
 private:
-    void setupUI(WId targetWinId);
-    void moveWindow(WId targetWinId);
-    void resizeWindow(WId targetWinId);
+    Display *display;
+    Window rootWindow;
 
-    QWidget *topBar;
-    QPushButton *closeButton;
-    QPushButton *fullscreenButton;
-
-    QProcess *process;
-
-    WId currentWinId;
-    bool isFullScreenMode;
+    Window targetWindow;
     bool dragging;
-    bool resizing;
     QPoint dragStartPosition;
-    QSize resizeStartSize;
+
+    void addTopBar();
+    void sendConfigureEvent(Window win, int x, int y, int width, int height);
 };
 
 #endif // WINDOW_H
