@@ -67,15 +67,14 @@ void TerminalWindow::launchXTerm() {
     xtermProcess->start(program, arguments);
 }
 
-const int CHAR_WIDTH = 9;
-const int CHAR_HEIGHT = 18;
+
 
 void TerminalWindow::resizeEvent(QResizeEvent *event) {
     QMainWindow::resizeEvent(event);
 
     if (xtermProcess->state() == QProcess::Running) {
-        int newColumns = event->size().width() / CHAR_WIDTH;
-        int newRows = event->size().height() / CHAR_HEIGHT;
+        int newColumns = event->size().width() / 9;
+        int newRows = event->size().height() / 18;
 
         QString resizeCommand = QString("printf '\\e[8;%1;%2t'").arg(newRows).arg(newColumns);
         xtermProcess->write(resizeCommand.toUtf8());
