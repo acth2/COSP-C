@@ -13,6 +13,7 @@
 #include <QPainter>
 #include <QVBoxLayout>
 #include <QProcess>
+#include <QThread>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
@@ -56,6 +57,9 @@ WindowManager::WindowManager(QWidget *parent)
         
     userInteractRightWidget = nullptr;
 
+    QThread* xorgMonitorThread = QThread::create([this]() { monitorXorgWindows(); });
+    xorgMonitorThread->start();
+
     showFullScreen();
 }
 
@@ -73,19 +77,18 @@ void WindowManager::monitorXorgWindows() {
     }
 }
 
-
 void WindowManager::toggleConsole() {
     isConsoleVisible = !isConsoleVisible;
     logLabel->setVisible(isConsoleVisible);
     appendLog("Welcome into the DEBUG window (AKA: Where my nightmare comes true), Press ESC to exit it");
 }
+
 void WindowManager::attachTaskbarToWindow(WId xorgWindowId) {
-    Main::Window *appWindow = new Main::Window();
+    Window *appWindow = new Window();
 
     appWindow->setXorgAppWindow(xorgWindowId);
     appWindow->show();
 }
-
 
 void WindowManager::appendLog(const QString &message) {
     if (!loggedMessages.contains(message)) {
