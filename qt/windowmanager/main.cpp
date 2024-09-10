@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
     }
 
     manager.setWindowTitle("CWM");
+    manager.monitorXorgWindows();
     manager.showFullScreen();
 
     taskBar.show();
