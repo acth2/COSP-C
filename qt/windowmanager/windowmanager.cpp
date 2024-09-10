@@ -31,6 +31,15 @@ WindowManager::WindowManager(QWidget *parent)
         setGeometry(screenGeometry);
     }
 
+    display = XOpenDisplay(nullptr);
+    if (!display) {
+        appendLog("Cannot open X11 display");
+        return;
+    }
+    root = DefaultRootWindow(display);
+
+    XSelectInput(display, root, SubstructureNotifyMask);
+
     logLabel = new QLabel(this);
     logLabel->setStyleSheet("QLabel { color : white; background-color : rgba(0, 0, 0, 150); }");
     logLabel->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
@@ -49,15 +58,29 @@ WindowManager::WindowManager(QWidget *parent)
     showFullScreen();
 }
 
+void WindowManager::monitorXorgWindows() {
+    XEvent event;
+    while (true) {
+        XNextEvent(display, &event);
+
+        if (event.type == MapNotify) {
+            Window xorgWindow = event.xmap.window;
+            appendLog("New Xorg window detected");
+
+            attachTaskbarToWindow(xorgWindow);
+        }
+    }
+}
+
+
 void WindowManager::toggleConsole() {
     isConsoleVisible = !isConsoleVisible;
     logLabel->setVisible(isConsoleVisible);
     appendLog("Welcome into the DEBUG window (AKA: Where my nightmare comes true), Press ESC to exit it");
 }
-
 void WindowManager::attachTaskbarToWindow(WId xorgWindowId) {
     Main::Window *appWindow = new Main::Window();
-    
+
     appWindow->setXorgAppWindow(xorgWindowId);
     appWindow->show();
 }
