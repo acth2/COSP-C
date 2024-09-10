@@ -1,15 +1,20 @@
 #include "windowmanager.h"
+#include "Window.h"
 #include "userinteractright.h"
 #include "taskbar.h"
 #include <QApplication>
 #include <QScreen>
 #include <QDebug>
 #include <QKeyEvent>
+#include <QSet>
 #include <QMouseEvent>
 #include <QCloseEvent>
 #include <QPainter>
 #include <QVBoxLayout>
 #include <QProcess>
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include <X11/Xutil.h>
 
 WindowManager::WindowManager(QWidget *parent)
     : QWidget(parent), 
@@ -49,6 +54,14 @@ void WindowManager::toggleConsole() {
     logLabel->setVisible(isConsoleVisible);
     appendLog("Welcome into the DEBUG window (AKA: Where my nightmare comes true), Press ESC to exit it");
 }
+
+void WindowManager::attachTaskbarToWindow(WId xorgWindowId) {
+    Main::Window *appWindow = new Main::Window();
+    
+    appWindow->setXorgAppWindow(xorgWindowId);
+    appWindow->show();
+}
+
 
 void WindowManager::appendLog(const QString &message) {
     if (!loggedMessages.contains(message)) {
