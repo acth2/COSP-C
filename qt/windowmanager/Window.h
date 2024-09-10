@@ -5,6 +5,7 @@
 #include <QProcess>
 #include <QPushButton>
 #include <QWidget>
+#include "Window.h"
 
 class Window : public QMainWindow {
     Q_OBJECT
