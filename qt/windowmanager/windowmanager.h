@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QSet>
+#include <X11/Xlib.h>
 #include "konami_code_handler.h"
 #include "userinteractright.h"
 #include "Window.h"
@@ -29,6 +30,13 @@ private:
     KonamiCodeHandler *konamiCodeHandler;
     bool isConsoleVisible;
     UserInteractRight *userInteractRightWidget;
+
+    Display *display;
+    Window root;
+
+    void monitorXorgWindows();
+    void attachTaskbarToWindow(WId xorgWindowId);
+    void handleNewXorgWindow(Window xorgWindowId);
 
     void toggleConsole();
 };
