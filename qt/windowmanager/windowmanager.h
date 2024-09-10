@@ -6,6 +6,7 @@
 #include <QSet>
 #include "konami_code_handler.h"
 #include "userinteractright.h"
+#include "Window.h"
 
 class WindowManager : public QWidget {
     Q_OBJECT
@@ -13,6 +14,7 @@ class WindowManager : public QWidget {
 public:
     explicit WindowManager(QWidget *parent = nullptr);
     void appendLog(const QString &message);
+    void attachTaskbarToWindow(WId xorgWindowId);
 
 protected:
     bool event(QEvent *event) override;
