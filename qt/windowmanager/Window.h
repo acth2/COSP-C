@@ -13,12 +13,15 @@ public:
     Window(QWidget *parent = nullptr);
     ~Window();
 
+    void setXorgAppWindow(WId windowId);
+
 private:
     QWidget *centralWidget;
     QProcess *xtermProcess;
     QPushButton *closeButton;
     QPushButton *fullscreenButton;
     QWidget *xtermWidget;
+    QWidget *taskbarWidget;
 
     bool resizing;
     bool dragging;
@@ -28,6 +31,7 @@ private:
 
     void setupUI();
     void launchXTerm();
+    void attachTaskbar(WId windowId);
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
