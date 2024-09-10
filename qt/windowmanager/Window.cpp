@@ -21,21 +21,22 @@ void Window::setupUI() {
     centralWidget = new QWidget(this);
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
 
-    QWidget *topBar = new QWidget(this);
-    topBar->setFixedHeight(30);
-    QHBoxLayout *topBarLayout = new QHBoxLayout(topBar);
+    taskbarWidget = new QWidget(this);
+    taskbarWidget->setFixedHeight(30);
+    QHBoxLayout *taskbarLayout = new QHBoxLayout(taskbarWidget);
     
-    closeButton = new QPushButton("✕", topBar);
-    fullscreenButton = new QPushButton("❐", topBar);
-    topBarLayout->addWidget(fullscreenButton);
-    topBarLayout->addStretch();
-    topBarLayout->addWidget(closeButton);
+    closeButton = new QPushButton("✕", taskbarWidget);
+    fullscreenButton = new QPushButton("❐", taskbarWidget);
+    taskbarLayout->addWidget(fullscreenButton);
+    taskbarLayout->addStretch();
+    taskbarLayout->addWidget(closeButton);
 
     connect(closeButton, &QPushButton::clicked, this, &Window::close);
     connect(fullscreenButton, &QPushButton::clicked, this, &Window::toggleFullScreen);
 
+    // XTerm placeholder widget
     xtermWidget = new QWidget(this);
-    mainLayout->addWidget(topBar);
+    mainLayout->addWidget(taskbarWidget);
     mainLayout->addWidget(xtermWidget);
     setCentralWidget(centralWidget);
 }
@@ -46,9 +47,16 @@ void Window::launchXTerm() {
     xtermProcess->start("xterm", arguments);
 }
 
+void Window::setXorgAppWindow(WId windowId) {
+    attachTaskbar(windowId);
+}
+
+void Window::attachTaskbar(WId windowId) {
+    qDebug() << "Attaching taskbar to Xorg window:" << windowId;
+}
+
 void Window::resizeEvent(QResizeEvent *event) {
     QMainWindow::resizeEvent(event);
-    // Handling terminal resizing
     if (xtermProcess->state() == QProcess::Running) {
         int newColumns = event->size().width() / 9;
         int newRows = event->size().height() / 18;
