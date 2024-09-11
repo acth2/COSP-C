@@ -13,6 +13,7 @@
 #include <QVBoxLayout>
 #include <QProcess>
 #include <QThread>
+#include <QWindow>
 
 WindowManager::WindowManager(QWidget *parent)
     : QWidget(parent),
@@ -53,12 +54,16 @@ void WindowManager::toggleConsole() {
     appendLog("Welcome into the DEBUG window (AKA: Where my nightmare comes true), Press ESC to exit it");
 }
 
-void WindowManager::attachTaskbarToWindow(WId xorgWindowId) {
-    Window *appWindow = new Window();
-    appWindow->setXorgAppWindow(xorgWindowId);
-    appWindow->show();
-}
+void WindowManager::createAndTrackWindow(WId xorgWindowId) {
+    QWindow *window = QWindow::fromWinId(xorgWindowId);
+    if (window) {
+        trackedWindows.insert(xorgWindowId, window);
 
+        QRect geometry = window->geometry();
+        appendLog(QString("Detected new window: %1").arg(xorgWindowId));
+        appendLog(QString("Window position: (%1, %2)").arg(geometry.x()).arg(geometry.y()));
+    }
+}
 void WindowManager::appendLog(const QString &message) {
     if (!loggedMessages.contains(message)) {
         loggedMessages.insert(message);
