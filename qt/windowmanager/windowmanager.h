@@ -8,6 +8,7 @@
 #include <QMap>
 #include "konami_code_handler.h"
 #include "userinteractright.h"
+#include <X11/Xlib.h>
 
 class WindowManager : public QWidget {
     Q_OBJECT
