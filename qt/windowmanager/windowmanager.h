@@ -28,8 +28,8 @@ private:
     QLabel *logLabel;
     QSet<QString> loggedMessages;
     QTimer *timer;
-    QSet<WId> knownWindows;
-    QMap<WId, QWidget*> taskbars;
+    QSet<QWidget*> knownWindows;
+    QMap<QWidget*, QWidget*> taskbars;
     KonamiCodeHandler *konamiCodeHandler;
     bool isConsoleVisible;
     UserInteractRight *userInteractRightWidget;
