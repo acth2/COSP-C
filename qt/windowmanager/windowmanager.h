@@ -27,18 +27,9 @@ private:
     QString backgroundImagePath;
     QLabel *logLabel;
     QSet<QString> loggedMessages;
-    QTimer *timer;
-    QSet<QWidget*> knownWindows;
-    QMap<QWidget*, QWidget*> taskbars;
     KonamiCodeHandler *konamiCodeHandler;
     bool isConsoleVisible;
     UserInteractRight *userInteractRightWidget;
-
-    void toggleConsole();
-    void checkForNewWindows();
-
-    void handleNewWindow(WId windowId);
-    void createTaskbarForWindow(WId windowId);
 };
 
 #endif // WINDOWMANAGER_H
