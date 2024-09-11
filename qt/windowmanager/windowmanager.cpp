@@ -145,7 +145,7 @@ void WindowManager::updateTaskbarPosition(QWindow *window) {
     if (windowTaskbars.contains(window)) {
         TaskBar *taskbar = windowTaskbars.value(window);
         QRect geometry = window->geometry();
-        taskBar->setGeometry(geometry.x(), geometry.y(), geometry.width(), 30);
+        taskbar->setGeometry(geometry.x(), geometry.y(), geometry.width(), 30);
     }
 }
 
