@@ -143,9 +143,9 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
 void WindowManager::updateTaskbarPosition(QWindow *window) {
     if (windowTaskbars.contains(window)) {
-        Taskbar *taskbar = windowTaskbars.value(window);
+        TaskBar *taskbar = windowTaskbars.value(window);
         QRect geometry = window->geometry();
-        taskbar->setGeometry(geometry.x(), geometry.y(), geometry.width(), 30);
+        taskBar->setGeometry(geometry.x(), geometry.y(), geometry.width(), 30);
     }
 }
 
