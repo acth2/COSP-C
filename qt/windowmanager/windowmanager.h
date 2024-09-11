@@ -1,6 +1,7 @@
 #ifndef WINDOWMANAGER_H
 #define WINDOWMANAGER_H
 
+#include <QtCore/qtextstream.h>
 #include <QWidget>
 #include <QLabel>
 #include <QSet>
