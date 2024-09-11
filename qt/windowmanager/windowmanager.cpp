@@ -56,7 +56,10 @@ void WindowManager::checkForNewWindows() {
     listExistingWindows();
 }
 
+Display *xDisplay;
 void WindowManager::listExistingWindows() {
+    xDisplay = XOpenDisplay(nullptr);
+    
     Atom netWmWindowType = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE", False);
     Atom netWmWindowTypeDesktop = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
 
