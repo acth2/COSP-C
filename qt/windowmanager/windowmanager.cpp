@@ -106,44 +106,6 @@ void WindowManager::trackWindowEvents(Window xorgWindowId) {
     XSelectInput(xDisplay, xorgWindowId, StructureNotifyMask);
 }
 
-void WindowManager::listExistingWindows() {
-    Atom netWmWindowType = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE", False);
-    Atom netWmWindowTypeDesktop = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
-
-    Window windowRoot = DefaultRootWindow(xDisplay);
-    Window parent, *children;
-    unsigned int nChildren;
-
-    if (XQueryTree(xDisplay, windowRoot, &windowRoot, &parent, &children, &nChildren)) {
-        for (unsigned int i = 0; i < nChildren; i++) {
-            Window child = children[i];
-
-            Atom type;
-            int format;
-            unsigned long nItems, bytesAfter;
-            unsigned char *data = nullptr;
-
-            if (XGetWindowProperty(xDisplay, child, netWmWindowType, 0, 1, False, XA_ATOM,
-                                   &type, &format, &nItems, &bytesAfter, &data) == Success) {
-                if (data) {
-                    Atom *atoms = (Atom *)data;
-                    if (atoms[0] == netWmWindowTypeDesktop) {
-                        XFree(data);
-                        continue;
-                    }
-                    XFree(data);
-                }
-            }
-
-            if (!trackedWindows.contains(child)) {
-                createAndTrackWindow(child);
-                trackWindowEvents(child);  
-            }
-        }
-        XFree(children);
-    }
-}
-
 void WindowManager::processX11Events() {
     XEvent event;
     while (XPending(xDisplay)) {
