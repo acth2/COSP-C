@@ -33,6 +33,7 @@ private:
 
     void createAndTrackWindow(WId xorgWindowId);
     QMap<WId, QWindow*> trackedWindows;
+    QTimer *windowCheckTimer;
 };
 
 #endif // WINDOWMANAGER_H
