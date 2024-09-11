@@ -35,9 +35,6 @@ private:
     Window root;
 
     void monitorXorgWindows();
-    void attachTaskbarToWindow(WId xorgWindowId);
-    void handleNewXorgWindow(Window xorgWindowId);
-
     void toggleConsole();
 };
 
