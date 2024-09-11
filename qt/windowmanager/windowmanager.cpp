@@ -1,4 +1,3 @@
-#include <QTextStream>
 #include "windowmanager.h"
 #include "Window.h"
 #include "userinteractright.h"
@@ -19,11 +18,11 @@
 #include <X11/Xutil.h>
 
 WindowManager::WindowManager(QWidget *parent)
-    : QWidget(parent), 
+    : QWidget(parent),
       isConsoleVisible(false),
       userInteractRightWidget(nullptr),
       backgroundImagePath("/usr/cydra/backgrounds/current.png") {
-    
+
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
@@ -54,10 +53,10 @@ WindowManager::WindowManager(QWidget *parent)
 
     konamiCodeHandler = new KonamiCodeHandler(this);
     connect(konamiCodeHandler, &KonamiCodeHandler::konamiCodeEntered, this, &WindowManager::toggleConsole);
-        
+
     userInteractRightWidget = nullptr;
 
-    QThread* xorgMonitorThread = QThread::create([this]() { monitorXorgWindows(); });
+    QThread *xorgMonitorThread = QThread::create([this]() { monitorXorgWindows(); });
     xorgMonitorThread->start();
 
     showFullScreen();
@@ -85,7 +84,6 @@ void WindowManager::toggleConsole() {
 
 void WindowManager::attachTaskbarToWindow(WId xorgWindowId) {
     Window *appWindow = new Window();
-
     appWindow->setXorgAppWindow(xorgWindowId);
     appWindow->show();
 }
@@ -112,7 +110,7 @@ bool WindowManager::event(QEvent *event) {
             userInteractRightWidget->show();
         }
     }
-    
+
     return QWidget::event(event);
 }
 
