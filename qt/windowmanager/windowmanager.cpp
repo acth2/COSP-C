@@ -55,23 +55,43 @@ WindowManager::WindowManager(QWidget *parent)
     connect(konamiCodeHandler, &KonamiCodeHandler::konamiCodeEntered, this, &WindowManager::toggleConsole);
 
     userInteractRightWidget = nullptr;
-
-    QThread *xorgMonitorThread = QThread::create([this]() { monitorXorgWindows(); });
-    xorgMonitorThread->start();
+        
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &WindowManager::checkForNewWindows);
+    timer->start(1000);
 
     showFullScreen();
 }
 
-void WindowManager::monitorXorgWindows() {
-    XEvent event;
-    while (true) {
-        XNextEvent(display, &event);
+void WindowManager::handleNewWindow(WId windowId) {
+    qDebug() << "New window detected: " << windowId;
+    createTaskbarForWindow(windowId);
+}
 
-        if (event.type == MapNotify) {
-            Window xorgWindow = event.xmap.window;
-            appendLog("New Xorg window detected");
+void WindowManager::createTaskbarForWindow(WId windowId) {
+    QWidget *taskbar = new QWidget(this);
+    taskbar->setFixedHeight(30);
+    taskbar->setStyleSheet("background-color: gray;");
 
-            attachTaskbarToWindow(xorgWindow);
+    QVBoxLayout *layout = new QVBoxLayout(taskbar);
+    QPushButton *closeButton = new QPushButton("Close", taskbar);
+    layout->addWidget(closeButton);
+
+    connect(closeButton, &QPushButton::clicked, [this, taskbar]() {
+        taskbar->close();
+    });
+
+    taskbar->show();
+    taskbars[windowId] = taskbar;
+}
+
+void WindowManager::checkForNewWindows() {
+    QList<QWidget*> windows = QApplication::allWindows();
+    for (QWidget *window : windows) {
+        WId windowId = window->winId();
+        if (!knownWindows.contains(windowId)) {
+            knownWindows.insert(windowId);
+            handleNewWindow(windowId);
         }
     }
 }
