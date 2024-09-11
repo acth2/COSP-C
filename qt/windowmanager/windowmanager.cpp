@@ -1,5 +1,4 @@
 #include "windowmanager.h"
-#include "Window.h"
 #include "userinteractright.h"
 #include "taskbar.h"
 #include <QApplication>
