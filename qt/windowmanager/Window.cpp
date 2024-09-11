@@ -34,7 +34,6 @@ void Window::setupUI() {
     connect(closeButton, &QPushButton::clicked, this, &Window::close);
     connect(fullscreenButton, &QPushButton::clicked, this, &Window::toggleFullScreen);
 
-    // XTerm placeholder widget
     xtermWidget = new QWidget(this);
     mainLayout->addWidget(taskbarWidget);
     mainLayout->addWidget(xtermWidget);
@@ -83,9 +82,9 @@ void Window::mousePressEvent(QMouseEvent *event) {
 
 void Window::mouseMoveEvent(QMouseEvent *event) {
     if (resizing) {
-        QSize newSize = resizeStartSize + QSize(event->globalPos().x() - resizeStartPosition.x(),
-                                                event->globalPos().y() - resizeStartPosition.y());
-        resize(newSize);
+        int dx = event->globalX() - resizeStartPosition.x();
+        int dy = event->globalY() - resizeStartPosition.y();
+        resize(resizeStartSize.width() + dx, resizeStartSize.height() + dy);
     } else if (dragging) {
         move(event->globalPos() - dragStartPosition);
     }
@@ -93,8 +92,8 @@ void Window::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void Window::mouseReleaseEvent(QMouseEvent *event) {
-    resizing = false;
     dragging = false;
+    resizing = false;
     QMainWindow::mouseReleaseEvent(event);
 }
 
