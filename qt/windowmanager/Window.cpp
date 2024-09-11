@@ -5,7 +5,11 @@
 #include <QMouseEvent>
 #include <QDebug>
 
-Window::Window(QWidget *parent) : QMainWindow(parent), xtermProcess(new QProcess(this)) {
+Window::Window(QWidget *parent) 
+    : QMainWindow(parent), 
+      xtermProcess(new QProcess(this)), 
+      resizing(false), 
+      dragging(false) {
     setupUI();
     launchXTerm();
 }
@@ -24,7 +28,7 @@ void Window::setupUI() {
     taskbarWidget = new QWidget(this);
     taskbarWidget->setFixedHeight(30);
     QHBoxLayout *taskbarLayout = new QHBoxLayout(taskbarWidget);
-    
+
     closeButton = new QPushButton("✕", taskbarWidget);
     fullscreenButton = new QPushButton("❐", taskbarWidget);
     taskbarLayout->addWidget(fullscreenButton);
