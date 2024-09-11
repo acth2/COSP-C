@@ -39,6 +39,8 @@ private:
     void listExistingWindows();
     QMap<WId, QWindow*> trackedWindows;
     QTimer *windowCheckTimer;
+    Display *xDisplay;
+    Window rootWindow;
 };
 
 #endif // WINDOWMANAGER_H
