@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QFile>
 #include <QProcess>
+#include <QDebug>
 
 UserInteractRight::UserInteractRight(QWidget *parent) 
     : QWidget(parent), isDarkMode(false) {
