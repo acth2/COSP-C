@@ -13,9 +13,6 @@
 #include <QVBoxLayout>
 #include <QProcess>
 #include <QThread>
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
-#include <X11/Xutil.h>
 
 WindowManager::WindowManager(QWidget *parent)
     : QWidget(parent),
