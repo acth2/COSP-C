@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 #include <QProcess>
-#include <QWidget>
 #include <QPushButton>
+#include <QWidget>
 
 class Window : public QMainWindow {
     Q_OBJECT
@@ -28,8 +28,8 @@ private:
     QWidget *centralWidget;
     QProcess *xtermProcess;
 
-    bool resizing = false;
-    bool dragging = false;
+    bool resizing;
+    bool dragging;
     QPoint resizeStartPosition;
     QSize resizeStartSize;
     QPoint dragStartPosition;
