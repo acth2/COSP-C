@@ -7,6 +7,7 @@
 #include <QSet>
 #include <QTimer>
 #include <QMap>
+#include "taskbar.h"
 #include "konami_code_handler.h"
 #include "userinteractright.h"
 #include <X11/Xlib.h>
