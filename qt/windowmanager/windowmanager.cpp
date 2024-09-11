@@ -14,6 +14,7 @@
 #include <QProcess>
 #include <QThread>
 #include <QWindow>
+#include <X11/Xlib.h>
 
 WindowManager::WindowManager(QWidget *parent)
     : QWidget(parent),
@@ -44,7 +45,11 @@ WindowManager::WindowManager(QWidget *parent)
     connect(konamiCodeHandler, &KonamiCodeHandler::konamiCodeEntered, this, &WindowManager::toggleConsole);
 
     userInteractRightWidget = nullptr;
-
+        
+    windowCheckTimer = new QTimer(this);
+    connect(windowCheckTimer, &QTimer::timeout, this, &WindowManager::checkForNewWindows);
+    windowCheckTimer->start(500);
+        
     showFullScreen();
 }
 
