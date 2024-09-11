@@ -29,15 +29,6 @@ WindowManager::WindowManager(QWidget *parent)
         setGeometry(screenGeometry);
     }
 
-    display = XOpenDisplay(nullptr);
-    if (!display) {
-        appendLog("Cannot open X11 display");
-        return;
-    }
-    root = DefaultRootWindow(display);
-
-    XSelectInput(display, root, SubstructureNotifyMask);
-
     logLabel = new QLabel(this);
     logLabel->setStyleSheet("QLabel { color : white; background-color : rgba(0, 0, 0, 150); }");
     logLabel->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
@@ -72,7 +63,7 @@ void WindowManager::checkForNewWindows() {
 }
 
 void WindowManager::handleNewWindow(QWidget *window) {
-    appendLog("New window detected:");
+    qDebug() << "New window detected:" << window;
     createTaskbarForWindow(window);
 }
 
