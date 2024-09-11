@@ -60,12 +60,23 @@ WindowManager::WindowManager(QWidget *parent)
     showFullScreen();
 }
 
-void WindowManager::handleNewWindow(WId windowId) {
-    qDebug() << "New window detected: " << windowId;
-    createTaskbarForWindow(windowId);
+
+void WindowManager::checkForNewWindows() {
+    QList<QWidget*> windows = QApplication::topLevelWidgets();
+    for (QWidget *window : windows) {
+        if (!knownWindows.contains(window)) {
+            knownWindows.insert(window);
+            handleNewWindow(window);
+        }
+    }
 }
 
-void WindowManager::createTaskbarForWindow(WId windowId) {
+void WindowManager::handleNewWindow(QWidget *window) {
+    appendLog("New window detected:");
+    createTaskbarForWindow(window);
+}
+
+void WindowManager::createTaskbarForWindow(QWidget *window) {
     QWidget *taskbar = new QWidget(this);
     taskbar->setFixedHeight(30);
     taskbar->setStyleSheet("background-color: gray;");
@@ -74,23 +85,12 @@ void WindowManager::createTaskbarForWindow(WId windowId) {
     QPushButton *closeButton = new QPushButton("Close", taskbar);
     layout->addWidget(closeButton);
 
-    connect(closeButton, &QPushButton::clicked, [this, taskbar]() {
+    connect(closeButton, &QPushButton::clicked, [taskbar]() {
         taskbar->close();
     });
 
     taskbar->show();
-    taskbars[windowId] = taskbar;
-}
-
-void WindowManager::checkForNewWindows() {
-    QList<QWidget*> windows = QApplication::allWindows();
-    for (QWidget *window : windows) {
-        WId windowId = window->winId();
-        if (!knownWindows.contains(windowId)) {
-            knownWindows.insert(windowId);
-            handleNewWindow(windowId);
-        }
-    }
+    taskbars[window] = taskbar;
 }
 
 void WindowManager::toggleConsole() {
