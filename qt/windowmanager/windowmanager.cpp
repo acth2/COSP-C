@@ -16,6 +16,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
+#undef KeyPress
+
 WindowManager::WindowManager(QWidget *parent)
     : QWidget(parent),
       isConsoleVisible(false),
@@ -121,12 +123,12 @@ void WindowManager::appendLog(const QString &message) {
     }
 }
 
-bool WindowManager::event(QEvent *event) {
-    if (event->type() == QEvent::KeyPress) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+bool WindowManager::event(QEvent *qtEvent) {
+    if (qtEvent->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(qtEvent);
         konamiCodeHandler->handleKeyPress(keyEvent);
-    } else if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+    } else if (qtEvent->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(qtEvent);
         if (mouseEvent->button() == Qt::RightButton) {
             if (!userInteractRightWidget) {
                 userInteractRightWidget = new UserInteractRight(this);
@@ -136,7 +138,7 @@ bool WindowManager::event(QEvent *event) {
         }
     }
 
-    return QWidget::event(event);
+    return QWidget::event(qtEvent);
 }
 
 void WindowManager::keyPressEvent(QKeyEvent *event) {
