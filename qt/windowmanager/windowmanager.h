@@ -21,13 +21,13 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    void updateTaskbarPosition(QWindow window) override;
+    void updateTaskbarPosition(QWindow* window) override;
+    void trackWindowEvents(Window xorgWindowId);
 
 private slots:
     void checkForNewWindows();
     void toggleConsole();
     void processX11Events();
-    void trackWindowEvents();
 
 private:
 
