@@ -55,10 +55,6 @@ WindowManager::WindowManager(QWidget *parent)
     showFullScreen();
 }
 
-void WindowManager::checkForNewWindows() {
-    listExistingWindows();
-}
-
 Display *xDisplay;
 void WindowManager::listExistingWindows() {
     xDisplay = XOpenDisplay(nullptr);
@@ -105,6 +101,11 @@ void WindowManager::checkForNewWindows() {
     processX11Events(); 
 }
 
+void WindowManager::trackWindowEvents(Window xorgWindowId) {
+    xDisplay = XOpenDisplay(nullptr);
+    XSelectInput(xDisplay, xorgWindowId, StructureNotifyMask);
+}
+
 void WindowManager::listExistingWindows() {
     Atom netWmWindowType = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE", False);
     Atom netWmWindowTypeDesktop = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
@@ -141,11 +142,6 @@ void WindowManager::listExistingWindows() {
         }
         XFree(children);
     }
-}
-
-void WindowManager::trackWindowEvents(Window xorgWindowId) {
-    xDisplay = XOpenDisplay(nullptr);
-    XSelectInput(xDisplay, xorgWindowId, StructureNotifyMask);
 }
 
 void WindowManager::processX11Events() {
