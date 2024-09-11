@@ -3,41 +3,40 @@
 
 #include <QMainWindow>
 #include <QProcess>
-#include <QPushButton>
 #include <QWidget>
+#include <QPushButton>
 
 class Window : public QMainWindow {
     Q_OBJECT
 
 public:
-    Window(QWidget *parent = nullptr);
+    explicit Window(QWidget *parent = nullptr);
     ~Window();
-
     void setXorgAppWindow(WId windowId);
-
-private:
-    QWidget *centralWidget;
-    QProcess *xtermProcess;
-    QPushButton *closeButton;
-    QPushButton *fullscreenButton;
-    QWidget *xtermWidget;
-    QWidget *taskbarWidget;
-
-    bool resizing;
-    bool dragging;
-    QPoint dragStartPosition;
-    QPoint resizeStartPosition;
-    QSize resizeStartSize;
-
-    void setupUI();
-    void launchXTerm();
-    void attachTaskbar(WId windowId);
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+
+private:
+    QWidget *taskbarWidget;
+    QWidget *xtermWidget;
+    QPushButton *closeButton;
+    QPushButton *fullscreenButton;
+    QWidget *centralWidget;
+    QProcess *xtermProcess;
+
+    bool resizing = false;
+    bool dragging = false;
+    QPoint resizeStartPosition;
+    QSize resizeStartSize;
+    QPoint dragStartPosition;
+
+    void setupUI();
+    void launchXTerm();
+    void attachTaskbar(WId windowId);
     void toggleFullScreen();
 };
 
