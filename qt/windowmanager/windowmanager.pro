@@ -12,14 +12,12 @@ SOURCES += main.cpp \
            windowmanager.cpp \
            konami_code_handler.cpp \
            userinteractright.cpp \
-           taskbar.cpp \
-           Window.cpp
+           taskbar.cpp
            
 HEADERS += windowmanager.h \
            konami_code_handler.h \
            userinteractright.h \
-           taskbar.h \
-           Window.h 
+           taskbar.h
 
 DESTDIR = src
 
