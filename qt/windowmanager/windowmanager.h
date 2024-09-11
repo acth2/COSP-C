@@ -25,7 +25,6 @@ protected:
 private slots:
     void checkForNewWindows();
     void toggleConsole();
-    void listExistingWindows();
 
 private:
 
