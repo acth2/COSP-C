@@ -140,6 +140,15 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         appendLog(QString("Window position: (%1, %2)").arg(geometry.x()).arg(geometry.y()));
     }
 }
+
+void WindowManager::updateTaskbarPosition(QWindow *window) {
+    if (windowTaskbars.contains(window)) {
+        Taskbar *taskbar = windowTaskbars.value(window);
+        QRect geometry = window->geometry();
+        taskbar->setGeometry(geometry.x(), geometry.y(), geometry.width(), 30);
+    }
+}
+
 void WindowManager::appendLog(const QString &message) {
     if (!loggedMessages.contains(message)) {
         loggedMessages.insert(message);
