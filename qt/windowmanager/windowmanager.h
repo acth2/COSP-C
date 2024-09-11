@@ -30,6 +30,9 @@ private:
     KonamiCodeHandler *konamiCodeHandler;
     bool isConsoleVisible;
     UserInteractRight *userInteractRightWidget;
+
+    void createAndTrackWindow(WId xorgWindowId);
+    QMap<WId, QWindow*> trackedWindows;
 };
 
 #endif // WINDOWMANAGER_H
