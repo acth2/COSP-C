@@ -43,45 +43,8 @@ WindowManager::WindowManager(QWidget *parent)
     connect(konamiCodeHandler, &KonamiCodeHandler::konamiCodeEntered, this, &WindowManager::toggleConsole);
 
     userInteractRightWidget = nullptr;
-        
-    timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &WindowManager::checkForNewWindows);
-    timer->start(1000);
 
     showFullScreen();
-}
-
-
-void WindowManager::checkForNewWindows() {
-    QList<QWidget*> windows = QApplication::topLevelWidgets();
-    for (QWidget *window : windows) {
-        if (!knownWindows.contains(window)) {
-            knownWindows.insert(window);
-            handleNewWindow(window);
-        }
-    }
-}
-
-void WindowManager::handleNewWindow(QWidget *window) {
-    qDebug() << "New window detected:" << window;
-    createTaskbarForWindow(window);
-}
-
-void WindowManager::createTaskbarForWindow(QWidget *window) {
-    QWidget *taskbar = new QWidget(this);
-    taskbar->setFixedHeight(30);
-    taskbar->setStyleSheet("background-color: gray;");
-
-    QVBoxLayout *layout = new QVBoxLayout(taskbar);
-    QPushButton *closeButton = new QPushButton("Close", taskbar);
-    layout->addWidget(closeButton);
-
-    connect(closeButton, &QPushButton::clicked, [taskbar]() {
-        taskbar->close();
-    });
-
-    taskbar->show();
-    taskbars[window] = taskbar;
 }
 
 void WindowManager::toggleConsole() {
