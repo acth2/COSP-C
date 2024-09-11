@@ -21,6 +21,7 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
+    void updateTaskbarPosition(QWindow window) override;
 
 private slots:
     void checkForNewWindows();
