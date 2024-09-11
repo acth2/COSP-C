@@ -23,7 +23,11 @@ protected:
     void closeEvent(QCloseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
 
+private slots:
+    void checkForNewWindows();
+
 private:
+
     QString backgroundImagePath;
     QLabel *logLabel;
     QSet<QString> loggedMessages;
@@ -32,6 +36,7 @@ private:
     UserInteractRight *userInteractRightWidget;
 
     void createAndTrackWindow(WId xorgWindowId);
+    void listExistingWindows();
     QMap<WId, QWindow*> trackedWindows;
     QTimer *windowCheckTimer;
 };
