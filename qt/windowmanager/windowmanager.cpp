@@ -57,8 +57,6 @@ WindowManager::WindowManager(QWidget *parent)
 
 Display *xDisplay;
 void WindowManager::listExistingWindows() {
-    xDisplay = XOpenDisplay(nullptr);
-    
     Atom netWmWindowType = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE", False);
     Atom netWmWindowTypeDesktop = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
 
@@ -94,11 +92,11 @@ void WindowManager::listExistingWindows() {
         XFree(children);
     }
 }
-
 void WindowManager::checkForNewWindows() {
     xDisplay = XOpenDisplay(nullptr);
     listExistingWindows();
     processX11Events(); 
+    cleanUpClosedWindows();
 }
 
 void WindowManager::trackWindowEvents(Window xorgWindowId) {
@@ -135,11 +133,10 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     if (window) {
         trackedWindows.insert(xorgWindowId, window);
 
-        centerWindow(window);
-
         QRect geometry = window->geometry();
         appendLog(QString("Detected new window: %1").arg(xorgWindowId));
         appendLog(QString("Window position: (%1, %2)").arg(geometry.x()).arg(geometry.y()));
+        appendLog(QString("Window size: (%1, %2)").arg(geometry.width()).arg(geometry.height()));
     }
 }
 
@@ -175,6 +172,23 @@ bool WindowManager::event(QEvent *qtEvent) {
     }
 
     return QWidget::event(qtEvent);
+}
+
+void WindowManager::cleanUpClosedWindows() {
+    QList<Window> windowsToRemove;
+    for (auto xorgWindowId : trackedWindows.keys()) {
+        XWindowAttributes attributes;
+        int status = XGetWindowAttributes(xDisplay, xorgWindowId, &attributes);
+
+        if (status == 0 || attributes.map_state == IsUnmapped) {
+            windowsToRemove.append(xorgWindowId);
+        }
+    }
+
+    for (auto xorgWindowId : windowsToRemove) {
+        QWindow *window = trackedWindows.value(xorgWindowId);
+        trackedWindows.remove(xorgWindowId);
+    }
 }
 
 void WindowManager::keyPressEvent(QKeyEvent *event) {
