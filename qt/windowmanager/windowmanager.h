@@ -32,6 +32,7 @@ private slots:
     void checkForNewWindows();
     void toggleConsole();
     void processX11Events();
+    void cleanUpClosedWindows();
 
 private:
 
