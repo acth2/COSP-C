@@ -19,7 +19,7 @@ HEADERS += windowmanager.h \
            konami_code_handler.h \
            userinteractright.h \
            taskbar.h \
-           topbar.h
+           win/topbar.h
 
 DESTDIR = src
 
