@@ -183,6 +183,17 @@ void WindowManager::keyPressEvent(QKeyEvent *event) {
     }
 }
 
+void WindowManager::centerWindow(QWindow *window) {
+    QScreen *screen = QApplication::primaryScreen();
+    if (screen) {
+        QRect screenGeometry = screen->geometry();
+        QRect windowGeometry = window->geometry();
+        int x = (screenGeometry.width() - windowGeometry.width()) / 2;
+        int y = (screenGeometry.height() - windowGeometry.height()) / 2;
+        window->setGeometry(x, y, windowGeometry.width(), windowGeometry.height());
+    }
+}
+
 void WindowManager::closeEvent(QCloseEvent *event) {
     appendLog("Close attempt ignored");
     event->ignore();
