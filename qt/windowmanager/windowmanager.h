@@ -46,6 +46,7 @@ private:
     void createAndTrackWindow(WId xorgWindowId);
     void listExistingWindows();
     QMap<WId, QWindow*> trackedWindows;
+    QMap<WId, TopBar*> windowTopBars;
     QMap<QWindow*, TaskBar*> windowTaskbars;
     QTimer *windowCheckTimer;
 };
