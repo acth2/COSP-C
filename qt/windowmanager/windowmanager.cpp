@@ -138,6 +138,11 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         appendLog(QString("Detected new window: %1").arg(xorgWindowId));
         appendLog(QString("Window position: (%1, %2)").arg(geometry.x()).arg(geometry.y()));
         appendLog(QString("Window size: (%1, %2)").arg(geometry.width()).arg(geometry.height()));
+
+        TopBar *topBar = new TopBar(window, this);
+        topBar->updateTitle("Window " + QString::number(xorgWindowId));
+        windowTopBars.insert(xorgWindowId, topBar);
+        topBar->updatePosition();
     }
 }
 
@@ -189,6 +194,13 @@ void WindowManager::cleanUpClosedWindows() {
     for (auto xorgWindowId : windowsToRemove) {
         QWindow *window = trackedWindows.value(xorgWindowId);
         trackedWindows.remove(xorgWindowId);
+
+        if (windowTopBars.contains(xorgWindowId)) {
+            TopBar *topBar = windowTopBars.value(xorgWindowId);
+            topBar->hide();
+            topBar->deleteLater();
+            windowTopBars.remove(xorgWindowId);
+        }
     }
 }
 
