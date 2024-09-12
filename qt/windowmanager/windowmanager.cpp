@@ -135,6 +135,8 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     if (window) {
         trackedWindows.insert(xorgWindowId, window);
 
+        centerWindow(window);
+
         QRect geometry = window->geometry();
         appendLog(QString("Detected new window: %1").arg(xorgWindowId));
         appendLog(QString("Window position: (%1, %2)").arg(geometry.x()).arg(geometry.y()));
