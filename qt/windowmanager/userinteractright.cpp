@@ -16,6 +16,8 @@ UserInteractRight::UserInteractRight(QWidget *parent)
     setupUI();
 
     setFixedSize(200, 250);
+
+    setWindowTitle("CWM");
         
     if (QFile::exists("/usr/cydra/settings/darkmode")) {
         isDarkMode = true;
