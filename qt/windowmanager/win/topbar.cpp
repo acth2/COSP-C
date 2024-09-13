@@ -22,11 +22,23 @@ TopBar::TopBar(QWindow *parentWindow, QWidget *parent)
     updatePosition();
 }
 
+/*
 void TopBar::updatePosition() {
     if (trackedWindow) {
         QRect windowGeometry = trackedWindow->geometry();
         int topbarHeight = 30;
         setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
+        show();
+    }
+}
+*/
+
+void TopBar::updatePosition() {
+    if (trackedWindow) {
+        QRect windowGeometry = trackedWindow->geometry();
+        int topbarHeight = 30;
+        setGeometry(windowGeometry.x(), windowGeometry.bottom() - topbarHeight, windowGeometry.width(), topbarHeight);
+        setStyleSheet("background-color: rgba(0, 0, 255, 150);"); // Blue background for visibility
         show();
     }
 }
