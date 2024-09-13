@@ -138,6 +138,9 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         appendLog(QString("Detected new window: %1").arg(xorgWindowId));
         appendLog(QString("Window position: (%1, %2)").arg(geometry.x()).arg(geometry.y()));
         appendLog(QString("Window size: (%1, %2)").arg(geometry.width()).arg(geometry.height()));
+        
+        int newY = geometry.y() + 50;
+        window->setGeometry(geometry.x(), newY, geometry.width(), geometry.height());
 
         TopBar *topBar = new TopBar(window, this);
         topBar->updateTitle("Window " + QString::number(xorgWindowId));
