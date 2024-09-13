@@ -153,7 +153,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         appendLog(QString("Window position: (%1, %2)").arg(geometry.x()).arg(geometry.y()));
         appendLog(QString("Window size: (%1, %2)").arg(geometry.width()).arg(geometry.height()));
 
-        if (!window->windowState().testFlag(Qt::WindowFullScreen)) {
+        if (!(window->windowState() & Qt::WindowFullScreen)) {
             TopBar *topBar = new TopBar(window, this);
             topBar->updateTitle(windowTitle);
             windowTopBars.insert(xorgWindowId, topBar);
