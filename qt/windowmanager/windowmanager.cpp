@@ -141,7 +141,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     if (window) {
         QString windowTitle = window->title();
         
-        if (windowTitle == "CWMUSRI") {
+        if (windowTitle == "CWM") {
             appendLog("Skipping window: CWMUSRI");
             return;
         }
