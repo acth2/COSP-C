@@ -113,6 +113,13 @@ void WindowManager::processX11Events() {
             XConfigureEvent xce = event.xconfigure;
             if (trackedWindows.contains(xce.window)) {
                 QWindow *window = trackedWindows.value(xce.window);
+                
+                QRect windowGeometry = window->geometry();
+                if (windowGeometry.y() < 30) {
+                    appendLog("Topbar is out of view, resetting window position.");
+                    window->setY(30);
+                }
+
                 appendLog(QString("Window resized/moved: (%1, %2), Size: (%3x%4)")
                     .arg(xce.x).arg(xce.y)
                     .arg(xce.width).arg(xce.height));
