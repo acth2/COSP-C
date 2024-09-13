@@ -150,10 +150,23 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 }
 
 void WindowManager::updateTaskbarPosition(QWindow *window) {
-    if (windowTaskbars.contains(window)) {
-        TaskBar *taskbar = windowTaskbars.value(window);
+    if (window->windowState() & Qt::WindowFullScreen) {
+        appendLog(QString("Window %1 is in fullscreen, skipping adjustment.").arg(window->winId()));
+        return;
+    }
+
+    if (windowTopBars.contains(window->winId())) {
+        TopBar *topBar = windowTopBars.value(window->winId());
         QRect geometry = window->geometry();
-        taskbar->setGeometry(geometry.x(), geometry.y(), geometry.width(), 30);
+        int topbarHeight = 30;
+
+        window->setGeometry(geometry.x(), geometry.y() + topbarHeight, geometry.width(), geometry.height());
+
+        topBar->setGeometry(geometry.x(), geometry.y(), geometry.width(), topbarHeight);
+        topBar->show();
+        
+        appendLog(QString("Taskbar updated for window %1 at position (%2, %3)")
+            .arg(window->winId()).arg(geometry.x()).arg(geometry.y()));
     }
 }
 
