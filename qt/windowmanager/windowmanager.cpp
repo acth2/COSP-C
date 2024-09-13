@@ -138,9 +138,6 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         appendLog(QString("Detected new window: %1").arg(xorgWindowId));
         appendLog(QString("Window position: (%1, %2)").arg(geometry.x()).arg(geometry.y()));
         appendLog(QString("Window size: (%1, %2)").arg(geometry.width()).arg(geometry.height()));
-        
-        int newY = geometry.y() + 50;
-        window->setGeometry(geometry.x(), newY, geometry.width(), geometry.height());
 
         TopBar *topBar = new TopBar(window, this);
         topBar->updateTitle("Window " + QString::number(xorgWindowId));
@@ -150,23 +147,24 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 }
 
 void WindowManager::updateTaskbarPosition(QWindow *window) {
-    if (window->windowState() & Qt::WindowFullScreen) {
-        appendLog(QString("Window %1 is in fullscreen, skipping adjustment.").arg(window->winId()));
-        return;
-    }
-
     if (windowTopBars.contains(window->winId())) {
         TopBar *topBar = windowTopBars.value(window->winId());
-        QRect geometry = window->geometry();
+        QRect windowGeometry = window->geometry();
         int topbarHeight = 30;
 
-        window->setGeometry(geometry.x(), geometry.y() + topbarHeight, geometry.width(), geometry.height());
+        int topBarYPosition = windowGeometry.y() - topbarHeight;
 
-        topBar->setGeometry(geometry.x(), geometry.y(), geometry.width(), topbarHeight);
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+
+        if (topBarYPosition < screenGeometry.y()) {
+            window->setGeometry(windowGeometry.x(), screenGeometry.y() + topbarHeight,
+                                windowGeometry.width(), windowGeometry.height());
+        }
+
+        topBar->setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, 
+                            windowGeometry.width(), topbarHeight);
         topBar->show();
-        
-        appendLog(QString("Taskbar updated for window %1 at position (%2, %3)")
-            .arg(window->winId()).arg(geometry.x()).arg(geometry.y()));
     }
 }
 
@@ -225,17 +223,6 @@ void WindowManager::keyPressEvent(QKeyEvent *event) {
         toggleConsole();
     } else {
         QWidget::keyPressEvent(event);
-    }
-}
-
-void WindowManager::centerWindow(QWindow *window) {
-    QScreen *screen = QApplication::primaryScreen();
-    if (screen) {
-        QRect screenGeometry = screen->geometry();
-        QRect windowGeometry = window->geometry();
-        int x = (screenGeometry.width() - windowGeometry.width()) / 2;
-        int y = (screenGeometry.height() - windowGeometry.height()) / 2;
-        window->setGeometry(x, y, windowGeometry.width(), windowGeometry.height());
     }
 }
 
