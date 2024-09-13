@@ -158,6 +158,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
             topBar->updateTitle(windowTitle);
             windowTopBars.insert(xorgWindowId, topBar);
             topBar->updatePosition();
+            topBar.show();
         }
     }
 }
