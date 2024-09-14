@@ -1,13 +1,11 @@
 #ifndef TOPBAR_H
 #define TOPBAR_H
 
-#include "utils/closebutton.h"
 #include <QWidget>
 #include <QWindow>
 #include <QLabel>
-#include <QHBoxLayout>
-#include <QMouseEvent>
 #include <QPushButton>
+#include <QHBoxLayout>
 
 class TopBar : public QWidget {
     Q_OBJECT
@@ -20,17 +18,22 @@ public:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
 
+signals:
+    void closeRequested();
+
 protected:
     void paintEvent(QPaintEvent *event) override;
+
+private slots:
+    void handleCloseButtonClicked();
 
 private:
     QWindow *trackedWindow;
     QLabel *titleLabel;
+    QPushButton *closeButton;
     bool isDragging = false;
     QPoint dragStartPos;
     QPoint windowStartPos;
-    QPoint lastMousePos;
-    CloseButton *closeButton;
 };
 
 #endif // TOPBAR_H
