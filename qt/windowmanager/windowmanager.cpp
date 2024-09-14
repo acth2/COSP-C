@@ -204,9 +204,9 @@ void WindowManager::updateTaskbarPosition(QWindow *window) {
                                 windowGeometry.width(), windowGeometry.height());
         }
 
-        topBar->setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, 
-                            windowGeometry.width(), topbarHeight);
+        topBar->setGeometry(windowGeometry.x(), windowGeometry.y(), windowGeometry.width(), topbarHeight);
         topBar->show();
+        appendLog("TopBar correctly positioned at the top of window: " + QString::number(window->winId()));
     }
 }
 
