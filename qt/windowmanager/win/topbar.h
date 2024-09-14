@@ -22,9 +22,6 @@ public:
 protected:
     void paintEvent(QPaintEvent *event) override;
 
-private slots:
-    void onCloseButtonClicked();
-
 private:
     QWindow *trackedWindow;
     QLabel *titleLabel;
@@ -32,7 +29,6 @@ private:
     QPoint dragStartPos;
     QPoint windowStartPos;
     QPoint lastMousePos;
-    QPushButton *closeButton;
 };
 
 #endif // TOPBAR_H
