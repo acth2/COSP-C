@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QMouseEvent>
+#include <QPushButton>
 
 class TopBar : public QWidget {
     Q_OBJECT
@@ -28,6 +29,7 @@ private:
     QPoint dragStartPos;
     QPoint windowStartPos;
     QPoint lastMousePos;
+    QPushButton *closeButton;
 };
 
 #endif // TOPBAR_H
