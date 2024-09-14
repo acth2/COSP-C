@@ -1,32 +1,21 @@
 #include "closebutton.h"
-#include <QPainter>
-#include <QMouseEvent>
-#include <QApplication>
 
-CloseButton::CloseButton(QWindow *parentWindow, QWidget *parent)
-    : QWidget(parent), trackedWindow(parentWindow)
-{
+CloseButton::CloseButton(QWindow *trackedWindow, QWidget *parent)
+    : QPushButton(parent), trackedWindow(trackedWindow) {
+
+    setText("✕");
     setFixedSize(30, 30);
-    setStyleSheet("background-color: rgba(255, 0, 0, 100);");
+    connect(this, &QPushButton::clicked, this, &CloseButton::handleButtonClicked);
 }
 
-void CloseButton::enterEvent(QEvent *event)
-{
-    setStyleSheet("background-color: rgba(255, 0, 0, 200);");
-}
-
-void CloseButton::leaveEvent(QEvent *event)
-{
-    setStyleSheet("background-color: rgba(255, 0, 0, 100);");
-}
-
-void CloseButton::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton) {
-        emit closeButtonClicked();
-
-        trackedWindow->close();
-        parentWidget()->close();
-        close();
+void CloseButton::updatePosition() {
+    if (trackedWindow) {
+        QRect windowGeometry = trackedWindow->geometry();
+        setGeometry(windowGeometry.right() - 40, windowGeometry.top(), 30, 30);
+        show();
     }
+}
+
+void CloseButton::handleButtonClicked() {
+    emit closeRequested();
 }
