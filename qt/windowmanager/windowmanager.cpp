@@ -139,13 +139,6 @@ void WindowManager::toggleConsole() {
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     QWindow *window = QWindow::fromWinId(xorgWindowId);
     if (window) {
-        QString windowTitle = window->title();
-        
-        if (windowTitle == "CWM") {
-            appendLog("Skipping window: CWMUSRI");
-            return;
-        }
-
         trackedWindows.insert(xorgWindowId, window);
 
         QRect geometry = window->geometry();
@@ -153,12 +146,12 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         appendLog(QString("Window position: (%1, %2)").arg(geometry.x()).arg(geometry.y()));
         appendLog(QString("Window size: (%1, %2)").arg(geometry.width()).arg(geometry.height()));
 
-        if (!(window->windowState() & Qt::WindowFullScreen)) {
-            TopBar *topBar = new TopBar(window, this);
-            topBar->updateTitle(windowTitle);
-            windowTopBars.insert(xorgWindowId, topBar);
-            topBar->updatePosition();
-        }
+        TopBar *topBar = new TopBar(window, this);
+        appendLog("TopBar created for window: " + QString::number(xorgWindowId));
+        topBar->updateTitle("Window " + QString::number(xorgWindowId));
+        windowTopBars.insert(xorgWindowId, topBar);
+        topBar->updatePosition();
+        appendLog("TopBar position updated for window: " + QString::number(xorgWindowId));
     }
 }
 
