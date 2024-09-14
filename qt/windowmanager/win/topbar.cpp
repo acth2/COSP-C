@@ -28,12 +28,17 @@ void TopBar::updatePosition() {
     if (trackedWindow) {
         QRect windowGeometry = trackedWindow->geometry();
         int topbarHeight = 30;
-        setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
+        setGeometry(windowGeometry.x(), windowGeometry.bottom() - topbarHeight, windowGeometry.width(), topbarHeight);
         setStyleSheet("background-color: rgba(0, 0, 0, 150);");
         show();
+
+        if (closeButton) {
+            closeButton->updatePosition();
+        }
+    } else {
+        qDebug() << "Tracked window is null in updatePosition";
     }
 }
-
 void TopBar::updateTitle(const QString &title) {
     titleLabel->setText(title);
 }
