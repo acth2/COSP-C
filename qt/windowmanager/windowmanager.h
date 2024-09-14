@@ -30,6 +30,7 @@ protected:
     void trackWindowEvents(Window xorgWindowId);
     void closeWindow(WId xorgWindowId);
     void centerWindow(QWindow *window);
+    void removeCloseButton(WId windowId);
 
 private slots:
     void checkForNewWindows();
