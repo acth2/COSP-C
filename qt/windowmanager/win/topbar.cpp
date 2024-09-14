@@ -51,7 +51,7 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         isDragging = true;
         dragStartPos = event->globalPos();
-        windowStartPos = trackedWindow->pos();
+        windowStartPos = trackedWindow->geometry().topLeft();
     }
 }
 
