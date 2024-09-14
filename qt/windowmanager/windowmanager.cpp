@@ -230,6 +230,14 @@ void WindowManager::setupCloseButton(QWindow *window) {
     appendLog("CloseButton created and positioned for window: " + QString::number(window->winId()));
 }
 
+void WindowManager::removeCloseButton(WId windowId) {
+    if (windowCloseButtons.contains(windowId)) {
+        CloseButton *closeButton = windowCloseButtons.value(windowId);
+        closeButton->deleteLater();
+        windowCloseButtons.remove(windowId);
+    }
+}
+
 void WindowManager::closeWindow(WId xorgWindowId) {
     if (trackedWindows.contains(xorgWindowId)) {
         trackedWindows[xorgWindowId]->close();
@@ -304,32 +312,29 @@ bool WindowManager::event(QEvent *qtEvent) {
 
     return QWidget::event(qtEvent);
 }
-
 void WindowManager::cleanUpClosedWindows() {
-    if (xDisplay) {
-        QList<Window> windowsToRemove;
-        for (auto xorgWindowId : trackedWindows.keys()) {
-            XWindowAttributes attributes;
-            int status = XGetWindowAttributes(xDisplay, xorgWindowId, &attributes);
+    QList<WId> windowsToRemove;
+    for (auto xorgWindowId : trackedWindows.keys()) {
+        XWindowAttributes attributes;
+        int status = XGetWindowAttributes(xDisplay, xorgWindowId, &attributes);
 
-            if (status == 0 || attributes.map_state == IsUnmapped) {
-                windowsToRemove.append(xorgWindowId);
-            }
+        if (status == 0 || attributes.map_state == IsUnmapped) {
+            windowsToRemove.append(xorgWindowId);
+        }
+    }
+
+    for (auto xorgWindowId : windowsToRemove) {
+        QWindow *window = trackedWindows.value(xorgWindowId);
+        trackedWindows.remove(xorgWindowId);
+
+        if (windowTopBars.contains(xorgWindowId)) {
+            TopBar *topBar = windowTopBars.value(xorgWindowId);
+            topBar->hide();
+            topBar->deleteLater();
+            windowTopBars.remove(xorgWindowId);
         }
 
-        for (auto xorgWindowId : windowsToRemove) {
-            QWindow *window = trackedWindows.value(xorgWindowId);
-            trackedWindows.remove(xorgWindowId);
-
-            if (windowTopBars.contains(xorgWindowId)) {
-                TopBar *topBar = windowTopBars.value(xorgWindowId);
-                topBar->hide();
-                topBar->deleteLater();
-                windowTopBars.remove(xorgWindowId);
-            }
-        }
-    } else {
-        appendLog("ERR: Failed to open X Display ..");
+        removeCloseButton(xorgWindowId);
     }
 }
 
