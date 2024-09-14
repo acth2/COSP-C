@@ -58,86 +58,102 @@ WindowManager::WindowManager(QWidget *parent)
 
 Display *xDisplay;
 void WindowManager::listExistingWindows() {
-    Atom netWmWindowType = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE", False);
-    Atom netWmWindowTypeNormal = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", False);
+    if (xDisplay) {
+        Atom netWmWindowType = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE", False);
+        Atom netWmWindowTypeNormal = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", False);
 
-    Window windowRoot = DefaultRootWindow(xDisplay);
-    Window parent, *children;
-    unsigned int nChildren;
+        Window windowRoot = DefaultRootWindow(xDisplay);
+        Window parent, *children;
+        unsigned int nChildren;
 
-    if (XQueryTree(xDisplay, windowRoot, &windowRoot, &parent, &children, &nChildren)) {
-        for (unsigned int i = 0; i < nChildren; i++) {
-            Window child = children[i];
+        if (XQueryTree(xDisplay, windowRoot, &windowRoot, &parent, &children, &nChildren)) {
+            for (unsigned int i = 0; i < nChildren; i++) {
+                Window child = children[i];
 
-            Atom type;
-            int format;
-            unsigned long nItems, bytesAfter;
-            unsigned char *data = nullptr;
+                Atom type;
+                int format;
+                unsigned long nItems, bytesAfter;
+                unsigned char *data = nullptr;
 
-            if (XGetWindowProperty(xDisplay, child, netWmWindowType, 0, 1, False, XA_ATOM,
+                if (XGetWindowProperty(xDisplay, child, netWmWindowType, 0, 1, False, XA_ATOM,
                                    &type, &format, &nItems, &bytesAfter, &data) == Success) {
-                if (data) {
-                    Atom *atoms = (Atom *)data;
-                    if (atoms[0] != netWmWindowTypeNormal) {
+                    if (data) {
+                        Atom *atoms = (Atom *)data;
+                        if (atoms[0] != netWmWindowTypeNormal) {
+                            XFree(data);
+                            continue;
+                        }
                         XFree(data);
-                        continue;
                     }
-                    XFree(data);
+                }
+
+                XWindowAttributes attributes;
+                if (XGetWindowAttributes(xDisplay, child, &attributes) == 0 || attributes.map_state != IsViewable) {
+                    continue;
+                }
+
+                QRect windowGeometry(attributes.x, attributes.y, attributes.width, attributes.height);
+
+                if (windowGeometry.width() == 0 || windowGeometry.height() == 0) {
+                    appendLog("Skipping non-graphical window (0x0 size): " + QString::number(child));
+                    continue;
+                }
+
+                appendLog("Detected graphical X11 window: " + QString::number(child));
+            
+                if (!trackedWindows.contains(child)) {
+                    createAndTrackWindow(child);
                 }
             }
-
-            XWindowAttributes attributes;
-            if (XGetWindowAttributes(xDisplay, child, &attributes) == 0 || attributes.map_state != IsViewable) {
-                continue;
-            }
-
-            QRect windowGeometry(attributes.x, attributes.y, attributes.width, attributes.height);
-
-            if (windowGeometry.width() == 0 || windowGeometry.height() == 0) {
-                appendLog("Skipping non-graphical window (0x0 size): " + QString::number(child));
-                continue;
-            }
-
-            appendLog("Detected graphical X11 window: " + QString::number(child));
-            
-            if (!trackedWindows.contains(child)) {
-                createAndTrackWindow(child);
-            }
+            XFree(children);
         }
-        XFree(children);
+    } else {
+        appendLog("ERR: Failed to open X Display ..");
     }
 }
 
 void WindowManager::checkForNewWindows() {
     xDisplay = XOpenDisplay(nullptr);
-    listExistingWindows();
-    processX11Events(); 
-    cleanUpClosedWindows();
+    if (xDisplay) {
+        listExistingWindows();
+        processX11Events(); 
+        cleanUpClosedWindows();
+    } else {
+        appendLog("ERR: Failed to open X Display ..");
+    }
 }
 
 void WindowManager::trackWindowEvents(Window xorgWindowId) {
     xDisplay = XOpenDisplay(nullptr);
-    XSelectInput(xDisplay, xorgWindowId, StructureNotifyMask);
+    if (xDisplay) {
+        XSelectInput(xDisplay, xorgWindowId, StructureNotifyMask);
+    } else {
+        appendLog("ERR: Failed to open X Display ..");
+    }
 }
 
 void WindowManager::processX11Events() {
     XEvent event;
-    while (XPending(xDisplay)) {
-        XNextEvent(xDisplay, &event);
-        if (event.type == ConfigureNotify) {
-            XConfigureEvent xce = event.xconfigure;
+    if (xDisplay) {
+        while (XPending(xDisplay)) {
+            XNextEvent(xDisplay, &event);
+            if (event.type == ConfigureNotify) {
+                XConfigureEvent xce = event.xconfigure;
 
-            if (trackedWindows.contains(xce.window)) {
-                QWindow *window = trackedWindows.value(xce.window);
-                QRect windowGeometry = window->geometry();
+                if (trackedWindows.contains(xce.window)) {
+                    QWindow *window = trackedWindows.value(xce.window);
+                    QRect windowGeometry = window->geometry();
 
-                appendLog(QString("Window resized/moved: (%1, %2), Size: (%3x%4)")
-                    .arg(xce.x).arg(xce.y)
-                    .arg(xce.width).arg(xce.height));
+                    appendLog(QString("Window resized/moved: (%1, %2), Size: (%3x%4)")
+                        .arg(xce.x).arg(xce.y)
+                        .arg(xce.width).arg(xce.height));
 
-                updateTaskbarPosition(window);
+                    updateTaskbarPosition(window);
+                }
             }
         }
+    } else {
+        appendLog("ERR: Failed to open X Display ..");
     }
 }
 
@@ -242,26 +258,30 @@ bool WindowManager::event(QEvent *qtEvent) {
 }
 
 void WindowManager::cleanUpClosedWindows() {
-    QList<Window> windowsToRemove;
-    for (auto xorgWindowId : trackedWindows.keys()) {
-        XWindowAttributes attributes;
-        int status = XGetWindowAttributes(xDisplay, xorgWindowId, &attributes);
+    if (xDisplay) {
+        QList<Window> windowsToRemove;
+        for (auto xorgWindowId : trackedWindows.keys()) {
+            XWindowAttributes attributes;
+            int status = XGetWindowAttributes(xDisplay, xorgWindowId, &attributes);
 
-        if (status == 0 || attributes.map_state == IsUnmapped) {
-            windowsToRemove.append(xorgWindowId);
+            if (status == 0 || attributes.map_state == IsUnmapped) {
+                windowsToRemove.append(xorgWindowId);
+            }
         }
-    }
 
-    for (auto xorgWindowId : windowsToRemove) {
-        QWindow *window = trackedWindows.value(xorgWindowId);
-        trackedWindows.remove(xorgWindowId);
+        for (auto xorgWindowId : windowsToRemove) {
+            QWindow *window = trackedWindows.value(xorgWindowId);
+            trackedWindows.remove(xorgWindowId);
 
-        if (windowTopBars.contains(xorgWindowId)) {
-            TopBar *topBar = windowTopBars.value(xorgWindowId);
-            topBar->hide();
-            topBar->deleteLater();
-            windowTopBars.remove(xorgWindowId);
+            if (windowTopBars.contains(xorgWindowId)) {
+                TopBar *topBar = windowTopBars.value(xorgWindowId);
+                topBar->hide();
+                topBar->deleteLater();
+                windowTopBars.remove(xorgWindowId);
+            }
         }
+    } else {
+        appendLog("ERR: Failed to open X Display ..");
     }
 }
 
