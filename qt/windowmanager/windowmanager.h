@@ -54,6 +54,7 @@ private:
     QTimer *windowCheckTimer;
     QMap<WId, CloseButton *> windowCloseButtons;
     CloseButton *closeButton;
+    QMap<WId, CloseButton*> closeButtons;
 
     void setupCloseButton(QWindow *window);
 };
