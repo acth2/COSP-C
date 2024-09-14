@@ -181,19 +181,17 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
                 appendLog(QString("Forcing window resize to 500x500: %1").arg(xorgWindowId));
 
                 QTimer::singleShot(200, this, [this, xorgWindowId, window]() {
+                    QRect newGeometry = window->geometry();
+                    appendLog(QString("Window size after resize: (%1, %2)")
+                        .arg(newGeometry.width()).arg(newGeometry.height()));
+
                     TopBar *topBar = new TopBar(window, this);
                     appendLog("TopBar created for window: " + QString::number(xorgWindowId));
                     windowTopBars.insert(xorgWindowId, topBar);
                     topBar->updatePosition();
                     appendLog("TopBar position updated for window: " + QString::number(xorgWindowId));
 
-                    CloseButton *closeButton = new CloseButton(window, this);
-                    closeButtons.insert(xorgWindowId, closeButton);
-                    closeButton->updatePosition();
-                    connect(closeButton, &CloseButton::closeRequested, [this, xorgWindowId]() {
-                        closeWindow(xorgWindowId);
-                    });
-                    appendLog("CloseButton created and positioned for window: " + QString::number(xorgWindowId));
+                    setupCloseButton(window);
                 });
             } else {
                 appendLog(QString("Window size after delay: (%1, %2)").arg(geometry.width()).arg(geometry.height()));
@@ -204,16 +202,24 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
                 topBar->updatePosition();
                 appendLog("TopBar position updated for window: " + QString::number(xorgWindowId));
 
-                CloseButton *closeButton = new CloseButton(window, this);
-                closeButtons.insert(xorgWindowId, closeButton);
-                closeButton->updatePosition();
-                connect(closeButton, &CloseButton::closeRequested, [this, xorgWindowId]() {
-                    closeWindow(xorgWindowId);
-                });
-                appendLog("CloseButton created and positioned for window: " + QString::number(xorgWindowId));
+                setupCloseButton(window);
             }
         });
     }
+}
+
+void WindowManager::setupCloseButton(QWindow *window) {
+    CloseButton *closeButton = new CloseButton(window, this);
+    connect(closeButton, &CloseButton::closeRequested, [this, window]() {
+        appendLog("Close button clicked for window: " + QString::number(window->winId()));
+        window->hide();
+        windowTopBars.remove(window->winId());
+        windowCloseButtons.remove(window->winId());
+    });
+
+    windowCloseButtons.insert(window->winId(), closeButton);
+    closeButton->updatePosition();
+    appendLog("CloseButton created and positioned for window: " + QString::number(window->winId()));
 }
 
 void WindowManager::closeWindow(WId xorgWindowId) {
