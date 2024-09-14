@@ -2,18 +2,18 @@
 #include <QPainter>
 #include <QScreen>
 #include <QApplication>
-#include <QFont>
+#include <QMouseEvent>
 
 TopBar::TopBar(QWindow *parentWindow, QWidget *parent)
-    : QWidget(parent), trackedWindow(parentWindow) {
+    : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
 
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
-    
+
     titleLabel = new QLabel(this);
     titleLabel->setAlignment(Qt::AlignCenter);
-    titleLabel->setStyleSheet("QLabel { color: white; font-size: 12px; font-weight: bold; }");
-    
+    titleLabel->setStyleSheet("QLabel { color: white; }");
+
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
     layout->setContentsMargins(10, 5, 10, 5);
@@ -45,4 +45,26 @@ void TopBar::paintEvent(QPaintEvent *event) {
     painter.setBrush(QColor(0, 0, 0, 150));
     painter.setPen(Qt::NoPen);
     painter.drawRect(rect());
+}
+
+void TopBar::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        isDragging = true;
+        dragStartPos = event->globalPos();
+        windowStartPos = trackedWindow->pos();
+    }
+}
+
+void TopBar::mouseMoveEvent(QMouseEvent *event) {
+    if (isDragging) {
+        QPoint delta = event->globalPos() - dragStartPos;
+        QPoint newWindowPos = windowStartPos + delta;
+        trackedWindow->setPosition(newWindowPos);
+    }
+}
+
+void TopBar::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        isDragging = false;
+    }
 }
