@@ -1,5 +1,6 @@
 #include "windowmanager.h"
 #include "win/topbar.h"
+#include "win/utils/closebutton.h"
 #include "userinteractright.h"
 #include "taskbar.h"
 #include <QApplication>
@@ -189,6 +190,11 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
                     windowTopBars.insert(xorgWindowId, topBar);
                     topBar->updatePosition();
                     appendLog("TopBar position updated for window: " + QString::number(xorgWindowId));
+
+                    CloseButton *closeButton = new CloseButton(window, this);
+                    closeButton->updatePosition();
+                    closeButtons.insert(xorgWindowId, closeButton);
+                    appendLog("CloseButton created and positioned for window: " + QString::number(xorgWindowId));
                 });
             } else {
                 appendLog(QString("Window size after delay: (%1, %2)").arg(geometry.width()).arg(geometry.height()));
@@ -198,6 +204,11 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
                 windowTopBars.insert(xorgWindowId, topBar);
                 topBar->updatePosition();
                 appendLog("TopBar position updated for window: " + QString::number(xorgWindowId));
+
+                CloseButton *closeButton = new CloseButton(window, this);
+                closeButton->updatePosition();
+                closeButtons.insert(xorgWindowId, closeButton);
+                appendLog("CloseButton created and positioned for window: " + QString::number(xorgWindowId));
             }
         });
     }
