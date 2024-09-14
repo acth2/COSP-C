@@ -20,6 +20,8 @@ protected:
 private:
     QWindow *trackedWindow;
     QLabel *titleLabel;
+    bool dragging = false;
+    QPoint lastMousePos;
 };
 
 #endif // TOPBAR_H
