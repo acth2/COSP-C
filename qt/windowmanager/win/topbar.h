@@ -24,7 +24,7 @@ protected:
 private:
     QWindow *trackedWindow;
     QLabel *titleLabel;
-    bool dragging = false;
+    bool isDragging = false;
     QPoint lastMousePos;
 };
 
