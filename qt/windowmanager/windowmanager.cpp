@@ -176,42 +176,20 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
             if (geometry.width() == 0 || geometry.height() == 0) {
                 appendLog("Still zero-size window after delay: " + QString::number(xorgWindowId));
-
                 window->setGeometry(50, 50, 500, 500);
-                appendLog(QString("Forcing window resize to 500x500: %1").arg(xorgWindowId));
-
-                QTimer::singleShot(200, this, [this, xorgWindowId, window]() {
-                    QRect newGeometry = window->geometry();
-                    appendLog(QString("Window size after resize: (%1, %2)")
-                        .arg(newGeometry.width()).arg(newGeometry.height()));
-
-                    TopBar *topBar = new TopBar(window, this);
-                    appendLog("TopBar created for window: " + QString::number(xorgWindowId));
-                    windowTopBars.insert(xorgWindowId, topBar);
-                    topBar->updatePosition();
-                    appendLog("TopBar position updated for window: " + QString::number(xorgWindowId));
-
-                    CloseButton *closeButton = new CloseButton(window, topBar);
-                    appendLog("CloseButton created for window: " + QString::number(xorgWindowId));
-                    closeButtons.insert(xorgWindowId, closeButton);
-                    closeButton->updatePosition();
-                    appendLog("CloseButton position updated for window: " + QString::number(xorgWindowId));
-                });
-            } else {
-                appendLog(QString("Window size after delay: (%1, %2)").arg(geometry.width()).arg(geometry.height()));
-
-                TopBar *topBar = new TopBar(window, this);
-                appendLog("TopBar created for window: " + QString::number(xorgWindowId));
-                windowTopBars.insert(xorgWindowId, topBar);
-                topBar->updatePosition();
-                appendLog("TopBar position updated for window: " + QString::number(xorgWindowId));
-
-                CloseButton *closeButton = new CloseButton(window, topBar);
-                appendLog("CloseButton created for window: " + QString::number(xorgWindowId));
-                closeButtons.insert(xorgWindowId, closeButton);
-                closeButton->updatePosition();
-                appendLog("CloseButton position updated for window: " + QString::number(xorgWindowId));
+                appendLog("Setting window to 500x500 dim.");
             }
+
+            TopBar *topBar = new TopBar(window, this);
+            windowTopBars.insert(xorgWindowId, topBar);
+
+            connect(topBar, &TopBar::closeRequested, [window, this, xorgWindowId]() {
+                appendLog("Window closed: " + QString::number(xorgWindowId));
+                window->hide();
+                windowTopBars.remove(xorgWindowId);
+            });
+
+            topBar->updatePosition();
         });
     }
 }
