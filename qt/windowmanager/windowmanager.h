@@ -28,7 +28,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void updateTaskbarPosition(QWindow* window);
     void trackWindowEvents(Window xorgWindowId);
-    void closeWindow(Window xorgWindowId);
+    void closeWindow(WId xorgWindowId);
     void centerWindow(QWindow *window);
 
 private slots:
