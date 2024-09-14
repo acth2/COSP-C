@@ -50,7 +50,6 @@ private:
     void listExistingWindows();
     QMap<WId, QWindow*> trackedWindows;
     QMap<WId, TopBar*> windowTopBars;
-    QMap<WId, CloseButton*> closeButtons;
     QMap<QWindow*, TaskBar*> windowTaskbars;
     QTimer *windowCheckTimer;
 };
