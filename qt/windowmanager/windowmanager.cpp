@@ -160,7 +160,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
             if (geometry.width() == 0 || geometry.height() == 0) {
                 appendLog("Still zero-size window after delay: " + QString::number(xorgWindowId));
 
-                window->setGeometry(0, 0, 500, 500);
+                window->setGeometry(50, 50, 500, 500);
                 appendLog(QString("Forcing window resize to 500x500: %1").arg(xorgWindowId));
 
                 QTimer::singleShot(200, this, [this, xorgWindowId, window]() {
