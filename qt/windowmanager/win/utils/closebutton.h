@@ -9,7 +9,8 @@ class CloseButton : public QWidget
     Q_OBJECT
 
 public:
-    CloseButton(QWindow *parentWindow, QWidget *parent = nullptr);
+    explicit CloseButton(QWindow *trackedWindow, QWidget *parent = nullptr);
+    void updatePosition();
 
 protected:
     void enterEvent(QEvent *event) override;
@@ -21,6 +22,10 @@ private:
 
 signals:
     void closeButtonClicked();
+    void closeRequested();
+
+private slots:
+    void handleButtonClicked();
 };
 
 #endif // CLOSEBUTTON_H
