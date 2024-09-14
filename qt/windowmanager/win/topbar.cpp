@@ -68,5 +68,6 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
 void TopBar::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         isDragging = false;
+        QApplication::restoreOverrideCursor();
     }
 }
