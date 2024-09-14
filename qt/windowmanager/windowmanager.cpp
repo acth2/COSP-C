@@ -59,7 +59,7 @@ WindowManager::WindowManager(QWidget *parent)
 Display *xDisplay;
 void WindowManager::listExistingWindows() {
     Atom netWmWindowType = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE", False);
-    Atom netWmWindowTypeDesktop = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
+    Atom netWmWindowTypeNormal = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", False);
 
     Window windowRoot = DefaultRootWindow(xDisplay);
     Window parent, *children;
@@ -78,7 +78,7 @@ void WindowManager::listExistingWindows() {
                                    &type, &format, &nItems, &bytesAfter, &data) == Success) {
                 if (data) {
                     Atom *atoms = (Atom *)data;
-                    if (atoms[0] == netWmWindowTypeDesktop) {
+                    if (atoms[0] != netWmWindowTypeNormal) {
                         XFree(data);
                         continue;
                     }
@@ -86,6 +86,20 @@ void WindowManager::listExistingWindows() {
                 }
             }
 
+            XWindowAttributes attributes;
+            if (XGetWindowAttributes(xDisplay, child, &attributes) == 0 || attributes.map_state != IsViewable) {
+                continue;
+            }
+
+            QRect windowGeometry(attributes.x, attributes.y, attributes.width, attributes.height);
+
+            if (windowGeometry.width() == 0 || windowGeometry.height() == 0) {
+                appendLog("Skipping non-graphical window (0x0 size): " + QString::number(child));
+                continue;
+            }
+
+            appendLog("Detected graphical X11 window: " + QString::number(child));
+            
             if (!trackedWindows.contains(child)) {
                 createAndTrackWindow(child);
             }
@@ -93,6 +107,7 @@ void WindowManager::listExistingWindows() {
         XFree(children);
     }
 }
+
 void WindowManager::checkForNewWindows() {
     xDisplay = XOpenDisplay(nullptr);
     listExistingWindows();
