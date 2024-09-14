@@ -14,8 +14,13 @@ TopBar::TopBar(QWindow *parentWindow, QWidget *parent)
     titleLabel->setAlignment(Qt::AlignCenter);
     titleLabel->setStyleSheet("QLabel { color: white; }");
 
+    closeButton = new QPushButton("✕", this);
+    closeButton->setStyleSheet("QPushButton { background-color: red; color: white; border: none; }");
+    connect(closeButton, &QPushButton::clicked, this, &TopBar::onCloseButtonClicked);
+
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
+    layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 5);
     setLayout(layout);
 
@@ -34,6 +39,12 @@ void TopBar::updatePosition() {
 
 void TopBar::updateTitle(const QString &title) {
     titleLabel->setText(title);
+}
+
+void TopBar::onCloseButtonClicked() {
+    if (trackedWindow) {
+        trackedWindow->close();
+    }
 }
 
 void TopBar::paintEvent(QPaintEvent *event) {
