@@ -25,6 +25,8 @@ private:
     QWindow *trackedWindow;
     QLabel *titleLabel;
     bool isDragging = false;
+    QPoint dragStartPos;
+    QPoint windowStartPos;
     QPoint lastMousePos;
 };
 
