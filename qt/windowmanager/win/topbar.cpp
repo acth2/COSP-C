@@ -3,6 +3,7 @@
 #include <QScreen>
 #include <QApplication>
 #include <QMouseEvent>
+#include "../windowmanager.h"
 
 TopBar::TopBar(QWindow *parentWindow, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
