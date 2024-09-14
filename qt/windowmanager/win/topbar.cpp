@@ -1,10 +1,7 @@
 #include "topbar.h"
-#include <QPainter>
-#include <QScreen>
 #include <QApplication>
 #include <QMouseEvent>
-#include <QDebug>
-#include "../windowmanager.h"
+#include <QPainter>
 
 TopBar::TopBar(QWindow *parentWindow, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
@@ -15,13 +12,18 @@ TopBar::TopBar(QWindow *parentWindow, QWidget *parent)
     titleLabel = new QLabel(this);
     titleLabel->setAlignment(Qt::AlignCenter);
     titleLabel->setStyleSheet("QLabel { color: white; }");
-        
+
+    closeButton = new QPushButton("✕", this);
+    closeButton->setFixedSize(30, 30);
+    connect(closeButton, &QPushButton::clicked, this, &TopBar::handleCloseButtonClicked);
+
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
     layout->addStretch();
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 5);
     setLayout(layout);
+    
     updatePosition();
 }
 
@@ -29,27 +31,19 @@ void TopBar::updatePosition() {
     if (trackedWindow) {
         QRect windowGeometry = trackedWindow->geometry();
         int topbarHeight = 30;
-        setGeometry(windowGeometry.x(), windowGeometry.bottom() - topbarHeight, windowGeometry.width(), topbarHeight);
-        setStyleSheet("background-color: rgba(0, 0, 0, 150);");
+        setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
         show();
-
-        if (closeButton) {
-            closeButton->updatePosition();
-        }
-    } else {
-        qDebug() << "Tracked window is null in updatePosition";
     }
 }
+
 void TopBar::updateTitle(const QString &title) {
     titleLabel->setText(title);
 }
 
 void TopBar::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
-
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-
     painter.setBrush(QColor(0, 0, 0, 150));
     painter.setPen(Qt::NoPen);
     painter.drawRect(rect());
@@ -62,13 +56,13 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
         windowStartPos = trackedWindow->geometry().topLeft();
     }
 }
+
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
     if (isDragging) {
         QPoint delta = event->globalPos() - dragStartPos;
         QPoint newWindowPos = windowStartPos + delta;
         QApplication::setOverrideCursor(Qt::ClosedHandCursor);
         trackedWindow->setGeometry(QRect(newWindowPos, trackedWindow->geometry().size()));
-
         updatePosition();
     }
 }
@@ -78,4 +72,8 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
         isDragging = false;
         QApplication::setOverrideCursor(Qt::ArrowCursor);
     }
+}
+
+void TopBar::handleCloseButtonClicked() {
+    emit closeRequested();
 }
