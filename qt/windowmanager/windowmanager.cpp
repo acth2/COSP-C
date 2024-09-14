@@ -191,7 +191,11 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
                     topBar->updatePosition();
                     appendLog("TopBar position updated for window: " + QString::number(xorgWindowId));
 
-                    setupCloseButton(window);
+                    CloseButton *closeButton = new CloseButton(window, topBar);
+                    appendLog("CloseButton created for window: " + QString::number(xorgWindowId));
+                    closeButtons.insert(xorgWindowId, closeButton);
+                    closeButton->updatePosition();
+                    appendLog("CloseButton position updated for window: " + QString::number(xorgWindowId));
                 });
             } else {
                 appendLog(QString("Window size after delay: (%1, %2)").arg(geometry.width()).arg(geometry.height()));
@@ -202,7 +206,11 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
                 topBar->updatePosition();
                 appendLog("TopBar position updated for window: " + QString::number(xorgWindowId));
 
-                setupCloseButton(window);
+                CloseButton *closeButton = new CloseButton(window, topBar);
+                appendLog("CloseButton created for window: " + QString::number(xorgWindowId));
+                closeButtons.insert(xorgWindowId, closeButton);
+                closeButton->updatePosition();
+                appendLog("CloseButton position updated for window: " + QString::number(xorgWindowId));
             }
         });
     }
