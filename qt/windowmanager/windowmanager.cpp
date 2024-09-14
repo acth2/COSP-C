@@ -181,10 +181,6 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
                 appendLog(QString("Forcing window resize to 500x500: %1").arg(xorgWindowId));
 
                 QTimer::singleShot(200, this, [this, xorgWindowId, window]() {
-                    QRect newGeometry = window->geometry();
-                    appendLog(QString("Window size after resize: (%1, %2)")
-                        .arg(newGeometry.width()).arg(newGeometry.height()));
-
                     TopBar *topBar = new TopBar(window, this);
                     appendLog("TopBar created for window: " + QString::number(xorgWindowId));
                     windowTopBars.insert(xorgWindowId, topBar);
@@ -192,8 +188,11 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
                     appendLog("TopBar position updated for window: " + QString::number(xorgWindowId));
 
                     CloseButton *closeButton = new CloseButton(window, this);
-                    closeButton->updatePosition();
                     closeButtons.insert(xorgWindowId, closeButton);
+                    closeButton->updatePosition();
+                    connect(closeButton, &CloseButton::closeRequested, [this, xorgWindowId]() {
+                        closeWindow(xorgWindowId);
+                    });
                     appendLog("CloseButton created and positioned for window: " + QString::number(xorgWindowId));
                 });
             } else {
@@ -206,14 +205,35 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
                 appendLog("TopBar position updated for window: " + QString::number(xorgWindowId));
 
                 CloseButton *closeButton = new CloseButton(window, this);
-                closeButton->updatePosition();
                 closeButtons.insert(xorgWindowId, closeButton);
+                closeButton->updatePosition();
+                connect(closeButton, &CloseButton::closeRequested, [this, xorgWindowId]() {
+                    closeWindow(xorgWindowId);
+                });
                 appendLog("CloseButton created and positioned for window: " + QString::number(xorgWindowId));
             }
         });
     }
 }
 
+void WindowManager::closeWindow(WId xorgWindowId) {
+    if (trackedWindows.contains(xorgWindowId)) {
+        trackedWindows[xorgWindowId]->close();
+        trackedWindows.remove(xorgWindowId);
+    }
+
+    if (windowTopBars.contains(xorgWindowId)) {
+        windowTopBars[xorgWindowId]->deleteLater();
+        windowTopBars.remove(xorgWindowId);
+    }
+
+    if (closeButtons.contains(xorgWindowId)) {
+        closeButtons[xorgWindowId]->deleteLater();
+        closeButtons.remove(xorgWindowId);
+    }
+
+    appendLog(QString("Closed and removed window: %1").arg(xorgWindowId));
+}
 
 void WindowManager::updateTaskbarPosition(QWindow *window) {
     if (windowTopBars.contains(window->winId())) {
