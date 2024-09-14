@@ -3,6 +3,7 @@
 
 #include <QtCore/qtextstream.h>
 #include "win/utils/closebutton.h"
+#include "win/topbar.h"
 #include <QWidget>
 #include <QLabel>
 #include <QSet>
@@ -11,7 +12,6 @@
 #include "taskbar.h"
 #include "konami_code_handler.h"
 #include "userinteractright.h"
-#include "win/topbar.h"
 #include <X11/Xlib.h>
 
 class WindowManager : public QWidget {
