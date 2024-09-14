@@ -29,6 +29,7 @@ private:
     QPoint dragStartPos;
     QPoint windowStartPos;
     QPoint lastMousePos;
+    CloseButton *closeButton;
 };
 
 #endif // TOPBAR_H
