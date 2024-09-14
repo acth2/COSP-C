@@ -191,21 +191,19 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 void WindowManager::updateTaskbarPosition(QWindow *window) {
     if (windowTopBars.contains(window->winId())) {
         TopBar *topBar = windowTopBars.value(window->winId());
-        QRect windowGeometry = window->geometry();
-        int topbarHeight = 30;
-
-        int topBarYPosition = windowGeometry.y() - topbarHeight;
-
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
 
-        if (topBarYPosition < screenGeometry.y()) {
-            window->setGeometry(windowGeometry.x(), screenGeometry.y() + topbarHeight,
-                                windowGeometry.width(), windowGeometry.height());
-        }
+        int windowWidth = window->width();
+        int windowHeight = window->height();
+        int topbarHeight = 30;
 
-        topBar->setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, 
-                            windowGeometry.width(), topbarHeight);
+        int centeredX = (screenGeometry.width() - windowWidth) / 2;
+        int centeredY = (screenGeometry.height() - windowHeight) / 2;
+
+        window->setGeometry(centeredX, centeredY, windowWidth, windowHeight);
+
+        topBar->setGeometry(centeredX, centeredY - topbarHeight, windowWidth, topbarHeight);
         topBar->show();
     }
 }
