@@ -193,13 +193,20 @@ void WindowManager::updateTaskbarPosition(QWindow *window) {
         TopBar *topBar = windowTopBars.value(window->winId());
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
-
+        
         int windowWidth = window->width();
         int windowHeight = window->height();
         int topbarHeight = 30;
 
         int centeredX = (screenGeometry.width() - windowWidth) / 2;
         int centeredY = (screenGeometry.height() - windowHeight) / 2;
+
+        if (windowWidth <= 0 || windowHeight <= 0) {
+            windowWidth = 800;
+            windowHeight = 600;
+            centeredX = (screenGeometry.width() - windowWidth) / 2;
+            centeredY = (screenGeometry.height() - windowHeight) / 2;
+        }
 
         window->setGeometry(centeredX, centeredY, windowWidth, windowHeight);
 
