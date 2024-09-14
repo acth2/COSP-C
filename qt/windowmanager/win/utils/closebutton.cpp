@@ -1,4 +1,5 @@
 #include "closebutton.h"
+#include "../../windowmanager.h"
 #include <QApplication>
 
 CloseButton::CloseButton(QWindow *trackedWindow, QWidget *parent)
@@ -19,5 +20,6 @@ void CloseButton::updatePosition() {
 }
 
 void CloseButton::handleButtonClicked() {
+    appendLog("Close button clicked");
     emit closeRequested();
 }
