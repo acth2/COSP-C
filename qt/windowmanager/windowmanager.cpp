@@ -126,14 +126,10 @@ void WindowManager::processX11Events() {
         XNextEvent(xDisplay, &event);
         if (event.type == ConfigureNotify) {
             XConfigureEvent xce = event.xconfigure;
+
             if (trackedWindows.contains(xce.window)) {
                 QWindow *window = trackedWindows.value(xce.window);
-                
                 QRect windowGeometry = window->geometry();
-                if (windowGeometry.y() < 30) {
-                    appendLog("Topbar is out of view, resetting window position.");
-                    window->setY(30);
-                }
 
                 appendLog(QString("Window resized/moved: (%1, %2), Size: (%3x%4)")
                     .arg(xce.x).arg(xce.y)
@@ -145,6 +141,7 @@ void WindowManager::processX11Events() {
     }
 }
 
+
 void WindowManager::toggleConsole() {
     isConsoleVisible = !isConsoleVisible;
     logLabel->setVisible(isConsoleVisible);
@@ -154,28 +151,26 @@ void WindowManager::toggleConsole() {
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     QWindow *window = QWindow::fromWinId(xorgWindowId);
     if (window) {
-        QRect geometry = window->geometry();
-        
-        if (geometry.width() == 0 && geometry.height() == 0) {
-            appendLog("Ignoring window with size 0,0: " + QString::number(xorgWindowId));
-            return;
-        }
-
-        if (trackedWindows.contains(xorgWindowId)) {
-            appendLog("Window already tracked: " + QString::number(xorgWindowId));
-            return;
-        }
-
         trackedWindows.insert(xorgWindowId, window);
-        appendLog("Tracking new window: " + QString::number(xorgWindowId));
+        appendLog(QString("Detected new window: %1").arg(xorgWindowId));
 
-        TopBar *topBar = new TopBar(window, this);
-        topBar->updateTitle("Window " + QString::number(xorgWindowId));
-        windowTopBars.insert(xorgWindowId, topBar);
-        topBar->updatePosition();
+        QTimer::singleShot(500, this, [this, xorgWindowId, window]() {
+            QRect geometry = window->geometry();
+
+            if (geometry.width() == 0 || geometry.height() == 0) {
+                appendLog("Still zero-size window after delay: " + QString::number(xorgWindowId));
+            } else {
+                appendLog(QString("Window size after delay: (%1, %2)").arg(geometry.width()).arg(geometry.height()));
+                
+                TopBar *topBar = new TopBar(window, this);
+                appendLog("TopBar created for window: " + QString::number(xorgWindowId));
+                windowTopBars.insert(xorgWindowId, topBar);
+                topBar->updatePosition();
+                appendLog("TopBar position updated for window: " + QString::number(xorgWindowId));
+            }
+        });
     }
 }
-
 void WindowManager::updateTaskbarPosition(QWindow *window) {
     if (windowTopBars.contains(window->winId())) {
         TopBar *topBar = windowTopBars.value(window->winId());
