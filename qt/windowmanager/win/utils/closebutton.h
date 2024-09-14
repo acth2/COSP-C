@@ -1,8 +1,11 @@
 #ifndef CLOSEBUTTON_H
 #define CLOSEBUTTON_H
 
+#include <QtCore/qtextstream.h>
 #include <QWidget>
 #include <QWindow>
+#include <QMap>
+#include <X11/Xlib.h>
 
 class CloseButton : public QWidget
 {
@@ -26,6 +29,7 @@ signals:
 
 private slots:
     void handleButtonClicked();
+    QMap<WId, CloseButton*> closeButtons;
 };
 
 #endif // CLOSEBUTTON_H
