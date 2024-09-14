@@ -15,15 +15,17 @@ TopBar::TopBar(QWindow *parentWindow, QWidget *parent)
     titleLabel->setStyleSheet("QLabel { color: white; }");
 
     closeButton = new QPushButton("✕", this);
-    closeButton->setStyleSheet("QPushButton { background-color: red; color: white; border: none; }");
+    closeButton->setFixedSize(20, 20);
+    closeButton->setStyleSheet("QPushButton { background-color: darkred; color: white; border: none; border-radius: 10px; }"
+                               "QPushButton:hover { background-color: red; }");
     connect(closeButton, &QPushButton::clicked, this, &TopBar::onCloseButtonClicked);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
+    layout->addStretch();
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 5);
     setLayout(layout);
-
     updatePosition();
 }
 
