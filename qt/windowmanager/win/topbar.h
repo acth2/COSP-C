@@ -1,6 +1,7 @@
 #ifndef TOPBAR_H
 #define TOPBAR_H
 
+#include "utils/closebutton.h"
 #include <QWidget>
 #include <QWindow>
 #include <QLabel>
