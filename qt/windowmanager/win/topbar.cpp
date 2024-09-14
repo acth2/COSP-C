@@ -3,6 +3,7 @@
 #include <QScreen>
 #include <QApplication>
 #include <QMouseEvent>
+#include <QDebug>
 #include "../windowmanager.h"
 
 TopBar::TopBar(QWindow *parentWindow, QWidget *parent)
