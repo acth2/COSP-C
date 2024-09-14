@@ -6,6 +6,7 @@ CloseButton::CloseButton(QWindow *trackedWindow, QWidget *parent)
 
     setText("✕");
     setFixedSize(30, 30);
+
     connect(this, &QPushButton::clicked, this, &CloseButton::handleButtonClicked);
 }
 
