@@ -52,6 +52,9 @@ private:
     QMap<WId, TopBar*> windowTopBars;
     QMap<QWindow*, TaskBar*> windowTaskbars;
     QTimer *windowCheckTimer;
+    QMap<WId, CloseButton *> windowCloseButtons;
+
+    void setupCloseButton(QWindow *window);
 };
 
 #endif // WINDOWMANAGER_H
