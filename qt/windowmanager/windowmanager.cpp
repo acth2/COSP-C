@@ -233,9 +233,12 @@ void WindowManager::closeWindow(WId xorgWindowId) {
         windowTopBars.remove(xorgWindowId);
     }
 
-    if (closeButton.contains(xorgWindowId)) {
-        closeButton[xorgWindowId]->deleteLater();
-        closeButton.remove(xorgWindowId);
+    if (closeButton) {
+        closeButton->deleteLater();
+        closeButton = nullptr;
+        appendLog("Close button removed for window: " + QString::number(xorgWindowId));
+    } else {
+        appendLog("No Close button to remove for window: " + QString::number(xorgWindowId));
     }
 
     appendLog(QString("Closed and removed window: %1").arg(xorgWindowId));
