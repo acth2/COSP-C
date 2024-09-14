@@ -2,6 +2,7 @@
 #define WINDOWMANAGER_H
 
 #include <QtCore/qtextstream.h>
+#include "win/utils/closebutton.h"
 #include <QWidget>
 #include <QLabel>
 #include <QSet>
