@@ -12,7 +12,7 @@ TopBar::TopBar(QWindow *parentWindow, QWidget *parent)
     
     titleLabel = new QLabel(this);
     titleLabel->setAlignment(Qt::AlignCenter);
-    titleLabel->setStyleSheet("QLabel { color: white; }");
+    titleLabel->setStyleSheet("QLabel { color: white; font-size: 12px; font-weight: bold; }");
     
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
@@ -22,23 +22,12 @@ TopBar::TopBar(QWindow *parentWindow, QWidget *parent)
     updatePosition();
 }
 
-/*
 void TopBar::updatePosition() {
     if (trackedWindow) {
         QRect windowGeometry = trackedWindow->geometry();
         int topbarHeight = 30;
         setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
-        show();
-    }
-}
-*/
-
-void TopBar::updatePosition() {
-    if (trackedWindow) {
-        QRect windowGeometry = trackedWindow->geometry();
-        int topbarHeight = 30;
-        setGeometry(windowGeometry.x(), windowGeometry.bottom() - topbarHeight, windowGeometry.width(), topbarHeight);
-        setStyleSheet("background-color: rgba(0, 0, 255, 150);"); // Blue background for visibility
+        setStyleSheet("background-color: rgba(0, 0, 0, 150);");
         show();
     }
 }
