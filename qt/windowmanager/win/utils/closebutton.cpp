@@ -1,4 +1,5 @@
 #include "closebutton.h"
+#include <QApplication>
 
 CloseButton::CloseButton(QWindow *trackedWindow, QWidget *parent)
     : QPushButton(parent), trackedWindow(trackedWindow) {
