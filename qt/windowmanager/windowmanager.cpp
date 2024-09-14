@@ -139,19 +139,25 @@ void WindowManager::toggleConsole() {
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     QWindow *window = QWindow::fromWinId(xorgWindowId);
     if (window) {
-        trackedWindows.insert(xorgWindowId, window);
-
         QRect geometry = window->geometry();
-        appendLog(QString("Detected new window: %1").arg(xorgWindowId));
-        appendLog(QString("Window position: (%1, %2)").arg(geometry.x()).arg(geometry.y()));
-        appendLog(QString("Window size: (%1, %2)").arg(geometry.width()).arg(geometry.height()));
+        
+        if (geometry.width() == 0 && geometry.height() == 0) {
+            appendLog("Ignoring window with size 0,0: " + QString::number(xorgWindowId));
+            return;
+        }
+
+        if (trackedWindows.contains(xorgWindowId)) {
+            appendLog("Window already tracked: " + QString::number(xorgWindowId));
+            return;
+        }
+
+        trackedWindows.insert(xorgWindowId, window);
+        appendLog("Tracking new window: " + QString::number(xorgWindowId));
 
         TopBar *topBar = new TopBar(window, this);
-        appendLog("TopBar created for window: " + QString::number(xorgWindowId));
         topBar->updateTitle("Window " + QString::number(xorgWindowId));
         windowTopBars.insert(xorgWindowId, topBar);
         topBar->updatePosition();
-        appendLog("TopBar position updated for window: " + QString::number(xorgWindowId));
     }
 }
 
@@ -244,7 +250,6 @@ void WindowManager::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     QPixmap backgroundPixmap(backgroundImagePath);
     if (!backgroundPixmap.isNull()) {
-        appendLog("Background loaded!");
         painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
     }
 }
