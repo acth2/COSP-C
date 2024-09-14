@@ -22,6 +22,9 @@ public:
 protected:
     void paintEvent(QPaintEvent *event) override;
 
+private slots:
+    void onCloseButtonClicked();
+
 private:
     QWindow *trackedWindow;
     QLabel *titleLabel;
