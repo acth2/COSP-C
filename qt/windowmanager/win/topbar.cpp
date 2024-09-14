@@ -18,8 +18,11 @@ TopBar::TopBar(QWindow *parentWindow, QWidget *parent)
     closeButton->setFixedSize(20, 20);
     closeButton->setStyleSheet("QPushButton { background-color: darkred; color: white; border: none; border-radius: 10px; }"
                                "QPushButton:hover { background-color: red; }");
+        
+    closeButton->setEnabled(true);
+    closeButton->setFocusPolicy(Qt::NoFocus);
     connect(closeButton, &QPushButton::clicked, this, &TopBar::onCloseButtonClicked);
-
+        
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
     layout->addStretch();
