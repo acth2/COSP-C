@@ -54,12 +54,14 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
         windowStartPos = trackedWindow->geometry().topLeft();
     }
 }
-
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
     if (isDragging) {
         QPoint delta = event->globalPos() - dragStartPos;
         QPoint newWindowPos = windowStartPos + delta;
-        trackedWindow->setPosition(newWindowPos);
+        QApplication::setOverrideCursor(Qt::ClosedHandCursor);
+        trackedWindow->setGeometry(QRect(newWindowPos, trackedWindow->geometry().size()));
+
+        updatePosition();
     }
 }
 
