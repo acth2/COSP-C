@@ -3,6 +3,7 @@
 
 #include <QtCore/qtextstream.h>
 #include <QWidget>
+#include <QPushButton>
 #include <QWindow>
 #include <QMap>
 #include <X11/Xlib.h>
