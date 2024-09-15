@@ -188,9 +188,16 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
             topBar->updatePosition();
 
             connect(topBar, &TopBar::closeRequested, [window, this, xorgWindowId]() {
-                appendLog("INFO: Window closed: " + QString::number(xorgWindowId));
+                if (!window) {
+                    appendLog("ERROR: Window is nullptr.");
+                    return;
+                }
+
+                appendLog("INFO: Close request received for window ID: " + QString::number(xorgWindowId));
                 window->hide();
+                appendLog("INFO: Hiding window ID: " + QString::number(xorgWindowId));
                 windowTopBars.remove(xorgWindowId);
+                appendLog("INFO: TopBar removed for window ID: " + QString::number(xorgWindowId));
             });
         });
     }
