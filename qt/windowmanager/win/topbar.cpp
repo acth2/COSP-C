@@ -1,10 +1,14 @@
 #include "topbar.h"
+#include <QtCore/qtextstream.h>
 #include "../windowmanager.h"
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPushButton>
 #include <QProcess>
 #include <QPainter>
+#include <QString>
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
@@ -47,6 +51,35 @@ void TopBar::updatePosition() {
         setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
         show();
     }
+}
+
+
+pid_t getProcessIdFromWindow(WId windowId) {
+    Display *display = XOpenDisplay(nullptr);
+    if (!display) {
+        return -1;
+    }
+
+    pid_t pid = -1;
+    Atom atom = XInternAtom(display, "_NET_WM_PID", False);
+    if (atom != None) {
+        Atom type;
+        int format;
+        unsigned long nitems, bytesafter;
+        unsigned char *data = nullptr;
+
+        int status = XGetWindowProperty(display, windowId, atom, 0, sizeof(pid_t), False, XA_CARDINAL,
+                                        &type, &format, &nitems, &bytesafter, &data);
+        if (status == Success && data) {
+            if (format == 32 && nitems >= 1) {
+                pid = static_cast<pid_t>(reinterpret_cast<pid_t*>(data)[0]);
+            }
+            XFree(data);
+        }
+    }
+
+    XCloseDisplay(display);
+    return pid;
 }
 
 void TopBar::updateTitle(const QString &title) {
