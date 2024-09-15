@@ -190,12 +190,18 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
                 appendLog("INFO: Close button clicked. Attempting to close window: " + QString::number(xorgWindowId));
 
             if (!window) {
-                appendLog("ERROR: Window is null or already deleted.");
+                appendLog("ERR: Window is null or already deleted.");
                 return;
             }
 
             window->hide();
 
+
+            if (!trackedWindows.contains(xorgWindowId)) {
+                appendLog("ERR: Window with xorgWindowId " + QString::number(xorgWindowId) + " not found.");
+                return;
+            }
+                
             if (windowTopBars.contains(xorgWindowId)) {
                 TopBar* topBar = windowTopBars[xorgWindowId];
                 if (topBar) {
