@@ -28,6 +28,9 @@ signals:
 protected:
     void paintEvent(QPaintEvent *event) override;
 
+private slots:
+    void closeTrackedWindow();
+
 private:
     QWindow *trackedWindow;
     QLabel *titleLabel;
@@ -36,8 +39,6 @@ private:
     QPoint dragStartPos;
     QPoint windowStartPos;
     WindowManager *windowManager;
-
-    void closeTrackedWindow();
 };
 
 #endif // TOPBAR_H
