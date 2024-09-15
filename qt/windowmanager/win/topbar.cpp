@@ -21,7 +21,7 @@ TopBar::TopBar(QWindow *parentWindow, QWidget *parent)
     layout->addWidget(titleLabel);
     layout->addStretch();
     layout->addWidget(closeButton);
-    layout->setContentsMargins(10, 5, 10, 5);
+    layout->setContentsMargins(10, 5, 10, 2);
     setLayout(layout);
     
     updatePosition();
@@ -30,7 +30,7 @@ TopBar::TopBar(QWindow *parentWindow, QWidget *parent)
 void TopBar::updatePosition() {
     if (trackedWindow) {
         QRect windowGeometry = trackedWindow->geometry();
-        int topbarHeight = 33;
+        int topbarHeight = 36;
         setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
         show();
     }
