@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPushButton>
+#include <QProcess>
 #include <QPainter>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
@@ -19,8 +20,11 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     closeButton->setFixedSize(30, 30);
     connect(closeButton, &QPushButton::clicked, [this]() {
         if (trackedWindow) {
-            if (windowManager) {
-                windowManager->closeWindow(trackedWindow->winId());
+            pid_t pid = getProcessIdFromWindow(trackedWindow->winId());
+        
+            if (pid > 0) {
+                QString command = QString("kill -9 %1").arg(pid);
+                QProcess::execute(command);
             }
             this->close();
         }
