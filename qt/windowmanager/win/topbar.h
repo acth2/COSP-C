@@ -6,12 +6,13 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QHBoxLayout>
+#include "windowmanager.h"
 
 class TopBar : public QWidget {
     Q_OBJECT
 
 public:
-    explicit TopBar(QWindow *parentWindow, QWidget *parent = nullptr);
+    explicit TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent = nullptr);
     void updatePosition();
     void updateTitle(const QString &title);
     void mousePressEvent(QMouseEvent *event) override;
@@ -34,6 +35,7 @@ private:
     bool isDragging = false;
     QPoint dragStartPos;
     QPoint windowStartPos;
+    WindowManager *windowManager;
 };
 
 #endif // TOPBAR_H
