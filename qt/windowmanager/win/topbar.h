@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QHBoxLayout>
+#include <QProcess>
 #include "../windowmanager.h"
 
 class WindowManager;
