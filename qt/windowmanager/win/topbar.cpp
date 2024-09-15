@@ -2,6 +2,7 @@
 #include "../windowmanager.h"
 #include <QApplication>
 #include <QMouseEvent>
+#include <QPushButton>
 #include <QPainter>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
