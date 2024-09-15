@@ -156,6 +156,7 @@ void UserInteractRight::button1Clicked() {
     connect(xtermProcess, &QProcess::started, []() {
         qDebug() << "xterm started successfully";
     });
+    close();
 }
 
 void UserInteractRight::closeIfClickedOutside(QMouseEvent *event) {
