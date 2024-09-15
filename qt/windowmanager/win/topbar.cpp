@@ -1,4 +1,5 @@
 #include "topbar.h"
+#include "../windowmanager.h"
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
