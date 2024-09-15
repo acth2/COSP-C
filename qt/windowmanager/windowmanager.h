@@ -22,6 +22,7 @@ public:
     explicit WindowManager(QWidget *parent = nullptr);
     void appendLog(const QString &message);
     QMap<WId, TopBar*> windowTopBars;
+    void closeWindow(WId xorgWindowId);
 
 protected:
     bool event(QEvent *event) override;
@@ -30,7 +31,6 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void updateTaskbarPosition(QWindow* window);
     void trackWindowEvents(Window xorgWindowId);
-    void closeWindow(WId xorgWindowId);
     void centerWindow(QWindow *window);
     void removeCloseButton(WId windowId);
 
