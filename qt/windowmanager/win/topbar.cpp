@@ -20,7 +20,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 
     closeButton = new QPushButton("✕", this);
     closeButton->setFixedSize(30, 30);
-    connect(closeButton, &QPushButton::clicked, &TopBar::closeTrackedWindow);
+    connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
