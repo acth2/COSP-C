@@ -215,10 +215,46 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 void WindowManager::setupCloseButton(QWindow *window) {
     CloseButton *closeButton = new CloseButton(window, this);
     connect(closeButton, &CloseButton::closeRequested, [this, window]() {
-        appendLog("INFO: Close button clicked for window: " + QString::number(window->winId()));
-        window->hide();
-        windowTopBars.remove(window->winId());
-        windowCloseButtons.remove(window->winId());
+    appendLog("INFO: Close button clicked. Attempting to close window: " + QString::number(xorgWindowId));
+
+    if (!window) {
+        appendLog("ERROR: Window is null or already deleted.");
+        return;
+    }
+
+    window->hide();
+
+    if (windowTopBars.contains(xorgWindowId)) {
+        TopBar* topBar = windowTopBars[xorgWindowId];
+        if (topBar) {
+            topBar->hide();
+            appendLog("INFO: Top bar hidden.");
+            delete topBar;
+            appendLog("INFO: Top bar deleted.");
+        } else {
+            appendLog("WARNING: Top bar is null or invalid.");
+        }
+        windowTopBars.remove(xorgWindowId);
+    } else {
+        appendLog("WARNING: No top bar found for windowId: " + QString::number(xorgWindowId));
+    }
+
+    if (windowCloseButtons.contains(xorgWindowId)) {
+        CloseButton* closeButton = windowCloseButtons[xorgWindowId];
+        if (closeButton) {
+            closeButton->hide();
+            appendLog("INFO: Close button hidden.");
+            delete closeButton;
+            appendLog("INFO: Close button deleted.");
+        } else {
+            appendLog("WARNING: Close button is null or invalid.");
+        }
+        windowCloseButtons.remove(xorgWindowId);
+    } else {
+        appendLog("WARNING: No close button found for windowId: " + QString::number(xorgWindowId));
+    }
+
+    appendLog("INFO: Successfully closed window: " + QString::number(xorgWindowId));
     });
 
     windowCloseButtons.insert(window->winId(), closeButton);
