@@ -14,6 +14,8 @@
 #include "userinteractright.h"
 #include <X11/Xlib.h>
 
+class TopBar;
+
 class WindowManager : public QWidget {
     Q_OBJECT
 
