@@ -188,52 +188,9 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
             topBar->updatePosition();
 
             connect(topBar, &TopBar::closeRequested, [window, this, xorgWindowId]() {
-                appendLog("INFO: Close button clicked. Attempting to close window: " + QString::number(xorgWindowId));
-
-            if (!window) {
-                appendLog("ERR: Window is null or already deleted.");
-                return;
-            }
-
-            window->hide();
-
-
-            if (!trackedWindows.contains(xorgWindowId)) {
-                appendLog("ERR: Window with xorgWindowId " + QString::number(xorgWindowId) + " not found.");
-                return;
-            }
-                
-            if (windowTopBars.contains(xorgWindowId)) {
-                TopBar* topBar = windowTopBars[xorgWindowId];
-                if (topBar) {
-                    topBar->hide();
-                    appendLog("INFO: TopBar hidden.");
-                    delete topBar;
-                    appendLog("INFO: TopBar deleted.");
-                } else {
-                    appendLog("WARNING: TopBar is null or invalid.");
-                }
+                appendLog("INFO: Window closed: " + QString::number(xorgWindowId));
+                window->hide();
                 windowTopBars.remove(xorgWindowId);
-            } else {
-                appendLog("WARNING: No topBar found for windowId: " + QString::number(xorgWindowId));
-            }
-
-            if (windowCloseButtons.contains(xorgWindowId)) {
-                CloseButton* closeButton = windowCloseButtons[xorgWindowId];
-                if (closeButton) {
-                    closeButton->hide();
-                    appendLog("INFO: Close button hidden.");
-                    delete closeButton;
-                    appendLog("INFO: Close button deleted.");
-                } else {
-                    appendLog("WARNING: Close button is null or invalid.");
-                }
-                windowCloseButtons.remove(xorgWindowId);
-            } else {
-                appendLog("WARNING: No close button found for windowId: " + QString::number(xorgWindowId));
-            }
-
-            appendLog("INFO: Successfully closed window: " + QString::number(xorgWindowId));
             });
         });
     }
