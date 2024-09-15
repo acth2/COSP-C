@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QProcess>
 #include <QPainter>
+#include <QObject>
 #include <QString>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
