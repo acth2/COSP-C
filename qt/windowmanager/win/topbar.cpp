@@ -78,6 +78,8 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
 void TopBar::handleCloseButtonClicked() {
     if (windowManager) {
         windowManager->appendLog("WARN: CLOSE REQUEST EMITTED");
+    } else {
+        windowManager->appendLog("ERR: WindowManager is null");
     }
     emit closeRequested();
 }
