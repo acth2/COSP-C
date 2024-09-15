@@ -27,9 +27,6 @@ signals:
 protected:
     void paintEvent(QPaintEvent *event) override;
 
-private slots:
-    void handleCloseButtonClicked();
-
 private:
     QWindow *trackedWindow;
     QLabel *titleLabel;
