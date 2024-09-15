@@ -19,7 +19,9 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     closeButton->setFixedSize(30, 30);
     connect(closeButton, &QPushButton::clicked, [this]() {
         if (trackedWindow) {
-            trackedWindow->hide();
+            if (windowManager) {
+                windowManager->closeWindow(trackedWindow->winId());
+            }
             this->close();
         }
     });
@@ -78,17 +80,5 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         isDragging = false;
         QApplication::setOverrideCursor(Qt::ArrowCursor);
-    }
-}
-
-void TopBar::handleCloseButtonClicked() {
-    if (trackedWindow) {
-        if (windowManager) {
-
-            windowManager->windowTopBars.remove(trackedWindow->winId());
-            trackedWindow->close();
-
-            delete this; 
-        }
     }
 }
