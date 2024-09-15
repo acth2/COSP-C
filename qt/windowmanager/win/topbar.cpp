@@ -80,7 +80,6 @@ void TopBar::handleCloseButtonClicked() {
         if (windowManager) {
             windowManager->appendLog("WARN: CLOSE REQUEST EMITTED");
 
-            windowManager->removeCloseButton(trackedWindow->winId());
             windowManager->windowTopBars.remove(trackedWindow->winId());
             trackedWindow->close();
 
