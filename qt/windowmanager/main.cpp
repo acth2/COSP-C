@@ -1,11 +1,29 @@
-#include <QApplication>
-#include <QScreen>
 #include "windowmanager.h"
 #include "taskbar.h"
+#include <QApplication>
+#include <QScreen>
+#include <QFile>
+#include <QTextStream>
+#include <QDateTime>
+#include <QtMessageHandler>
+
+QFile logFile;
+
+void customLogOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
+    QTextStream out(&logFile);
+    out << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz ")
+        << msg << endl;
+}
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
+
+    logFile.setFileName("/path/to/your/logfile.txt");
+    logFile.open(QIODevice::Append | QIODevice::Text);
+
+    qInstallMessageHandler(customLogOutput);
+    
     WindowManager manager;
     TaskBar taskBar;
 
