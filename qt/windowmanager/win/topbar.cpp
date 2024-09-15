@@ -4,7 +4,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 
-TopBar::TopBar(QWindow *parentWindow, QWidget *parent)
+TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
 
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
