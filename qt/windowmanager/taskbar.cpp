@@ -111,6 +111,7 @@ void TaskBar::showPowerMenu() {
     } else {
         QWidget *overlay = new QWidget(nullptr);
         overlay->setStyleSheet("background: rgba(0, 0, 0, 0.7);");
+        overlay->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::WindowDoesNotAcceptFocus);
         overlay->setGeometry(QApplication::primaryScreen()->geometry());
         overlay->show();
 
