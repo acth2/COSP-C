@@ -10,6 +10,7 @@
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
+    trackedWindow->installEventFilter(this);
 
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -30,6 +31,16 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     setLayout(layout);
     
     updatePosition();
+}
+
+bool TopBar::eventFilter(QObject *obj, QEvent *event) {
+    if (obj == trackedWindow && event->type() == QEvent::MouseButtonPress) {
+        if (trackedWindow) {
+            trackedWindow->requestActivate();
+        }
+        return true;
+    }
+    return QWidget::eventFilter(obj, event);
 }
 
 void TopBar::updatePosition() {
@@ -59,6 +70,10 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
         isDragging = true;
         dragStartPos = event->globalPos();
         windowStartPos = trackedWindow->geometry().topLeft();
+
+        if (trackedWindow) {
+            trackedWindow->requestActivate();
+        }
     }
 }
 
