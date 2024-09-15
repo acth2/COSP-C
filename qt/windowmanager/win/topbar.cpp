@@ -10,6 +10,18 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
+#ifdef None
+#undef None
+#endif
+
+#ifdef Status
+#undef Status
+#endif
+
+#ifdef Success
+#undef Success
+#endif
+
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
 
