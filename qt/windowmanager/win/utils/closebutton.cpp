@@ -20,6 +20,5 @@ void CloseButton::updatePosition() {
 }
 
 void CloseButton::handleButtonClicked() {
-    appendLog("Close button clicked");
     emit closeRequested();
 }
