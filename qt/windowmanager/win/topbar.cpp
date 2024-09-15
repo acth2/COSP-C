@@ -21,7 +21,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     closeButton->setFixedSize(30, 30);
     connect(closeButton, &QPushButton::clicked, [this]() {
         if (trackedWindow) {
-            parentWindow->destroy();
+            trackedWindow->hide();
             this->close();
         }
     });
