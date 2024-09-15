@@ -30,7 +30,6 @@ protected:
     void trackWindowEvents(Window xorgWindowId);
     void closeWindow(WId xorgWindowId);
     void centerWindow(QWindow *window);
-    void removeCloseButton(WId windowId);
 
 private slots:
     void checkForNewWindows();
@@ -55,7 +54,6 @@ private:
     QTimer *windowCheckTimer;
     QMap<WId, CloseButton *> windowCloseButtons;
     CloseButton *closeButton;
-    QMap<WId, CloseButton*> closeButtons;
 
     void setupCloseButton(QWindow *window);
 };
