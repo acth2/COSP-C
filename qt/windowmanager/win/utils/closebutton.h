@@ -2,6 +2,7 @@
 #define CLOSEBUTTON_H
 
 #include <QPushButton>
+#include "../../windowmanager.h"
 #include <QWindow>
 
 class CloseButton : public QPushButton {
