@@ -189,20 +189,16 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     }
 }
 
-void WindowManager::closeWindow(WId xorgWindowId) {
-    if (trackedWindows.contains(xorgWindowId)) {
-        trackedWindows[xorgWindowId]->close();
-        trackedWindows.remove(xorgWindowId);
+void WindowManager::closeWindow(WId windowId) {
+    if (trackedWindows.contains(windowId)) {
+        QWindow* window = trackedWindows.value(windowId);
+        if (window) {
+            window->hide();
+            trackedWindows.remove(windowId);
+            appendLog("INFO: Window killed");
+        }
     }
-
-    if (windowTopBars.contains(xorgWindowId)) {
-        windowTopBars[xorgWindowId]->deleteLater();
-        windowTopBars.remove(xorgWindowId);
-    }
-
-    appendLog(QString("INFO: Closed and removed window: %1").arg(xorgWindowId));
 }
-
 void WindowManager::updateTaskbarPosition(QWindow *window) {
     if (windowTopBars.contains(window->winId())) {
         TopBar *topBar = windowTopBars.value(window->winId());
