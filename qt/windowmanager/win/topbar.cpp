@@ -19,12 +19,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 
     closeButton = new QPushButton("✕", this);
     closeButton->setFixedSize(30, 30);
-    connect(closeButton, &QPushButton::clicked, [this]() {
-        if (trackedWindow) {
-            trackedWindow->hide();
-            this->close();
-        }
-    });
+    connect(closeButton, &QPushButton::clicked, TopBar::closeTrackedWindow());
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
@@ -80,5 +75,23 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         isDragging = false;
         QApplication::setOverrideCursor(Qt::ArrowCursor);
+    }
+}
+
+void TopBar::closeTrackedWindow() {
+    if (trackedWindow) {
+        WId windowId = trackedWindow->winId();
+
+        QProcess process;
+        process.start("xdotool getwindowpid " + QString::number(windowId));
+        process.waitForFinished();
+        QString pidString = process.readAllStandardOutput().trimmed();
+        bool ok;
+        qint64 pid = pidString.toLongLong(&ok);
+
+        if (ok && pid > 0) {
+            QProcess::execute("kill -9 " + QString::number(pid));
+        }
+        this->close();
     }
 }
