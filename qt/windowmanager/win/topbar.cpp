@@ -76,10 +76,19 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void TopBar::handleCloseButtonClicked() {
-    if (windowManager) {
-        windowManager->appendLog("WARN: CLOSE REQUEST EMITTED");
+    if (trackedWindow) {
+        if (windowManager) {
+            windowManager->appendLog("WARN: CLOSE REQUEST EMITTED");
+
+            windowManager->removeCloseButton(trackedWindow->winId());
+            windowManager->windowTopBars.remove(trackedWindow->winId());
+            trackedWindow->close();
+
+            delete this; 
+        } else {
+            windowManager->appendLog("ERR: WindowManager is null");
+        }
     } else {
-        windowManager->appendLog("ERR: WindowManager is null");
+            windowManager->appendLog("ERR: The Track window is not detected. CLOSE REQUEST NOT EMITTED");
     }
-    emit closeRequested();
 }
