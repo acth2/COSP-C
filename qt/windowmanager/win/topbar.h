@@ -8,6 +8,8 @@
 #include <QHBoxLayout>
 #include "windowmanager.h"
 
+class WindowManager;
+
 class TopBar : public QWidget {
     Q_OBJECT
 
