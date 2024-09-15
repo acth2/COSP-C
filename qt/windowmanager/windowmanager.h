@@ -21,6 +21,7 @@ class WindowManager : public QWidget {
 public:
     explicit WindowManager(QWidget *parent = nullptr);
     void appendLog(const QString &message);
+    QMap<WId, TopBar*> windowTopBars;
 
 protected:
     bool event(QEvent *event) override;
@@ -51,7 +52,6 @@ private:
     void createAndTrackWindow(WId xorgWindowId);
     void listExistingWindows();
     QMap<WId, QWindow*> trackedWindows;
-    QMap<WId, TopBar*> windowTopBars;
     QMap<QWindow*, TaskBar*> windowTaskbars;
     QTimer *windowCheckTimer;
 
