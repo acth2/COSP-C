@@ -37,7 +37,7 @@ private:
     QPoint windowStartPos;
     WindowManager *windowManager;
 
-    pid_t getProcessIdFromWindow(WId windowId);
+    void closeTrackedWindow();
 };
 
 #endif // TOPBAR_H
