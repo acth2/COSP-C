@@ -1,6 +1,7 @@
 #ifndef TOPBAR_H
 #define TOPBAR_H
 
+#include <QtCore/qtextstream.h>
 #include <QWidget>
 #include <QWindow>
 #include <QLabel>
@@ -8,6 +9,8 @@
 #include <QHBoxLayout>
 #include <QProcess>
 #include "../windowmanager.h"
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
 
 class WindowManager;
 
@@ -36,6 +39,8 @@ private:
     QPoint dragStartPos;
     QPoint windowStartPos;
     WindowManager *windowManager;
+
+    pid_t getProcessIdFromWindow(WId windowId);
 };
 
 #endif // TOPBAR_H
