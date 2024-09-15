@@ -189,21 +189,6 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     }
 }
 
-void WindowManager::setupCloseButton(QWindow *window) {
-    CloseButton *closeButton = new CloseButton(window, this);
-    windowCloseButtons.insert(window->winId(), closeButton);
-    closeButton->updatePosition();
-    appendLog("INFO: CloseButton created and positioned for window: " + QString::number(window->winId()));
-}
-
-void WindowManager::removeCloseButton(WId windowId) {
-    if (windowCloseButtons.contains(windowId)) {
-        CloseButton *closeButton = windowCloseButtons.value(windowId);
-        closeButton->deleteLater();
-        windowCloseButtons.remove(windowId);
-    }
-}
-
 void WindowManager::closeWindow(WId xorgWindowId) {
     if (trackedWindows.contains(xorgWindowId)) {
         trackedWindows[xorgWindowId]->close();
@@ -213,14 +198,6 @@ void WindowManager::closeWindow(WId xorgWindowId) {
     if (windowTopBars.contains(xorgWindowId)) {
         windowTopBars[xorgWindowId]->deleteLater();
         windowTopBars.remove(xorgWindowId);
-    }
-
-    if (closeButton) {
-        closeButton->deleteLater();
-        closeButton = nullptr;
-        appendLog("INFO: Close button removed for window: " + QString::number(xorgWindowId));
-    } else {
-        appendLog("WARN: No Close button to remove for window: " + QString::number(xorgWindowId));
     }
 
     appendLog(QString("INFO: Closed and removed window: %1").arg(xorgWindowId));
@@ -308,7 +285,6 @@ void WindowManager::cleanUpClosedWindows() {
             windowTopBars.remove(xorgWindowId);
         }
 
-        removeCloseButton(xorgWindowId);
     }
 }
 
