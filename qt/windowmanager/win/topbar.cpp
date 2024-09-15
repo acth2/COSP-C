@@ -30,7 +30,7 @@ TopBar::TopBar(QWindow *parentWindow, QWidget *parent)
 void TopBar::updatePosition() {
     if (trackedWindow) {
         QRect windowGeometry = trackedWindow->geometry();
-        int topbarHeight = 30;
+        int topbarHeight = 33;
         setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
         show();
     }
