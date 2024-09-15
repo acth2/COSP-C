@@ -180,16 +180,34 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
                 appendLog("INFO: Setting window to 500x500 dim.");
             }
 
+            
             TopBar *topBar = new TopBar(window, this);
             windowTopBars.insert(xorgWindowId, topBar);
+            
+            topBar->updatePosition();
 
             connect(topBar, &TopBar::closeRequested, [window, this, xorgWindowId]() {
                 appendLog("INFO: Window closed: " + QString::number(xorgWindowId));
                 window->hide();
-                windowTopBars.remove(xorgWindowId);
-            });
 
-            topBar->updatePosition();
+                if (windowTopBars.contains(xorgWindowId)) {
+                    TopBar* topBar = windowTopBars[xorgWindowId];
+                    if (topBar) {
+                        topBar->hide();
+                        delete topBar;
+                    }
+                    windowTopBars.remove(xorgWindowId);
+                }
+
+                if (windowCloseButtons.contains(xorgWindowId)) {
+                    CloseButton* closeButton = windowCloseButtons[xorgWindowId];
+                    if (closeButton) {
+                        closeButton->hide();
+                        delete closeButton;
+                    }
+                    windowCloseButtons.remove(xorgWindowId);
+                }
+            });
         });
     }
 }
