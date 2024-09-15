@@ -7,6 +7,8 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QProcess>
+#include <QEvent>
+#include <QObject>
 #include "../windowmanager.h"
 
 class WindowManager;
@@ -21,6 +23,7 @@ public:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    void eventFilter(QObject *obj, QEvent *event) override;
 
 signals:
     void closeRequested();
