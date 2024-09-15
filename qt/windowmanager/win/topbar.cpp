@@ -88,6 +88,6 @@ void TopBar::handleCloseButtonClicked() {
             windowManager->appendLog("ERR: WindowManager is null");
         }
     } else {
-            windowManager->appendLog("ERR: The Track window is not detected. CLOSE REQUEST NOT EMITTED");
+            windowManager->appendLog("ERR: The tracked window is not detected. CLOSE REQUEST NOT EMITTED");
     }
 }
