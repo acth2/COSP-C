@@ -41,6 +41,10 @@ QWindow* TopBar::getTrackedWindow() const {
     return trackedWindow;
 }
 
+QLabel* TopBar::getPopup() const {
+    return popup;
+}
+
 bool TopBar::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
@@ -49,7 +53,7 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
             getTrackedWindow()->requestActivate();
         }
 
-        if (popup->isVisible() && !popup->geometry().contains(mouseEvent->globalPos())) {
+        if (getPopup()->isVisible() && !getPopup()->geometry().contains(mouseEvent->globalPos())) {
             closePopup();
             return true;
         }
