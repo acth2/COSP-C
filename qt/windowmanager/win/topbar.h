@@ -37,6 +37,7 @@ private slots:
     void closeTrackedWindow();
 
 private:
+    QLabel *popup;
     QLabel *titleLabel;
     QPushButton *closeButton;
     bool isDragging = false;
