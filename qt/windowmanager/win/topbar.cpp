@@ -62,12 +62,14 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
 }
 
 void TopBar::mouseReleaseEvent(QMouseEvent *event) {
-    if (trackedWindow) {
-        QMouseEvent *forwardedEvent = new QMouseEvent(
-            event->type(), event->pos(), event->button(), event->buttons(), event->modifiers());
-        QApplication::sendEvent(trackedWindow, forwardedEvent);
+    if (event->button() == Qt::LeftButton) {
+        isDragging = false;
+        QApplication::setOverrideCursor(Qt::ArrowCursor);
+
+        if (trackedWindow) {
+            trackedWindow->requestActivate();
+        }
     }
-    QWidget::mouseReleaseEvent(event);
 }
 
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
@@ -80,9 +82,11 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
 }
 
 bool TopBar::eventFilter(QObject *obj, QEvent *event) {
-    if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::KeyPress) {
-        if (popup->isVisible()) {
-            closePopup();
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+
+        if (trackedWindow && this->geometry().contains(mouseEvent->pos())) {
+            trackedWindow->requestActivate();
             return true;
         }
     }
