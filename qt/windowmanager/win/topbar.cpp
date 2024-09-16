@@ -19,6 +19,10 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     titleLabel->setAlignment(Qt::AlignCenter);
     titleLabel->setStyleSheet("QLabel { color: white; }");
 
+    popup = new QLabel(this);
+    popup->setFixedSize(500, 500);
+    popup->setStyleSheet("background-color: #333;");
+        
     closeButton = new QPushButton("✕", this);
     closeButton->setFixedSize(30, 30);
     connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
