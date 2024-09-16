@@ -111,6 +111,12 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
     }
 }
 
+void TopBar::closePopup() {
+    if (popup->isVisible()) {
+        popup->hide();
+    }
+}
+
 void TopBar::closeTrackedWindow() {
     if (trackedWindow) {
         WId windowId = trackedWindow->winId();
