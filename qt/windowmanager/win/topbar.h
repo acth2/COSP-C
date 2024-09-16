@@ -24,7 +24,10 @@ public:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
-    QWindow* getTrackedWindow() const;
+
+    QWindow *getTrackedWindow() const;
+    QLabel* getPopup() const;
+    void closePopup();
     QWindow *trackedWindow;
 
 signals:
