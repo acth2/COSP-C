@@ -24,6 +24,7 @@ public:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
+    QWindow *trackedWindow;
 
 signals:
     void closeRequested();
@@ -35,7 +36,6 @@ private slots:
     void closeTrackedWindow();
 
 private:
-    QWindow *trackedWindow;
     QLabel *titleLabel;
     QPushButton *closeButton;
     bool isDragging = false;
