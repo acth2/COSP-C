@@ -5,26 +5,25 @@
 #include <QPushButton>
 #include <QProcess>
 #include <QPainter>
-#include <QObject>
-#include <QString>
+#include <QWindow>
+#include <QWidget>
+#include <QScreen>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
     
-    trackedWindow->installEventFilter(this);
+    if (!trackedWindow && parentWindow) {
+        WId x11WindowId = parentWindow->winId();
+        trackedWindow = QWindow::fromWinId(x11WindowId);
+        trackedWindow->setFlags(Qt::Window);
+    }
 
-    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::WindowDoesNotAcceptFocus);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
     setAttribute(Qt::WA_TranslucentBackground);
-    setAttribute(Qt::WA_NoSystemBackground);
-    setAttribute(Qt::WA_TransparentForMouseEvents, true);
 
     titleLabel = new QLabel(this);
     titleLabel->setAlignment(Qt::AlignCenter);
     titleLabel->setStyleSheet("QLabel { color: white; }");
-
-    popup = new QLabel(this);
-    popup->setFixedSize(500, 500);
-    popup->setStyleSheet("background-color: #333;");
 
     closeButton = new QPushButton("✕", this);
     closeButton->setFixedSize(30, 30);
@@ -36,22 +35,12 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
     setLayout(layout);
-    
+
     updatePosition();
 }
 
 QWindow* TopBar::getTrackedWindow() const {
     return trackedWindow;
-}
-
-QLabel* TopBar::getPopup() const {
-    return popup;
-}
-
-void TopBar::closePopup() {
-    if (popup->isVisible()) {
-        popup->hide();
-    }
 }
 
 void TopBar::updatePosition() {
@@ -63,27 +52,6 @@ void TopBar::updatePosition() {
     }
 }
 
-void TopBar::updateTitle(const QString &title) {
-    titleLabel->setText(title);
-}
-
-bool TopBar::eventFilter(QObject *obj, QEvent *event) {
-    if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-
-        if (getTrackedWindow()) {
-            getTrackedWindow()->requestActivate();
-            getTrackedWindow()->raise();
-        }
-
-        if (getPopup()->isVisible() && !getPopup()->geometry().contains(mouseEvent->globalPos())) {
-            closePopup();
-            return true;
-        }
-    }
-    return QWidget::eventFilter(obj, event);
-}
-
 void TopBar::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         isDragging = true;
@@ -92,7 +60,6 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
 
         if (trackedWindow) {
             trackedWindow->requestActivate();
-            trackedWindow->raise();
         }
     }
 }
@@ -114,19 +81,10 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
     }
 }
 
-void TopBar::paintEvent(QPaintEvent *event) {
-    Q_UNUSED(event);
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setBrush(QColor(0, 0, 0, 150));
-    painter.setPen(Qt::NoPen);
-    painter.drawRect(rect());
-}
-
 void TopBar::closeTrackedWindow() {
     if (trackedWindow) {
         WId windowId = trackedWindow->winId();
-
+        
         QProcess process;
         process.start("xdotool getwindowpid " + QString::number(windowId));
         process.waitForFinished();
@@ -139,4 +97,24 @@ void TopBar::closeTrackedWindow() {
         }
         this->close();
     }
+}
+
+bool TopBar::eventFilter(QObject *obj, QEvent *event) {
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+
+        if (getTrackedWindow()) {
+            getTrackedWindow()->requestActivate();
+        }
+    }
+    return QWidget::eventFilter(obj, event);
+}
+
+void TopBar::paintEvent(QPaintEvent *event) {
+    Q_UNUSED(event);
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setBrush(QColor(0, 0, 0, 150));
+    painter.setPen(Qt::NoPen);
+    painter.drawRect(rect());
 }
