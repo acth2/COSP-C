@@ -10,10 +10,13 @@
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
+    
     trackedWindow->installEventFilter(this);
 
-    setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::WindowDoesNotAcceptFocus);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::WindowDoesNotAcceptFocus);
     setAttribute(Qt::WA_TranslucentBackground);
+    setAttribute(Qt::WA_NoSystemBackground);
+    setAttribute(Qt::WA_TransparentForMouseEvents, true);
 
     titleLabel = new QLabel(this);
     titleLabel->setAlignment(Qt::AlignCenter);
@@ -22,7 +25,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     popup = new QLabel(this);
     popup->setFixedSize(500, 500);
     popup->setStyleSheet("background-color: #333;");
-        
+
     closeButton = new QPushButton("✕", this);
     closeButton->setFixedSize(30, 30);
     connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
@@ -45,21 +48,12 @@ QLabel* TopBar::getPopup() const {
     return popup;
 }
 
-bool TopBar::eventFilter(QObject *obj, QEvent *event) {
-    if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-
-        if (getTrackedWindow()) {
-            getTrackedWindow()->requestActivate();
-        }
-
-        if (getPopup()->isVisible() && !getPopup()->geometry().contains(mouseEvent->globalPos())) {
-            closePopup();
-            return true;
-        }
+void TopBar::closePopup() {
+    if (popup->isVisible()) {
+        popup->hide();
     }
-    return QWidget::eventFilter(obj, event);
 }
+
 void TopBar::updatePosition() {
     if (trackedWindow) {
         QRect windowGeometry = trackedWindow->geometry();
@@ -73,13 +67,21 @@ void TopBar::updateTitle(const QString &title) {
     titleLabel->setText(title);
 }
 
-void TopBar::paintEvent(QPaintEvent *event) {
-    Q_UNUSED(event);
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setBrush(QColor(0, 0, 0, 150));
-    painter.setPen(Qt::NoPen);
-    painter.drawRect(rect());
+bool TopBar::eventFilter(QObject *obj, QEvent *event) {
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+
+        if (getTrackedWindow()) {
+            getTrackedWindow()->requestActivate();
+            getTrackedWindow()->raise();
+        }
+
+        if (getPopup()->isVisible() && !getPopup()->geometry().contains(mouseEvent->globalPos())) {
+            closePopup();
+            return true;
+        }
+    }
+    return QWidget::eventFilter(obj, event);
 }
 
 void TopBar::mousePressEvent(QMouseEvent *event) {
@@ -90,6 +92,7 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
 
         if (trackedWindow) {
             trackedWindow->requestActivate();
+            trackedWindow->raise();
         }
     }
 }
@@ -111,10 +114,13 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
     }
 }
 
-void TopBar::closePopup() {
-    if (popup->isVisible()) {
-        popup->hide();
-    }
+void TopBar::paintEvent(QPaintEvent *event) {
+    Q_UNUSED(event);
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setBrush(QColor(0, 0, 0, 150));
+    painter.setPen(Qt::NoPen);
+    painter.drawRect(rect());
 }
 
 void TopBar::closeTrackedWindow() {
