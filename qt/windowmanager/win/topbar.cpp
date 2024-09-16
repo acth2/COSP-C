@@ -33,21 +33,25 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     updatePosition();
 }
 
-bool TaskBar::eventFilter(QObject *object, QEvent *event) {
+QWindow* TopBar::getTrackedWindow() const {
+    return trackedWindow;
+}
+
+bool TopBar::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+
+        if (getTrackedWindow()) {
+            getTrackedWindow()->requestActivate();
+        }
+
         if (popup->isVisible() && !popup->geometry().contains(mouseEvent->globalPos())) {
             closePopup();
             return true;
-        } else {
-            if (trackedWindow) {
-                trackedWindow->requestActivate();
-            }
         }
     }
-    return QWidget::eventFilter(object, event);
+    return QWidget::eventFilter(obj, event);
 }
-
 void TopBar::updatePosition() {
     if (trackedWindow) {
         QRect windowGeometry = trackedWindow->geometry();
