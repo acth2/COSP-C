@@ -1,19 +1,26 @@
 #include "x11windowcontainer.h"
-#include <QX11Info>
-#include <QX11EmbedContainer>
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
 
 X11WindowContainer::X11WindowContainer(QWindow *window, QWidget *parent)
     : QWidget(parent), x11Window(window) {
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(Qt::FramelessWindowHint | Qt::Window);
-    setGeometry(window->geometry());
-    QX11Info::setDisplay(QX11Info::display());
 
-    QWidget *embedWidget = new QX11EmbedContainer(this);
-    embedWidget->setAttribute(Qt::WA_TranslucentBackground);
-    embedWidget->setGeometry(this->geometry());
+    Display *display = XOpenDisplay(nullptr);
+    if (!display) {
+        qWarning() << "Cannot open display";
+        return;
+    }
 
-    embedWidget->winId();
+    x11WindowId = window->winId();
+    Window rootWindow = DefaultRootWindow(display);
+
+    XReparentWindow(display, x11WindowId, winId(), 0, 0);
+    XMapWindow(display, x11WindowId);
+    XFlush(display);
+
+    XCloseDisplay(display);
 }
 
 void X11WindowContainer::updateWindowGeometry() {
