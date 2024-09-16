@@ -9,7 +9,7 @@
 #include <QProcess>
 #include <QEvent>
 #include <QObject>
-#include "../windowmanager.h"
+#include <QMouseEvent>
 
 class WindowManager;
 
@@ -20,15 +20,13 @@ public:
     explicit TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent = nullptr);
     void updatePosition();
     void updateTitle(const QString &title);
+    QWindow* getTrackedWindow() const;
+    QLabel* getPopup() const;
+    void closePopup();
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
-
-    QWindow *getTrackedWindow() const;
-    QLabel* getPopup() const;
-    void closePopup();
-    QWindow *trackedWindow;
 
 signals:
     void closeRequested();
@@ -40,13 +38,14 @@ private slots:
     void closeTrackedWindow();
 
 private:
-    QLabel *popup;
     QLabel *titleLabel;
+    QLabel *popup;
     QPushButton *closeButton;
     bool isDragging = false;
     QPoint dragStartPos;
     QPoint windowStartPos;
     WindowManager *windowManager;
+    QWindow *trackedWindow;
 };
 
 #endif // TOPBAR_H
