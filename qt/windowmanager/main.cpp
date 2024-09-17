@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
 
-    logFile.setFileName("/path/to/your/logfile.txt");
+    logFile.setFileName("/usr/cydra/logs/cwm.log");
     logFile.open(QIODevice::Append | QIODevice::Text);
 
     qInstallMessageHandler(customLogOutput);
