@@ -175,37 +175,35 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         QWidget *containerWidget = new QWidget(this);
         QVBoxLayout *layout = new QVBoxLayout(containerWidget);
 
-        int defaultWidth = 500;
-        int defaultHeight = 500;
-        int topbarHeight = 30;
+        containerWidget->setMinimumSize(800, 600);
 
         QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
 
         QRect geometry = x11Window->geometry();
+        int topbarHeight = 30;
+
         if (geometry.isValid()) {
             containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
         } else {
-            containerWidget->setGeometry(50, 80, defaultWidth, defaultHeight + topbarHeight);
+            containerWidget->setGeometry(50, 80, 800, 600 + topbarHeight);
         }
-
         layout->addWidget(windowWidget);
         containerWidget->setLayout(layout);
+
         containerWidget->show();
 
         TopBar *topBar = new TopBar(x11Window, this);
         windowTopBars.insert(xorgWindowId, topBar);
 
-        topBar->setGeometry(containerWidget->x(), containerWidget->y() - topbarHeight, containerWidget->width(), topbarHeight);
+        topBar->setGeometry(geometry.x(), geometry.y() - topbarHeight, geometry.width(), topbarHeight);
+        topBar->updatePosition();
         topBar->show();
-
-        updateTaskbarPosition(x11Window);
         
         appendLog(QString("INFO: TopBar created for window: %1").arg(xorgWindowId));
     } else {
         appendLog("ERR: Failed to create a window from X11 ID");
     }
 }
-
 
 void WindowManager::closeWindow(WId windowId) {
     if (trackedWindows.contains(windowId)) {
@@ -217,7 +215,6 @@ void WindowManager::closeWindow(WId windowId) {
         }
     }
 }
-
 void WindowManager::updateTaskbarPosition(QWindow *window) {
     if (windowTopBars.contains(window->winId())) {
         TopBar *topBar = windowTopBars.value(window->winId());
@@ -239,6 +236,7 @@ void WindowManager::updateTaskbarPosition(QWindow *window) {
         }
 
         window->setGeometry(centeredX, centeredY, windowWidth, windowHeight);
+
         topBar->setGeometry(centeredX, centeredY - topbarHeight, windowWidth, topbarHeight);
         topBar->show();
     }
