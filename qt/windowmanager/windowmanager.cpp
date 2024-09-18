@@ -311,15 +311,14 @@ void WindowManager::setupUI() {
     int y = (screenGeometry.height() - this->height()) / 2;
     this->move(x, y);
 
-    QWidget *centralWidget = new QWidget(this);
-    QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
-
-    QWidget *topBar = new QWidget(this);
+    topBar = new QWidget(this);
     topBar->setFixedHeight(30);
+    topBar->setGeometry(0, 0, this->width(), 30);
+
     QHBoxLayout *topBarLayout = new QHBoxLayout(topBar);
 
-    QPushButton *closeButton = new QPushButton("✕", topBar);
-    QPushButton *fullscreenButton = new QPushButton("❐", topBar);
+    closeButton = new QPushButton("✕", topBar);
+    fullscreenButton = new QPushButton("❐", topBar);
     topBarLayout->addWidget(fullscreenButton);
     topBarLayout->addStretch();
     topBarLayout->addWidget(closeButton);
@@ -327,11 +326,14 @@ void WindowManager::setupUI() {
     connect(closeButton, &QPushButton::clicked, this, &WindowManager::close);
     connect(fullscreenButton, &QPushButton::clicked, this, &WindowManager::toggleFullScreen);
 
-    mainLayout->addWidget(topBar);
+    connect(this, &WindowManager::resized, this, &WindowManager::updateTopBar);
 
-    setCentralWidget(centralWidget);
     this->show();
     topBar->show();
+}
+
+void WindowManager::updateTopBar() {
+    topBar->setGeometry(0, 0, this->width(), 30);
 }
 
 void WindowManager::keyPressEvent(QKeyEvent *event) {
