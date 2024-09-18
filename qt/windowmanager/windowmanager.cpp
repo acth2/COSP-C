@@ -27,7 +27,6 @@ WindowManager::WindowManager(QWidget *parent)
       userInteractRightWidget(nullptr),
       backgroundImagePath("/usr/cydra/backgrounds/current.png") {
 
-    setupUI();
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
