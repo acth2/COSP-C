@@ -336,3 +336,9 @@ void WindowManager::paintEvent(QPaintEvent *event) {
         painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
     }
 }
+
+WindowManager::~WindowManager() {
+    if (xDisplay) {
+        XCloseDisplay(xDisplay);
+    }
+}
