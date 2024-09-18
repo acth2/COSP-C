@@ -313,6 +313,8 @@ void WindowManager::cleanUpClosedWindows() {
         }
 
     }
+
+    XDestroyWindow(xDisplay, xorgWindowId);
 }
 
 void WindowManager::keyPressEvent(QKeyEvent *event) {
