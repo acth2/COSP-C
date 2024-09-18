@@ -187,9 +187,10 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         QVBoxLayout *layout = new QVBoxLayout(containerWidget);
 
         containerWidget->setMinimumSize(800, 600);
-        containerWidget->setStyleSheet("QWidget { border: 5px solid darkblue; }");
 
         QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
+
+        windowWidget->setStyleSheet("QWidget { border: 2px solid darkblue; }");
 
         QRect geometry = x11Window->geometry();
         int topbarHeight = 30;
@@ -210,7 +211,17 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         topBar->setGeometry(geometry.x(), geometry.y() - topbarHeight, geometry.width(), topbarHeight);
         topBar->updatePosition();
         topBar->show();
-        
+
+        connect(x11Window, &QWindow::visibilityChanged, [this, containerWidget, xorgWindowId](bool visible) {
+            if (!visible) {
+                containerWidget->close();
+                if (windowTopBars.contains(xorgWindowId)) {
+                    windowTopBars[xorgWindowId]->close();
+                    windowTopBars.remove(xorgWindowId);
+                }
+            }
+        });
+
         appendLog(QString("INFO: TopBar created for window: %1").arg(xorgWindowId));
     } else {
         appendLog("ERR: Failed to create a window from X11 ID");
