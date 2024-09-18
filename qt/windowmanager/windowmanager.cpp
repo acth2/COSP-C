@@ -120,6 +120,15 @@ void WindowManager::checkForNewWindows() {
         listExistingWindows();
         processX11Events(); 
         cleanUpClosedWindows();
+        
+        Window activeWindow;
+        int revert;
+        XGetInputFocus(xDisplay, &activeWindow, &revert);
+
+        if (!trackedWindows.contains(activeWindow)) {
+            appendLog("INFO: Focusing back to Qt window");
+            this->activateWindow();
+        }
     } else {
         appendLog("ERR: Failed to open X Display ..");
     }
@@ -270,11 +279,17 @@ bool WindowManager::event(QEvent *qtEvent) {
             }
             userInteractRightWidget->move(mouseEvent->globalPos());
             userInteractRightWidget->show();
+        } else if (mouseEvent->button() == Qt::LeftButton) {
+            if (!this->geometry().contains(mouseEvent->pos())) {
+                appendLog("INFO: Clicking outside Qt window, refocusing");
+                this->activateWindow();
+            }
         }
     }
 
     return QWidget::event(qtEvent);
 }
+
 void WindowManager::cleanUpClosedWindows() {
     QList<WId> windowsToRemove;
     for (auto xorgWindowId : trackedWindows.keys()) {
