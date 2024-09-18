@@ -56,6 +56,9 @@ private:
     QTimer *windowCheckTimer;
 
     void setupCloseButton(QWindow *window);
+
+    void setupUI();
+    void updateTopBar();
 };
 
 #endif // WINDOWMANAGER_H
