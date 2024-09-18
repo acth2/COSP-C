@@ -164,6 +164,7 @@ void WindowManager::toggleConsole() {
     logLabel->setVisible(isConsoleVisible);
     appendLog("Welcome into the DEBUG window (Where my nightmare comes true), Press ESC to exit it");
 }
+
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
     if (x11Window) {
@@ -172,11 +173,19 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
         QWidget *containerWidget = new QWidget(this);
         QVBoxLayout *layout = new QVBoxLayout(containerWidget);
+
+        containerWidget->setMinimumSize(800, 600);
+
         QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
 
         QRect geometry = x11Window->geometry();
         int topbarHeight = 30;
-        containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
+
+        if (geometry.isValid()) {
+            containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
+        } else {
+            containerWidget->setGeometry(50, 50, 800, 600 + topbarHeight);
+        }
         layout->addWidget(windowWidget);
         containerWidget->setLayout(layout);
 
