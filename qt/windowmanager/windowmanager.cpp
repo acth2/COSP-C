@@ -186,7 +186,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         if (geometry.isValid()) {
             containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
         } else {
-            containerWidget->setGeometry(50, 50, 800, 600 + topbarHeight);
+            containerWidget->setGeometry(50, 80, 800, 600 + topbarHeight);
         }
         layout->addWidget(windowWidget);
         containerWidget->setLayout(layout);
@@ -195,9 +195,9 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
         TopBar *topBar = new TopBar(x11Window, this);
         windowTopBars.insert(xorgWindowId, topBar);
-        topBar->updatePosition();
 
         topBar->setGeometry(geometry.x(), geometry.y() - topbarHeight, geometry.width(), topbarHeight);
+        topBar->updatePosition();
         topBar->show();
         
         appendLog(QString("INFO: TopBar created for window: %1").arg(xorgWindowId));
@@ -299,45 +299,6 @@ void WindowManager::cleanUpClosedWindows() {
         }
 
     }
-}
-
-void WindowManager::setupUI() {
-    QSize defaultSize(500, 500);
-    this->resize(defaultSize);
-
-    QScreen *screen = QApplication::primaryScreen();
-    QRect screenGeometry = screen->geometry();
-
-    int x = (screenGeometry.width() - this->width()) / 2;
-    int y = (screenGeometry.height() - this->height()) / 2;
-    this->move(x, y);
-
-    tb = new QWidget(this);
-    tb->setFixedHeight(30);
-    tb->setGeometry(0, 0, this->width(), 30);
-
-    QHBoxLayout *topBarLayout = new QHBoxLayout(tb);
-
-    closeButton = new QPushButton("✕", tb);
-    fullscreenButton = new QPushButton("❐", tb);
-    topBarLayout->addWidget(fullscreenButton);
-    topBarLayout->addStretch();
-    topBarLayout->addWidget(closeButton);
-
-    connect(closeButton, &QPushButton::clicked, this, &WindowManager::close);
-    connect(fullscreenButton, &QPushButton::clicked, this, &WindowManager::showFullScreen);
-
-    this->show();
-    tb->show();
-}
-
-void WindowManager::resizeEvent(QResizeEvent *event) {
-    QMainWindow::resizeEvent(event);
-    updateTopBar();
-}
-
-void WindowManager::updateTopBar() {
-    tb->setGeometry(0, 0, this->width(), 30);
 }
 
 void WindowManager::keyPressEvent(QKeyEvent *event) {
