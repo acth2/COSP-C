@@ -26,6 +26,7 @@ WindowManager::WindowManager(QWidget *parent)
       userInteractRightWidget(nullptr),
       backgroundImagePath("/usr/cydra/backgrounds/current.png") {
 
+    setupUI();
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
@@ -297,6 +298,40 @@ void WindowManager::cleanUpClosedWindows() {
         }
 
     }
+}
+
+void WindowManager::setupUI() {
+    QSize defaultSize(500, 500);
+    this->resize(defaultSize);
+
+    QScreen *screen = QApplication::primaryScreen();
+    QRect screenGeometry = screen->geometry();
+
+    int x = (screenGeometry.width() - this->width()) / 2;
+    int y = (screenGeometry.height() - this->height()) / 2;
+    this->move(x, y);
+
+    QWidget *centralWidget = new QWidget(this);
+    QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
+
+    QWidget *topBar = new QWidget(this);
+    topBar->setFixedHeight(30);
+    QHBoxLayout *topBarLayout = new QHBoxLayout(topBar);
+
+    QPushButton *closeButton = new QPushButton("✕", topBar);
+    QPushButton *fullscreenButton = new QPushButton("❐", topBar);
+    topBarLayout->addWidget(fullscreenButton);
+    topBarLayout->addStretch();
+    topBarLayout->addWidget(closeButton);
+
+    connect(closeButton, &QPushButton::clicked, this, &WindowManager::close);
+    connect(fullscreenButton, &QPushButton::clicked, this, &WindowManager::toggleFullScreen);
+
+    mainLayout->addWidget(topBar);
+
+    setCentralWidget(centralWidget);
+    this->show();
+    topBar->show();
 }
 
 void WindowManager::keyPressEvent(QKeyEvent *event) {
