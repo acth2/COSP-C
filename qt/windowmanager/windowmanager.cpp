@@ -14,6 +14,7 @@
 #include <QProcess>
 #include <QThread>
 #include <QWindow>
+#include <QResizeEvent>
 #include <QDateTime>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -324,12 +325,15 @@ void WindowManager::setupUI() {
     topBarLayout->addWidget(closeButton);
 
     connect(closeButton, &QPushButton::clicked, this, &WindowManager::close);
-    connect(fullscreenButton, &QPushButton::clicked, this, &WindowManager::toggleFullScreen);
-
-    connect(this, &WindowManager::resized, this, &WindowManager::updateTopBar);
+    connect(fullscreenButton, &QPushButton::clicked, this, &WindowManager::showFullScreen);
 
     this->show();
     topBar->show();
+}
+
+void WindowManager::resizeEvent(QResizeEvent *event) {
+    QMainWindow::resizeEvent(event);
+    updateTopBar();
 }
 
 void WindowManager::updateTopBar() {
