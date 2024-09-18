@@ -45,6 +45,7 @@ private:
     QString backgroundImagePath;
     QLabel *logLabel;
     QSet<QString> loggedMessages;
+    QWidget TopBar;
     KonamiCodeHandler *konamiCodeHandler;
     bool isConsoleVisible;
     UserInteractRight *userInteractRightWidget;
@@ -56,6 +57,13 @@ private:
     QTimer *windowCheckTimer;
 
     void setupCloseButton(QWindow *window);
+
+    void setupUI();
+    void updateTopBar();
+
+    QWidget *tb;
+    QPushButton *closeButton;
+    QPushButton *fullscreenButton;
 };
 
 #endif // WINDOWMANAGER_H
