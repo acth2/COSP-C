@@ -45,6 +45,7 @@ private:
     QString backgroundImagePath;
     QLabel *logLabel;
     QSet<QString> loggedMessages;
+    QWidget TopBar;
     KonamiCodeHandler *konamiCodeHandler;
     bool isConsoleVisible;
     UserInteractRight *userInteractRightWidget;
@@ -59,6 +60,10 @@ private:
 
     void setupUI();
     void updateTopBar();
+
+    QWidget *topBar;
+    QPushButton *closeButton;
+    QPushButton *fullscreenButton
 };
 
 #endif // WINDOWMANAGER_H
