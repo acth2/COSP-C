@@ -129,6 +129,8 @@ void WindowManager::checkForNewWindows() {
             appendLog("INFO: Focusing back to Qt window");
             this->activateWindow();
         }
+        XCloseDisplay(xDisplay);
+        xDisplay = nullptr;
     } else {
         appendLog("ERR: Failed to open X Display ..");
     }
@@ -334,11 +336,5 @@ void WindowManager::paintEvent(QPaintEvent *event) {
     QPixmap backgroundPixmap(backgroundImagePath);
     if (!backgroundPixmap.isNull()) {
         painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
-    }
-}
-
-WindowManager::~WindowManager() {
-    if (xDisplay) {
-        XCloseDisplay(xDisplay);
     }
 }
