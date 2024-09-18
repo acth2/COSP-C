@@ -312,9 +312,8 @@ void WindowManager::cleanUpClosedWindows() {
             windowTopBars.remove(xorgWindowId);
         }
 
+        XDestroyWindow(xDisplay, xorgWindowId);
     }
-
-    XDestroyWindow(xDisplay, xorgWindowId);
 }
 
 void WindowManager::keyPressEvent(QKeyEvent *event) {
