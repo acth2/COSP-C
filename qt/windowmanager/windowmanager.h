@@ -61,9 +61,9 @@ private:
     void setupUI();
     void updateTopBar();
 
-    QWidget *topBar;
+    QWidget *tb;
     QPushButton *closeButton;
-    QPushButton *fullscreenButton
+    QPushButton *fullscreenButton;
 };
 
 #endif // WINDOWMANAGER_H
