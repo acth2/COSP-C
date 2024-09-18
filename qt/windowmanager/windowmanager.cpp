@@ -164,28 +164,34 @@ void WindowManager::toggleConsole() {
     logLabel->setVisible(isConsoleVisible);
     appendLog("Welcome into the DEBUG window (Where my nightmare comes true), Press ESC to exit it");
 }
-
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
-    QWindow *window = QWindow::fromWinId(xorgWindowId);
-    if (window) {
-        trackedWindows.insert(xorgWindowId, window);
+    QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
+    if (x11Window) {
+        trackedWindows.insert(xorgWindowId, x11Window);
         appendLog(QString("INFO: Detected new window: %1").arg(xorgWindowId));
 
-        QTimer::singleShot(500, this, [this, xorgWindowId, window]() {
-            QRect geometry = window->geometry();
+        QWidget *containerWidget = new QWidget(this);
+        QVBoxLayout *layout = new QVBoxLayout(containerWidget);
+        QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
 
-            if (geometry.width() == 0 || geometry.height() == 0) {
-                appendLog("WARN: Still zero-size window after delay: " + QString::number(xorgWindowId));
-                window->setGeometry(50, 50, 500, 500);
-                appendLog("INFO: Setting window to 500x500 dim.");
-            }
+        QRect geometry = x11Window->geometry();
+        int topbarHeight = 30;
+        containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
+        layout->addWidget(windowWidget);
+        containerWidget->setLayout(layout);
 
-            
-            TopBar *topBar = new TopBar(window, this);
-            windowTopBars.insert(xorgWindowId, topBar);
-            
-            topBar->updatePosition();
-        });
+        containerWidget->show();
+
+        TopBar *topBar = new TopBar(x11Window, this);
+        windowTopBars.insert(xorgWindowId, topBar);
+        topBar->updatePosition();
+
+        topBar->setGeometry(geometry.x(), geometry.y() - topbarHeight, geometry.width(), topbarHeight);
+        topBar->show();
+        
+        appendLog(QString("INFO: TopBar created for window: %1").arg(xorgWindowId));
+    } else {
+        appendLog("ERR: Failed to create a window from X11 ID");
     }
 }
 
