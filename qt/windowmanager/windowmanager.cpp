@@ -187,6 +187,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         QVBoxLayout *layout = new QVBoxLayout(containerWidget);
 
         containerWidget->setMinimumSize(800, 600);
+        containerWidget->setStyleSheet("QWidget { border: 5px solid darkblue; }");
 
         QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
 
