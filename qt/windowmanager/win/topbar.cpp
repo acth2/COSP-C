@@ -26,11 +26,11 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     setAttribute(Qt::WA_TranslucentBackground, true);
     setAttribute(Qt::WA_NoSystemBackground, true);
 
-    QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect(this);
-    blurEffect->setBlurRadius(10);
-    this->setGraphicsEffect(blurEffect);
+    QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect(closeButton);
+    blurEffect->setBlurRadius(5);
+    closeButton->setGraphicsEffect(blurEffect);
 
-    setStyleSheet("background-color: rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.6);");
+    //setStyleSheet("background-color: rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.6);");
 
     titleLabel = new QLabel(this);
     titleLabel->setAlignment(Qt::AlignCenter);
@@ -128,8 +128,13 @@ void TopBar::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    painter.setBrush(QColor(0, 0, 0, 150));
+    QColor semiTransparentColor(255, 255, 255, 80);
+    painter.setBrush(semiTransparentColor);
     painter.setPen(Qt::NoPen);
+    painter.drawRect(this->rect());
+
+    painter.setBrush(Qt::NoBrush);
+    painter.setPen(QPen(QColor(255, 255, 255, 150), 2));
     painter.drawRect(this->rect());
 
     QWidget::paintEvent(event);
