@@ -9,28 +9,29 @@
 #include <QWidget>
 #include <QScreen>
 #include <QGraphicsBlurEffect>
-
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
-    
+
     if (!trackedWindow && parentWindow) {
         WId x11WindowId = parentWindow->winId();
         trackedWindow = QWindow::fromWinId(x11WindowId);
         trackedWindow->setFlags(Qt::Window);
     }
 
+    if (!trackedWindow || !trackedWindow->handle()) {
+        qWarning() << "Invalid tracked window. Exiting TopBar constructor.";
+        return;
+    }
+
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
-    setAttribute(Qt::WA_TranslucentBackground);
-    setWindowFlags(windowFlags() | Qt::X11BypassWindowManagerHint);
     setAutoFillBackground(false);
     setAttribute(Qt::WA_TranslucentBackground, true);
     setAttribute(Qt::WA_NoSystemBackground, true);
 
-    QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect(closeButton);
-    blurEffect->setBlurRadius(5);
-    closeButton->setGraphicsEffect(blurEffect);
-
-    //setStyleSheet("background-color: rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.6);");
+    // Comment out the blur effect for now
+    // QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect(closeButton);
+    // blurEffect->setBlurRadius(5);
+    // closeButton->setGraphicsEffect(blurEffect);
 
     titleLabel = new QLabel(this);
     titleLabel->setAlignment(Qt::AlignCenter);
