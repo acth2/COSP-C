@@ -8,6 +8,7 @@
 #include <QWindow>
 #include <QWidget>
 #include <QScreen>
+#include <QGraphicsBlurEffect>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
@@ -22,7 +23,11 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(windowFlags() | Qt::X11BypassWindowManagerHint);
 
-    setStyleSheet("background-color: rgba(0, 0, 0, 100);");
+    setStyleSheet("background-color: rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.6);");
+
+    QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect(this);
+    blurEffect->setBlurRadius(10);
+    setGraphicsEffect(blurEffect);
 
     titleLabel = new QLabel(this);
     titleLabel->setAlignment(Qt::AlignCenter);
