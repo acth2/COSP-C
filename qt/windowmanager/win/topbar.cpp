@@ -125,9 +125,13 @@ void TopBar::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect();
-    blurEffect->setBlurRadius(8);
-    this->setGraphicsEffect(blurEffect);
+    painter.setBrush(QColor(0, 0, 0, 150));
+    painter.setPen(Qt::NoPen);
+    painter.drawRect(this->rect());
+
+    // QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect();
+    // blurEffect->setBlurRadius(8);
+    // this->setGraphicsEffect(blurEffect);
 
     QWidget::paintEvent(event);
 }
