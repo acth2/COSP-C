@@ -124,9 +124,18 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
 
 void TopBar::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
-    
+
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
+
+    QRegion region(this->rect());
+    for (auto* child : this->children()) {
+        if (auto* widgetChild = qobject_cast<QWidget*>(child)) {
+            region -= widgetChild->geometry();
+        }
+    }
+
+    painter.setClipRegion(region);
 
     QRect backgroundRect = this->rect();
     painter.setBrush(QColor(0, 0, 0, 150));
@@ -136,7 +145,7 @@ void TopBar::paintEvent(QPaintEvent *event) {
     QColor glassColor(255, 255, 255, 80);
     painter.fillRect(backgroundRect, glassColor);
 
-    painter.setOpacity(1.0);
+    painter.setClipping(false);
 
     QWidget::paintEvent(event);
 }
