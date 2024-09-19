@@ -128,12 +128,15 @@ void TopBar::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
+    QRect backgroundRect = this->rect();
     painter.setBrush(QColor(0, 0, 0, 150));
     painter.setPen(Qt::NoPen);
-    painter.drawRect(rect());
+    painter.drawRect(backgroundRect);
 
     QColor glassColor(255, 255, 255, 80);
-    painter.fillRect(this->rect(), glassColor);
+    painter.fillRect(backgroundRect, glassColor);
+
+    painter.setOpacity(1.0);
 
     QWidget::paintEvent(event);
 }
