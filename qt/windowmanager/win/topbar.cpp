@@ -13,7 +13,7 @@
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
-
+    
     if (!trackedWindow && parentWindow) {
         WId x11WindowId = parentWindow->winId();
         trackedWindow = QWindow::fromWinId(x11WindowId);
@@ -21,14 +21,10 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     }
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
+    setAttribute(Qt::WA_TranslucentBackground);
     setAutoFillBackground(false);
-    setAttribute(Qt::WA_TranslucentBackground, true);
-    setAttribute(Qt::WA_NoSystemBackground, true);
 
-    // Comment out the blur effect for now
-    // QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect(closeButton);
-    // blurEffect->setBlurRadius(5);
-    // closeButton->setGraphicsEffect(blurEffect);
+    setStyleSheet("background-color: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.6);");
 
     titleLabel = new QLabel(this);
     titleLabel->setAlignment(Qt::AlignCenter);
@@ -122,16 +118,13 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
 
 void TopBar::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
+
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    painter.setBrush(QColor(0, 0, 0, 150));
+    painter.setBrush(QColor(0, 0, 0, 128));
     painter.setPen(Qt::NoPen);
     painter.drawRect(this->rect());
-
-    // QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect();
-    // blurEffect->setBlurRadius(8);
-    // this->setGraphicsEffect(blurEffect);
 
     QWidget::paintEvent(event);
 }
