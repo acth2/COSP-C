@@ -22,12 +22,15 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlags(windowFlags() | Qt::X11BypassWindowManagerHint);
-
-    setStyleSheet("background-color: rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.6);");
+    setAutoFillBackground(false);
+    setAttribute(Qt::WA_TranslucentBackground, true);
+    setAttribute(Qt::WA_NoSystemBackground, true);
 
     QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect(this);
     blurEffect->setBlurRadius(10);
-    setGraphicsEffect(blurEffect);
+    this->setGraphicsEffect(blurEffect);
+
+    setStyleSheet("background-color: rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.6);");
 
     titleLabel = new QLabel(this);
     titleLabel->setAlignment(Qt::AlignCenter);
@@ -35,6 +38,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 
     closeButton = new QPushButton("✕", this);
     closeButton->setFixedSize(30, 30);
+    closeButton->setStyleSheet("background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.8);");
     connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
@@ -120,9 +124,16 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
 
 void TopBar::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
+    
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
+
     painter.setBrush(QColor(0, 0, 0, 150));
     painter.setPen(Qt::NoPen);
     painter.drawRect(rect());
+
+    QColor glassColor(255, 255, 255, 80);
+    painter.fillRect(this->rect(), glassColor);
+
+    QWidget::paintEvent(event);
 }
