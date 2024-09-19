@@ -118,13 +118,9 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
 
 void TopBar::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
-
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-
-    painter.setBrush(QColor(0, 0, 0, 128));
+    painter.setBrush(QColor(0, 0, 0, 256));
     painter.setPen(Qt::NoPen);
-    painter.drawRect(this->rect());
-
-    QWidget::paintEvent(event);
+    painter.drawRect(rect());
 }
