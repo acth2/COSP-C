@@ -21,10 +21,6 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     }
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
-    setAttribute(Qt::WA_TranslucentBackground);
-    setAutoFillBackground(false);
-
-    setStyleSheet("background-color: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.6);");
 
     titleLabel = new QLabel(this);
     titleLabel->setAlignment(Qt::AlignCenter);
@@ -32,12 +28,11 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 
     closeButton = new QPushButton("✕", this);
     closeButton->setFixedSize(30, 30);
-    closeButton->setStyleSheet("background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.8);");
     connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
-    layout->addStretch();
+    //layout->addStretch();
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
     setLayout(layout);
