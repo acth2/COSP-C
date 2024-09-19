@@ -121,11 +121,9 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
 }
 
 void TopBar::paintEvent(QPaintEvent *event) {
+    Q_UNUSED(event);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-
-    QColor backgroundColor(0, 0, 0, 80);
-    painter.fillRect(this->rect(), backgroundColor);
 
     QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect();
     blurEffect->setBlurRadius(8);
