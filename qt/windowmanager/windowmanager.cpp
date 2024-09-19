@@ -189,7 +189,6 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         containerWidget->setMinimumSize(800, 600);
 
         QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
-
         windowWidget->setStyleSheet("QWidget { border: 2px solid darkblue; }");
 
         QRect geometry = x11Window->geometry();
@@ -202,15 +201,20 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         }
         layout->addWidget(windowWidget);
         containerWidget->setLayout(layout);
-
         containerWidget->show();
 
         TopBar *topBar = new TopBar(x11Window, this);
-        windowTopBars.insert(xorgWindowId, topBar);
+        topBar->setStyleSheet("background-color: rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.6);");
 
+        windowTopBars.insert(xorgWindowId, topBar);
         topBar->setGeometry(geometry.x(), geometry.y() - topbarHeight, geometry.width(), topbarHeight);
         topBar->updatePosition();
         topBar->show();
+
+        QPushButton *closeButton = new QPushButton(topBar);
+        closeButton->setStyleSheet("background-color: rgba(255, 255, 255, 0.3); border: 1px solid rgba(255, 255, 255, 0.6);");
+        closeButton->setGeometry(topBar->width() - 40, 5, 30, 20);
+        closeButton->show();
 
         connect(x11Window, &QWindow::visibilityChanged, [this, containerWidget, xorgWindowId](bool visible) {
             if (!visible) {
