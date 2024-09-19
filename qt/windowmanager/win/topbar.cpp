@@ -9,6 +9,8 @@
 #include <QWidget>
 #include <QScreen>
 #include <QGraphicsBlurEffect>
+#include <QDebug>
+
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
 
@@ -16,11 +18,6 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
         WId x11WindowId = parentWindow->winId();
         trackedWindow = QWindow::fromWinId(x11WindowId);
         trackedWindow->setFlags(Qt::Window);
-    }
-
-    if (!trackedWindow || !trackedWindow->handle()) {
-        qWarning() << "Invalid tracked window. Exiting TopBar constructor.";
-        return;
     }
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
