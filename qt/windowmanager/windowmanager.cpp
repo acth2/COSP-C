@@ -196,6 +196,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         } else {
             containerWidget->setGeometry(50, 80, 800, 600 + topbarHeight);
         }
+        
         layout->addWidget(windowWidget);
         containerWidget->setLayout(layout);
 
