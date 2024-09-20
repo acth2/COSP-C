@@ -8,18 +8,23 @@
 #include <QWindow>
 #include <QWidget>
 #include <QScreen>
+#include <QGraphicsBlurEffect>
 #include <QDebug>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
-
+    
     if (!trackedWindow && parentWindow) {
         WId x11WindowId = parentWindow->winId();
         trackedWindow = QWindow::fromWinId(x11WindowId);
         trackedWindow->setFlags(Qt::Window);
     }
 
-    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint | Qt::Tool);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
+    setAttribute(Qt::WA_TranslucentBackground);
+    setAutoFillBackground(false);
+
+    setStyleSheet("background-color: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.6);");
 
     titleLabel = new QLabel(this);
     titleLabel->setAlignment(Qt::AlignCenter);
@@ -27,10 +32,12 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 
     closeButton = new QPushButton("✕", this);
     closeButton->setFixedSize(30, 30);
+    closeButton->setStyleSheet("background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.8);");
     connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
+    layout->addStretch();
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
     setLayout(layout);
@@ -83,7 +90,7 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
 void TopBar::closeTrackedWindow() {
     if (trackedWindow) {
         WId windowId = trackedWindow->winId();
-
+        
         QProcess process;
         process.start("xdotool getwindowpid " + QString::number(windowId));
         process.waitForFinished();
@@ -111,9 +118,13 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
 
 void TopBar::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
+
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.setBrush(QColor(0, 0, 0, 255));
+
+    painter.setBrush(QColor(0, 0, 0, 128));
     painter.setPen(Qt::NoPen);
-    painter.drawRect(rect());
+    painter.drawRect(this->rect());
+
+    QWidget::paintEvent(event);
 }
