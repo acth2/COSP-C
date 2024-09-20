@@ -19,6 +19,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
         trackedWindow = QWindow::fromWinId(x11WindowId);
         trackedWindow->setFlags(Qt::Window);
     }
+    trackedWindow->installEventFilter(this);
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint | Qt::Tool);
 
@@ -33,7 +34,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
     layout->addWidget(closeButton);
-    layout->setContentsMargins(10, 5, 10, 2);
+    layout->setContentsMargins(10, 0, 10, 0);
     setLayout(layout);
 
     updatePosition();
