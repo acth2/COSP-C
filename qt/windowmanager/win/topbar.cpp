@@ -2,6 +2,7 @@
 #include "../windowmanager.h"
 #include <QApplication>
 #include <QMouseEvent>
+#include <QGraphicsOpacityEffect>
 #include <QPushButton>
 #include <QProcess>
 #include <QPainter>
@@ -32,6 +33,11 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addStretch();
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
+
+    QGraphicsOpacityEffect *opacityEffect = new QGraphicsOpacityEffect(&layout);
+    opacityEffect->setOpacity(0.5);
+
+    layout.setGraphicsEffect(opacityEffect);
     setLayout(layout);
 
     updatePosition();
@@ -133,10 +139,4 @@ void TopBar::closeTrackedWindow() {
         }
         this->close();
     }
-}
-
-void TopBar::paintEvent(QPaintEvent *event) {
-    QPainter p(this);
-    
-    p.setOpacity(0.3);
 }
