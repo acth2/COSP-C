@@ -14,6 +14,7 @@
 #include <QProcess>
 #include <QThread>
 #include <QWindow>
+#include <QResizeEvent>
 #include <QDateTime>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -119,6 +120,15 @@ void WindowManager::checkForNewWindows() {
         listExistingWindows();
         processX11Events(); 
         cleanUpClosedWindows();
+        
+        Window activeWindow;
+        int revert;
+        XGetInputFocus(xDisplay, &activeWindow, &revert);
+
+        if (!trackedWindows.contains(activeWindow)) {
+            appendLog("INFO: Focusing back to Qt window");
+            this->activateWindow();
+        }
     } else {
         appendLog("ERR: Failed to open X Display ..");
     }
@@ -166,26 +176,41 @@ void WindowManager::toggleConsole() {
 }
 
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
-    QWindow *window = QWindow::fromWinId(xorgWindowId);
-    if (window) {
-        trackedWindows.insert(xorgWindowId, window);
+    QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
+    if (x11Window) {
+        trackedWindows.insert(xorgWindowId, x11Window);
         appendLog(QString("INFO: Detected new window: %1").arg(xorgWindowId));
 
-        QTimer::singleShot(500, this, [this, xorgWindowId, window]() {
-            QRect geometry = window->geometry();
+        QWidget *containerWidget = new QWidget(this);
+        QVBoxLayout *layout = new QVBoxLayout(containerWidget);
 
-            if (geometry.width() == 0 || geometry.height() == 0) {
-                appendLog("WARN: Still zero-size window after delay: " + QString::number(xorgWindowId));
-                window->setGeometry(50, 50, 500, 500);
-                appendLog("INFO: Setting window to 500x500 dim.");
-            }
+        containerWidget->setMinimumSize(800, 600);
 
-            
-            TopBar *topBar = new TopBar(window, this);
-            windowTopBars.insert(xorgWindowId, topBar);
-            
-            topBar->updatePosition();
-        });
+        QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
+
+        QRect geometry = x11Window->geometry();
+        int topbarHeight = 30;
+
+        if (geometry.isValid()) {
+            containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
+        } else {
+            containerWidget->setGeometry(50, 80, 800, 600 + topbarHeight);
+        }
+        layout->addWidget(windowWidget);
+        containerWidget->setLayout(layout);
+
+        containerWidget->show();
+
+        TopBar *topBar = new TopBar(x11Window, this);
+        windowTopBars.insert(xorgWindowId, topBar);
+
+        topBar->setGeometry(geometry.x(), geometry.y() - topbarHeight, geometry.width(), topbarHeight);
+        topBar->updatePosition();
+        topBar->show();
+        
+        appendLog(QString("INFO: TopBar created for window: %1").arg(xorgWindowId));
+    } else {
+        appendLog("ERR: Failed to create a window from X11 ID");
     }
 }
 
@@ -254,11 +279,17 @@ bool WindowManager::event(QEvent *qtEvent) {
             }
             userInteractRightWidget->move(mouseEvent->globalPos());
             userInteractRightWidget->show();
+        } else if (mouseEvent->button() == Qt::LeftButton) {
+            if (!this->geometry().contains(mouseEvent->pos())) {
+                appendLog("INFO: Clicking outside Qt window, refocusing");
+                this->activateWindow();
+            }
         }
     }
 
     return QWidget::event(qtEvent);
 }
+
 void WindowManager::cleanUpClosedWindows() {
     QList<WId> windowsToRemove;
     for (auto xorgWindowId : trackedWindows.keys()) {
