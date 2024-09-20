@@ -5,26 +5,24 @@
 #include <QPushButton>
 #include <QProcess>
 #include <QPainter>
-#include <QWindow>
-#include <QWidget>
-#include <QScreen>
+#include <QObject>
+#include <QString>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
-    
-    if (!trackedWindow && parentWindow) {
-        WId x11WindowId = parentWindow->winId();
-        trackedWindow = QWindow::fromWinId(x11WindowId);
-        trackedWindow->setFlags(Qt::Window);
-    }
+    trackedWindow->installEventFilter(this);
 
-    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint);
+    setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::WindowDoesNotAcceptFocus);
     setAttribute(Qt::WA_TranslucentBackground);
 
     titleLabel = new QLabel(this);
     titleLabel->setAlignment(Qt::AlignCenter);
     titleLabel->setStyleSheet("QLabel { color: white; }");
 
+    popup = new QLabel(this);
+    popup->setFixedSize(500, 500);
+    popup->setStyleSheet("background-color: #333;");
+        
     closeButton = new QPushButton("✕", this);
     closeButton->setFixedSize(30, 30);
     connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
@@ -35,7 +33,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
     setLayout(layout);
-
+    
     updatePosition();
 }
 
@@ -43,6 +41,25 @@ QWindow* TopBar::getTrackedWindow() const {
     return trackedWindow;
 }
 
+QLabel* TopBar::getPopup() const {
+    return popup;
+}
+
+bool TopBar::eventFilter(QObject *obj, QEvent *event) {
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+
+        if (getTrackedWindow()) {
+            getTrackedWindow()->requestActivate();
+        }
+
+        if (getPopup()->isVisible() && !getPopup()->geometry().contains(mouseEvent->globalPos())) {
+            closePopup();
+            return true;
+        }
+    }
+    return QWidget::eventFilter(obj, event);
+}
 void TopBar::updatePosition() {
     if (trackedWindow) {
         QRect windowGeometry = trackedWindow->geometry();
@@ -50,6 +67,19 @@ void TopBar::updatePosition() {
         setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
         show();
     }
+}
+
+void TopBar::updateTitle(const QString &title) {
+    titleLabel->setText(title);
+}
+
+void TopBar::paintEvent(QPaintEvent *event) {
+    Q_UNUSED(event);
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setBrush(QColor(0, 0, 0, 150));
+    painter.setPen(Qt::NoPen);
+    painter.drawRect(rect());
 }
 
 void TopBar::mousePressEvent(QMouseEvent *event) {
@@ -81,10 +111,16 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
     }
 }
 
+void TopBar::closePopup() {
+    if (popup->isVisible()) {
+        popup->hide();
+    }
+}
+
 void TopBar::closeTrackedWindow() {
     if (trackedWindow) {
         WId windowId = trackedWindow->winId();
-        
+
         QProcess process;
         process.start("xdotool getwindowpid " + QString::number(windowId));
         process.waitForFinished();
@@ -97,24 +133,4 @@ void TopBar::closeTrackedWindow() {
         }
         this->close();
     }
-}
-
-bool TopBar::eventFilter(QObject *obj, QEvent *event) {
-    if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-
-        if (getTrackedWindow()) {
-            getTrackedWindow()->requestActivate();
-        }
-    }
-    return QWidget::eventFilter(obj, event);
-}
-
-void TopBar::paintEvent(QPaintEvent *event) {
-    Q_UNUSED(event);
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setBrush(QColor(0, 0, 0, 150));
-    painter.setPen(Qt::NoPen);
-    painter.drawRect(rect());
 }
