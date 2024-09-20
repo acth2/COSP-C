@@ -77,7 +77,7 @@ void TopBar::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.setBrush(QColor(0, 0, 0, 150));
+    painter.setBrush(QColor(51, 51, 51, 150));
     painter.setPen(Qt::NoPen);
     painter.drawRect(rect());
 }
