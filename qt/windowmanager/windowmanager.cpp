@@ -1,6 +1,5 @@
 #include "windowmanager.h"
 #include "win/topbar.h"
-#include "win/utils/closebutton.h"
 #include "userinteractright.h"
 #include "taskbar.h"
 #include <QApplication>
@@ -15,6 +14,7 @@
 #include <QProcess>
 #include <QThread>
 #include <QWindow>
+#include <QResizeEvent>
 #include <QDateTime>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -167,77 +167,55 @@ void WindowManager::toggleConsole() {
 }
 
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
-    QWindow *window = QWindow::fromWinId(xorgWindowId);
-    if (window) {
-        trackedWindows.insert(xorgWindowId, window);
+    QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
+    if (x11Window) {
+        trackedWindows.insert(xorgWindowId, x11Window);
         appendLog(QString("INFO: Detected new window: %1").arg(xorgWindowId));
 
-        QTimer::singleShot(500, this, [this, xorgWindowId, window]() {
-            QRect geometry = window->geometry();
+        QWidget *containerWidget = new QWidget(this);
+        QVBoxLayout *layout = new QVBoxLayout(containerWidget);
 
-            if (geometry.width() == 0 || geometry.height() == 0) {
-                appendLog("WARN: Still zero-size window after delay: " + QString::number(xorgWindowId));
-                window->setGeometry(50, 50, 500, 500);
-                appendLog("INFO: Setting window to 500x500 dim.");
-            }
+        int defaultWidth = 500;
+        int defaultHeight = 500;
+        int topbarHeight = 30;
 
-            
-            TopBar *topBar = new TopBar(window, this);
-            windowTopBars.insert(xorgWindowId, topBar);
-            
-            topBar->updatePosition();
+        QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
 
-            connect(topBar, &TopBar::closeRequested, [window, this, xorgWindowId]() {
-                if (!window) {
-                    appendLog("ERROR: Window is nullptr.");
-                    return;
-                }
+        QRect geometry = x11Window->geometry();
+        if (geometry.isValid()) {
+            containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
+        } else {
+            containerWidget->setGeometry(50, 80, defaultWidth, defaultHeight + topbarHeight);
+        }
 
-                appendLog("INFO: Close request received for window ID: " + QString::number(xorgWindowId));
-                window->hide();
-                appendLog("INFO: Hiding window ID: " + QString::number(xorgWindowId));
-                windowTopBars.remove(xorgWindowId);
-                appendLog("INFO: TopBar removed for window ID: " + QString::number(xorgWindowId));
-            });
-        });
-    }
-}
+        layout->addWidget(windowWidget);
+        containerWidget->setLayout(layout);
+        containerWidget->show();
 
-void WindowManager::setupCloseButton(QWindow *window) {
-    CloseButton *closeButton = new CloseButton(window, this);
-    windowCloseButtons.insert(window->winId(), closeButton);
-    closeButton->updatePosition();
-    appendLog("INFO: CloseButton created and positioned for window: " + QString::number(window->winId()));
-}
+        TopBar *topBar = new TopBar(x11Window, this);
+        windowTopBars.insert(xorgWindowId, topBar);
 
-void WindowManager::removeCloseButton(WId windowId) {
-    if (windowCloseButtons.contains(windowId)) {
-        CloseButton *closeButton = windowCloseButtons.value(windowId);
-        closeButton->deleteLater();
-        windowCloseButtons.remove(windowId);
-    }
-}
+        topBar->setGeometry(containerWidget->x(), containerWidget->y() - topbarHeight, containerWidget->width(), topbarHeight);
+        topBar->show();
 
-void WindowManager::closeWindow(WId xorgWindowId) {
-    if (trackedWindows.contains(xorgWindowId)) {
-        trackedWindows[xorgWindowId]->close();
-        trackedWindows.remove(xorgWindowId);
-    }
-
-    if (windowTopBars.contains(xorgWindowId)) {
-        windowTopBars[xorgWindowId]->deleteLater();
-        windowTopBars.remove(xorgWindowId);
-    }
-
-    if (closeButton) {
-        closeButton->deleteLater();
-        closeButton = nullptr;
-        appendLog("INFO: Close button removed for window: " + QString::number(xorgWindowId));
+        updateTaskbarPosition(x11Window);
+        
+        appendLog(QString("INFO: TopBar created for window: %1").arg(xorgWindowId));
     } else {
-        appendLog("WARN: No Close button to remove for window: " + QString::number(xorgWindowId));
+        appendLog("ERR: Failed to create a window from X11 ID");
     }
+}
 
-    appendLog(QString("INFO: Closed and removed window: %1").arg(xorgWindowId));
+
+void WindowManager::closeWindow(WId windowId) {
+    if (trackedWindows.contains(windowId)) {
+        QWindow* window = trackedWindows.value(windowId);
+        if (window) {
+            window->hide();
+            trackedWindows.remove(windowId);
+            appendLog("INFO: Window killed");
+        }
+    }
 }
 
 void WindowManager::updateTaskbarPosition(QWindow *window) {
@@ -261,7 +239,6 @@ void WindowManager::updateTaskbarPosition(QWindow *window) {
         }
 
         window->setGeometry(centeredX, centeredY, windowWidth, windowHeight);
-
         topBar->setGeometry(centeredX, centeredY - topbarHeight, windowWidth, topbarHeight);
         topBar->show();
     }
@@ -322,7 +299,6 @@ void WindowManager::cleanUpClosedWindows() {
             windowTopBars.remove(xorgWindowId);
         }
 
-        removeCloseButton(xorgWindowId);
     }
 }
 
