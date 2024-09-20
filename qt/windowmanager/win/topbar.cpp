@@ -13,12 +13,13 @@
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
-    
+
     if (!trackedWindow && parentWindow) {
         WId x11WindowId = parentWindow->winId();
         trackedWindow = QWindow::fromWinId(x11WindowId);
         trackedWindow->setFlags(Qt::Window);
     }
+
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint | Qt::Tool);
 
     titleLabel = new QLabel(this);
@@ -32,8 +33,12 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
     layout->addWidget(closeButton);
-    layout->setContentsMargins(10, 0, 10, 0);
+    layout->setContentsMargins(10, 5, 10, 2);
     setLayout(layout);
+
+    QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect(this);
+    blurEffect->setBlurRadius(15);
+    this->setGraphicsEffect(blurEffect);
 
     updatePosition();
 }
@@ -83,7 +88,7 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
 void TopBar::closeTrackedWindow() {
     if (trackedWindow) {
         WId windowId = trackedWindow->winId();
-        
+
         QProcess process;
         process.start("xdotool getwindowpid " + QString::number(windowId));
         process.waitForFinished();
