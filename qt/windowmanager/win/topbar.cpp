@@ -34,11 +34,11 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
 
-    QGraphicsOpacityEffect *opacityEffect = new QGraphicsOpacityEffect(&layout);
-    opacityEffect->setOpacity(0.5);
-
-    layout.setGraphicsEffect(opacityEffect);
     setLayout(layout);
+
+    QGraphicsOpacityEffect *opacityEffect = new QGraphicsOpacityEffect(this);
+    opacityEffect->setOpacity(0.7);
+    this->setGraphicsEffect(opacityEffect);
 
     updatePosition();
 }
