@@ -21,7 +21,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 
     popup = new QLabel(this);
     popup->setFixedSize(500, 500);
-    popup->setStyleSheet("background-color: #333;");
+    //popup->setStyleSheet("background-color: #333;");
         
     closeButton = new QPushButton("✕", this);
     closeButton->setFixedSize(30, 30);
