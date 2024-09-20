@@ -129,6 +129,7 @@ void WindowManager::checkForNewWindows() {
             appendLog("INFO: Focusing back to Qt window");
             this->activateWindow();
         }
+        XCloseDisplay(xDisplay);
     } else {
         appendLog("ERR: Failed to open X Display ..");
     }
