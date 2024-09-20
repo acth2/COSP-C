@@ -135,8 +135,7 @@ void TopBar::closeTrackedWindow() {
     }
 }
 
-void MainWindow::paintEvent(QPaintEvent *event)
-{
+void TopBar::paintEvent(QPaintEvent *event) {
     QPainter p(this);
     
     p.setOpacity(0.3);
