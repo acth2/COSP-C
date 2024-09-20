@@ -33,6 +33,8 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
     setLayout(layout);
+
+    this->setProperty("windowOpacity", 0.5);
     
     updatePosition();
 }
