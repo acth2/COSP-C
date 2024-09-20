@@ -53,7 +53,7 @@ WindowManager::WindowManager(QWidget *parent)
         
     windowCheckTimer = new QTimer(this);
     connect(windowCheckTimer, &QTimer::timeout, this, &WindowManager::checkForNewWindows);
-    windowCheckTimer->start(500);
+    windowCheckTimer->start(50);
         
     showFullScreen();
 }
@@ -196,7 +196,6 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         } else {
             containerWidget->setGeometry(50, 80, 800, 600 + topbarHeight);
         }
-        
         layout->addWidget(windowWidget);
         containerWidget->setLayout(layout);
 
