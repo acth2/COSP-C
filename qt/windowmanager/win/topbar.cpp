@@ -8,7 +8,6 @@
 #include <QWindow>
 #include <QWidget>
 #include <QScreen>
-#include <QGraphicsBlurEffect>
 #include <QDebug>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
@@ -35,10 +34,6 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
     setLayout(layout);
-
-    QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect(this);
-    blurEffect->setBlurRadius(15);
-    this->setGraphicsEffect(blurEffect);
 
     updatePosition();
 }
