@@ -85,12 +85,12 @@ void WindowManager::listExistingWindows() {
                             XFree(data);
                             continue;
                         }
+                        XFree(data);
                     }
                 }
 
                 XWindowAttributes attributes;
                 if (XGetWindowAttributes(xDisplay, child, &attributes) == 0 || attributes.map_state != IsViewable) {
-                    appendLog("INFO: Skipping attribute window");
                     continue;
                 }
 
