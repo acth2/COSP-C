@@ -79,16 +79,25 @@ void WindowManager::listExistingWindows() {
 
                 if (XGetWindowProperty(xDisplay, child, netWmWindowType, 0, 1, False, XA_ATOM,
                                    &type, &format, &nItems, &bytesAfter, &data) == Success) {
-                    /*
+
                     if (data) {
                         Atom *atoms = (Atom *)data;
-                        if (atoms[0] != netWmWindowTypeNormal) {
-                            XFree(data);
-                            continue;
-                        }
+                        appendLog(QString("INFO: Found window type: %1").arg(QString::number(atoms[0])));
+
                         XFree(data);
                     }
-                    */
+
+                    XWindowAttributes attributes;
+                    if (XGetWindowAttributes(xDisplay, child, &attributes) == 0 || attributes.map_state != IsViewable) {
+                        appendLog("INFO: Skipping non-viewable window");
+                        continue;
+                    }
+
+                    QRect windowGeometry(attributes.x, attributes.y, attributes.width, attributes.height);
+                    if (windowGeometry.width() == 0 || windowGeometry.height() == 0) {
+                        appendLog("INFO: Skipping non-graphical window (0x0 size): " + QString::number(child));
+                        continue;
+                    }
                 }
 
                 XWindowAttributes attributes;
