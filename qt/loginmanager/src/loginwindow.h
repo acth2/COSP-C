@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QLineEdit>
+#include <QString>
 #include <QPushButton>
 
 class LoginWindow : public QWidget {
@@ -10,6 +11,7 @@ class LoginWindow : public QWidget {
 
 public:
     LoginWindow(QWidget *parent = nullptr);
+    hashPassword(const QString &password);
 
 private slots:
     void onLoginClicked();
