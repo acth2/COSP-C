@@ -174,15 +174,11 @@ void TopBar::closeTrackedWindow() {
 }
 
 void TopBar::maximizeWindow() {
-    if (parentWidget()) {
-        QWidget *parentWindow = parentWidget();
-
+    if (trackedWindow) {
         QScreen *screen = QGuiApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
+        QRect screenGeometry = screen->availableGeometry();
 
-        int screenWidth = screenGeometry.width();
-        int screenHeight = screenGeometry.height() - 40;
-
-        parentWindow->setGeometry(0, 0, screenWidth, screenHeight);
+        trackedWindow->setGeometry(screenGeometry);
+        updatePosition();
     }
 }
