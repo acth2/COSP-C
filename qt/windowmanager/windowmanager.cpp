@@ -83,8 +83,8 @@ void WindowManager::listExistingWindows() {
                                    &type, &format, &nItems, &bytesAfter, &data) == Success) {
                     if (data) {
                         Atom *atoms = (Atom *)data;
-                        if (atoms[0] != netWmWindowTypeNormal || atoms[0] == netWmWindowTypeDesktop || atoms[0] == netWmWindowTypeDock) {
-                            appendLog("INFO: Skipping desktop or dock window: " + QString::number(child));
+                        if (atoms[0] != netWmWindowTypeNormal || atoms[0] != netWmWindowTypeDesktop || atoms[0] != netWmWindowTypeDock) {
+                            appendLog("INFO: Skipping non-desktop or dock window: " + QString::number(child));
                             XFree(data);
                             continue;
                         }
