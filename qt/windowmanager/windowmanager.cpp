@@ -206,6 +206,9 @@ void WindowManager::toggleConsole() {
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
     if (x11Window) {
+        QSize originalSize = x11Window->size();
+        windowOriginalSizes.insert(xorgWindowId, originalSize);
+        
         trackedWindows.insert(xorgWindowId, x11Window);
         appendLog(QString("INFO: Detected new window: %1").arg(xorgWindowId));
 
@@ -217,11 +220,15 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         QRect geometry = x11Window->geometry();
         int topbarHeight = 30;
 
-        if (geometry.isValid()) {
-            containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
+        if (windowOriginalSizes.contains(window->winId())) {
+            QSize originalSize = windowOriginalSizes.value(window->winId());
+            windowWidth = originalSize.width();
+            windowHeight = originalSize.height();
         } else {
-            containerWidget->setGeometry(50, 80, 800, 600 + topbarHeight);
+            windowWidth = window->width();
+            windowHeight = window->height();
         }
+        
         layout->addWidget(windowWidget);
         containerWidget->setLayout(layout);
 
