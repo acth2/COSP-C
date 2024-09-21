@@ -6,6 +6,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QCryptographicHash>
+#include <QPushButton>
 #include <cstdlib>
 #include <crypt.h>
 #include <shadow.h>
