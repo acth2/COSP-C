@@ -80,23 +80,22 @@ void WindowManager::listExistingWindows() {
                 if (XGetWindowProperty(xDisplay, child, netWmWindowType, 0, 1, False, XA_ATOM,
                                    &type, &format, &nItems, &bytesAfter, &data) == Success) {
 
-                    if (data) {
-                        Atom *atoms = (Atom *)data;
-                        appendLog(QString("INFO: Found window type: %1").arg(QString::number(atoms[0])));
-
-                        XFree(data);
-                    }
-
                     XWindowAttributes attributes;
+
                     if (XGetWindowAttributes(xDisplay, child, &attributes) == 0 || attributes.map_state != IsViewable) {
-                        appendLog("INFO: Skipping non-viewable window");
+                        appendLog("INFO: Skipping non-viewable window: " + QString::number(child));
                         continue;
                     }
 
-                    QRect windowGeometry(attributes.x, attributes.y, attributes.width, attributes.height);
-                    if (windowGeometry.width() == 0 || windowGeometry.height() == 0) {
-                        appendLog("INFO: Skipping non-graphical window (0x0 size): " + QString::number(child));
+                    if (attributes.width <= 0 || attributes.height <= 0) {
+                        appendLog("INFO: Skipping window with invalid size (width or height <= 0): " + QString::number(child));
                         continue;
+                    }
+
+                    appendLog("INFO: Detected graphical window: " + QString::number(child));
+
+                    if (!trackedWindows.contains(child)) {
+                        createAndTrackWindow(child);
                     }
                 }
 
