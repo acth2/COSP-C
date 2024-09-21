@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QCryptographicHash>
 #include <cstdlib>
 #include <crypt.h>
 #include <shadow.h>
@@ -42,6 +43,11 @@ void LoginWindow::onLoginClicked() {
     authenticateUser(username, password);
 }
 
+QString hashPassword(const QString &password) {
+    QByteArray hashed = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256);
+    return QString(hashed.toHex());
+}
+
 void LoginWindow::authenticateUser(const QString &username, const QString &password) {
     struct spwd *userInfo = getspnam(username.toStdString().c_str());
     if (!userInfo) {
@@ -51,9 +57,9 @@ void LoginWindow::authenticateUser(const QString &username, const QString &passw
         return;
     }
 
-    const char *hashedPassword = crypt(password.toStdString().c_str(), userInfo->sp_pwdp);
+    QString hashedPassword = hashPassword(password);
 
-    if (hashedPassword && (QString(hashedPassword) == QString(userInfo->sp_pwdp))) {
+    if (hashedPassword == QString(userInfo->sp_pwdp)) {
         QMessageBox::information(this, "Login Successful", "Welcome!");
         system("startx /usr/bin/cwm");
         close();
