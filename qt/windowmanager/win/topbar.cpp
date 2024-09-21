@@ -38,8 +38,8 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
         closeButton->setStyleSheet(
             "QPushButton {"
             "   border-radius: 15px;"
-            "   background-color: white;"
-            "   color: black;"
+            "   background-color: black;"
+            "   color: white;"
             "   border: none;"
             "   font-weight: bold;"
             "}"
@@ -54,8 +54,8 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
         closeButton->setStyleSheet(
             "QPushButton {"
             "   border-radius: 15px;"
-            "   background-color: black;"
-            "   color: white;"
+            "   background-color: white;"
+            "   color: black;"
             "   border: none;"
             "   font-weight: bold;"
             "}"
