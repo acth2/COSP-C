@@ -94,14 +94,14 @@ void WindowManager::listExistingWindows() {
                 XWindowAttributes attributes;
                 if (XGetWindowAttributes(xDisplay, child, &attributes) == 0 || attributes.map_state != IsViewable) {
                     appendLog("INFO: Skipping attribute window" + QString::number(child));
-                    //continue;
+                    continue;
                 }
 
                 QRect windowGeometry(attributes.x, attributes.y, attributes.width, attributes.height);
 
                 if (windowGeometry.width() == 0 || windowGeometry.height() == 0) {
                     appendLog("INFO: Skipping non-graphical window (0x0 size): " + QString::number(child));
-                    continue;
+                    //continue;
                 }
 
                 appendLog("INFO: Detected graphical X11 window: " + QString::number(child));
