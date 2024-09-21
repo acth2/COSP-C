@@ -10,6 +10,7 @@ class LoginWindow : public QWidget {
 
 public:
     explicit LoginWindow(QWidget *parent = nullptr);
+    QString hashPassword(const QString &password);
 
 private slots:
     void onLoginClicked();
@@ -20,7 +21,6 @@ private:
     QPushButton *loginButton;
 
     void authenticateUser(const QString &username, const QString &password);
-    QString hashPassword(const QString &password);
 };
 
 #endif // LOGINWINDOW_H
