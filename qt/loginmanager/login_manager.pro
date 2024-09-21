@@ -10,3 +10,5 @@ SOURCES += \
 
 HEADERS += \
     src/loginwindow.h
+
+LIBS += -lcrypt
