@@ -16,6 +16,8 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 
     if (QFile::exists("/usr/cydra/settings/darkmode")) {
         isDarkMode = true;
+    } else {
+        isDarkMode = false;
     }
         
     trackedWindow->installEventFilter(this);
