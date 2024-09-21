@@ -79,6 +79,18 @@ void WindowManager::listExistingWindows() {
             for (unsigned int i = 0; i < nChildren; i++) {
                 Window child = children[i];
 
+                char *windowName = nullptr;
+                if (XFetchName(xDisplay, child, &windowName) && windowName) {
+                    QString name(windowName);
+                    if (name == "QTerminal") {
+                        appendLog("INFO: Detected QTerminal window: " + QString::number(child));
+                        createAndTrackWindow(child);
+                        XFree(windowName);
+                        continue;
+                    }
+                    XFree(windowName);
+                }
+
                 Atom type;
                 int format;
                 unsigned long nItems, bytesAfter;
@@ -88,8 +100,15 @@ void WindowManager::listExistingWindows() {
                                    &type, &format, &nItems, &bytesAfter, &data) == Success) {
                     if (data) {
                         Atom *atoms = (Atom *)data;
-                        if (atoms[0] != netWmWindowTypeNormal || atoms[0] != netWmWindowTypeDesktop || atoms[0] != netWmWindowTypeDock || atoms[0] != netWmWindowTypeToolbar || atoms[0] != netWmWindowTypeMenu || atoms[0] != netWmWindowTypeUtility || atoms[0] != netWmWindowTypeSplash || atoms[0] != netWmWindowTypeDialog) {
-                            appendLog("INFO: Skipping (a lot) non-desktop-dock-toolbar-menu-utility-splash-dialog window: " + QString::number(child));
+                        if (atoms[0] != netWmWindowTypeNormal &&
+                            atoms[0] != netWmWindowTypeDesktop &&
+                            atoms[0] != netWmWindowTypeDock &&
+                            atoms[0] != netWmWindowTypeToolbar &&
+                            atoms[0] != netWmWindowTypeMenu &&
+                            atoms[0] != netWmWindowTypeUtility &&
+                            atoms[0] != netWmWindowTypeSplash &&
+                            atoms[0] != netWmWindowTypeDialog) {
+                            appendLog("INFO: Skipping non-desktop-dock-toolbar-menu-utility-splash-dialog window: " + QString::number(child));
                             XFree(data);
                             continue;
                         }
