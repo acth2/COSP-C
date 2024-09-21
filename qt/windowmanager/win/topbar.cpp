@@ -172,7 +172,7 @@ void TopBar::closeTrackedWindow() {
     }
 }
 
-void TopBar::closeTrackedWindow() {
+void TopBar::maximizeWindow() {
     if (parentWidget()) {
         QWidget *parentWindow = parentWidget();
 
