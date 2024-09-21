@@ -3,15 +3,12 @@
 
 #include <QWidget>
 #include <QLineEdit>
-#include <QString>
-#include <QPushButton>
 
 class LoginWindow : public QWidget {
     Q_OBJECT
 
 public:
-    LoginWindow(QWidget *parent = nullptr);
-    hashPassword(const QString &password);
+    explicit LoginWindow(QWidget *parent = nullptr);
 
 private slots:
     void onLoginClicked();
@@ -22,6 +19,7 @@ private:
     QPushButton *loginButton;
 
     void authenticateUser(const QString &username, const QString &password);
+    QString hashPassword(const QString &password);
 };
 
 #endif // LOGINWINDOW_H
