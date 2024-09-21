@@ -42,6 +42,7 @@ private:
     QLabel *titleLabel;
     QLabel *popup;
     QPushButton *closeButton;
+    QPushButton *maximizeButton;
     bool isDragging = false;
     QPoint dragStartPos;
     QPoint windowStartPos;
