@@ -65,7 +65,12 @@ void WindowManager::listExistingWindows() {
         Atom netWmWindowTypeNormal = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", False);
         Atom netWmWindowTypeDesktop = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
         Atom netWmWindowTypeDock = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DOCK", False);
-
+        Atom netWmWindowTypeToolbar = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_TOOLBAR", False);
+        Atom netWmWindowTypeMenu = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_MENU", False);
+        Atom netWmWindowTypeUtility = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_UTILITY", False);
+        Atom netWmWindowTypeSplash = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_SPLASH", False);
+        Atom netWmWindowTypeDialog = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DIALOG", False);
+        
         Window windowRoot = DefaultRootWindow(xDisplay);
         Window parent, *children;
         unsigned int nChildren;
@@ -83,8 +88,8 @@ void WindowManager::listExistingWindows() {
                                    &type, &format, &nItems, &bytesAfter, &data) == Success) {
                     if (data) {
                         Atom *atoms = (Atom *)data;
-                        if (atoms[0] != netWmWindowTypeNormal || atoms[0] != netWmWindowTypeDesktop || atoms[0] != netWmWindowTypeDock) {
-                            appendLog("INFO: Skipping non-desktop or dock window: " + QString::number(child));
+                        if (atoms[0] != netWmWindowTypeNormal || atoms[0] != netWmWindowTypeDesktop || atoms[0] != netWmWindowTypeDock || atoms[0] != netWmWindowTypeToolbar || atoms[0] != netWmWindowTypeMenu || atoms[0] != netWmWindowTypeUtility || atoms[0] != netWmWindowTypeSplash || atoms[0] != netWmWindowTypeDialog) {
+                            appendLog("INFO: Skipping (a lot) non-desktop-dock-toolbar-menu-utility-splash-dialog window: " + QString::number(child));
                             XFree(data);
                             continue;
                         }
@@ -93,7 +98,7 @@ void WindowManager::listExistingWindows() {
 
                 XWindowAttributes attributes;
                 if (XGetWindowAttributes(xDisplay, child, &attributes) == 0 || attributes.map_state != IsViewable) {
-                    appendLog("INFO: Skipping attribute window" + QString::number(child));
+                    appendLog("INFO: Skipping attribute window: " + QString::number(child));
                     continue;
                 }
 
@@ -101,7 +106,7 @@ void WindowManager::listExistingWindows() {
 
                 if (windowGeometry.width() == 0 || windowGeometry.height() == 0) {
                     appendLog("INFO: Skipping non-graphical window (0x0 size): " + QString::number(child));
-                    //continue;
+                    continue;
                 }
 
                 appendLog("INFO: Detected graphical X11 window: " + QString::number(child));
