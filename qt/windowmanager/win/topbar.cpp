@@ -90,6 +90,7 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
 
         if (getTrackedWindow()) {
             getTrackedWindow()->requestActivate();
+            getTrackedWindow()->raise();
             this->raise();
         }
 
