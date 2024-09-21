@@ -52,26 +52,24 @@ QString LoginWindow::hashPassword(const QString &password) {
 
 void LoginWindow::authenticateUser(const QString &username, const QString &password) {
     QProcess process;
-    QString command = QString("echo '%1' | sudo -S -u %1 /usr/bin/false").arg(username);
-
-    process.start(command);
+    process.start("getent", QStringList() << "passwd" << username);
     process.waitForFinished();
 
-    int exitCode = process.exitCode();
-    if (exitCode == 0) {
-        process.start("bash", QStringList() << "-c" << QString("echo '%1' | sudo -S passwd --stdin %2").arg(password, username));
-        process.waitForFinished();
-        exitCode = process.exitCode();
-        
-        if (exitCode == 0) {
-            QMessageBox::information(this, "Login Successful", "Welcome!");
-            system("startx /usr/bin/cwm");
-            close();
-        } else {
-            QTimer::singleShot(3000, this, [=]() {
-                QMessageBox::warning(this, "Login Failed", "Invalid username or password.");
-            });
-        }
+    if (process.exitCode() != 0) {
+        QTimer::singleShot(3000, this, [=]() {
+            QMessageBox::warning(this, "Login Failed", "Invalid username or password.");
+        });
+        return;
+    }
+
+    QString command = QString("echo '%1' | sudo -S -u %2 /bin/true").arg(password, username);
+    process.start("bash", QStringList() << "-c" << command);
+    process.waitForFinished();
+
+    if (process.exitCode() == 0) {
+        QMessageBox::information(this, "Login Successful", "Welcome!");
+        system("startx /usr/bin/cwm");
+        close();
     } else {
         QTimer::singleShot(3000, this, [=]() {
             QMessageBox::warning(this, "Login Failed", "Invalid username or password.");
