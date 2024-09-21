@@ -166,10 +166,11 @@ void WindowManager::trackWindowEvents(Window xorgWindowId) {
     xDisplay = XOpenDisplay(nullptr);
     if (xDisplay) {
         XSelectInput(xDisplay, xorgWindowId, StructureNotifyMask);
+        
+        XResizeWindow(xDisplay, xorgWindowId, 500, 500);
     } else {
         appendLog("ERR: Failed to open X Display ..");
     }
-}
 
 void WindowManager::processX11Events() {
     XEvent event;
@@ -260,31 +261,13 @@ void WindowManager::updateTaskbarPosition(QWindow *window) {
         TopBar *topBar = windowTopBars.value(window->winId());
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
-
-        int windowWidth;
-        int windowHeight;
+        
         int topbarHeight = 30;
 
-        if (windowOriginalSizes.contains(window->winId())) {
-            QSize originalSize = windowOriginalSizes.value(window->winId());
-            windowWidth = originalSize.width();
-            windowHeight = originalSize.height();
-        } else {
-            windowWidth = window->width();
-            windowHeight = window->height();
-        }
+        QRect windowGeometry = window->geometry();
+        window->setGeometry(windowGeometry.x(), windowGeometry.y(), windowGeometry.width(), windowGeometry.height());
 
-        int centeredX = (screenGeometry.width() - windowWidth) / 2;
-        int centeredY = (screenGeometry.height() - windowHeight) / 2;
-
-        if (windowWidth <= 0 || windowHeight <= 0) {
-            windowWidth = 800;
-            windowHeight = 600;
-        }
-
-        window->setGeometry(centeredX, centeredY, windowWidth, windowHeight);
-
-        topBar->setGeometry(centeredX, centeredY - topbarHeight, windowWidth, topbarHeight);
+        topBar->setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
         topBar->show();
     }
 }
