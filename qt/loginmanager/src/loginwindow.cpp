@@ -50,16 +50,14 @@ QString LoginWindow::hashPassword(const QString &password) {
 }
 
 void LoginWindow::authenticateUser(const QString &username, const QString &password) {
-    struct spwd *userInfo = getspnam(username.toStdString().c_str());
-    if (!userInfo) {
-        QTimer::singleShot(3000, this, [=]() {
-            QMessageBox::warning(this, "Login Failed", "Invalid username or password.");
-        });
-        return;
-    }
+    QProcess process;
+    QString command = QString("echo '%1:%2' | chpasswd").arg(username, password);
+    
+    process.start("bash", QStringList() << "-c" << command);
+    process.waitForFinished();
 
-    const char* hashedPassword = crypt(password.toStdString().c_str(), userInfo->sp_pwdp);
-    if (hashedPassword && strcmp(hashedPassword, userInfo->sp_pwdp) == 0) {
+    int exitCode = process.exitCode();
+    if (exitCode == 0) {
         QMessageBox::information(this, "Login Successful", "Welcome!");
         system("startx /usr/bin/cwm");
         close();
