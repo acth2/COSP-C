@@ -2,7 +2,6 @@
 #include "../windowmanager.h"
 #include <QApplication>
 #include <QMouseEvent>
-#include <QGraphicsOpacityEffect>
 #include <QPushButton>
 #include <QProcess>
 #include <QPainter>
@@ -26,6 +25,21 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
         
     closeButton = new QPushButton("✕", this);
     closeButton->setFixedSize(30, 30);
+    closeButton->setStyleSheet(
+        "QPushButton {"
+        "   border-radius: 15px;"
+        "   background-color: white;"
+        "   color: black;"
+        "   border: none;"
+        "}"
+        "QPushButton:hover {"
+        "   background-color: red;"
+        "}"
+        "QPushButton:pressed {"
+        "   background-color: darkred;"
+        "}"
+    );
+
     connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
@@ -35,10 +49,6 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->setContentsMargins(10, 5, 10, 2);
 
     setLayout(layout);
-
-    QGraphicsOpacityEffect *opacityEffect = new QGraphicsOpacityEffect(this);
-    opacityEffect->setOpacity(0.7);
-    this->setGraphicsEffect(opacityEffect);
 
     updatePosition();
 }
