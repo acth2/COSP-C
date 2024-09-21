@@ -183,6 +183,8 @@ void TopBar::toggleMaximizeRestore() {
         maximizeWindow();
         isMaximized = true;
     }
+
+    updatePosition();
 }
 
 void TopBar::maximizeWindow() {
