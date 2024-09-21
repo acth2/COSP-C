@@ -37,6 +37,7 @@ protected:
 
 private slots:
     void closeTrackedWindow();
+    void maximizeWindow();
 
 private:
     QLabel *titleLabel;
