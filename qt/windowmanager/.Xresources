@@ -38,13 +38,10 @@ xterm*ScrollBar: false
 ! stop output to terminal from jumping down to bottom of scroll again
 xterm*scrollTtyOutput: false
 
+XTerm*vt100.translations: #override \
+    Shift Ctrl <Key> C: copy-selection(CLIPBOARD)
+
 ! Copy and paste settings
 XTerm*vt100.translations: #override \
-    Shift Ctrl <Key> C: copy-selection(CLIPBOARD) \n\
-    Shift Ctrl <Key> V: insert-selection(CLIPBOARD) \n\
-    ~Ctrl Shift <Btn3Down>: popup-menu()
-
-XTerm*VT100.translations: #override \
-    ~Ctrl Shift <Btn3Down>: popup-menu(mainMenu) \n\
     Shift Ctrl <Key> C: copy-selection(CLIPBOARD) \n\
     Shift Ctrl <Key> V: insert-selection(CLIPBOARD)
