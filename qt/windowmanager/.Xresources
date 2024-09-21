@@ -41,4 +41,18 @@ xterm*scrollTtyOutput: false
 ! Copy and paste settings
 XTerm*vt100.translations: #override \
     Shift Ctrl <Key> C: copy-selection(CLIPBOARD) \n\
-    Shift Ctrl <Key> V: insert-selection(CLIPBOARD)
+    Shift Ctrl <Key> V: insert-selection(CLIPBOARD) \n\
+    ~Ctrl Shift <Btn3Down>: popup-menu()
+
+! Custom right-click menu (Copy, Paste, Read Only)
+XTerm*VT100.translations: #override \
+    Ctrl Shift <Key> C: copy-selection(CLIPBOARD) \n\
+    Ctrl Shift <Key> V: insert-selection(CLIPBOARD) \n\
+    <Btn3Down>: popup-menu(mainMenu) \n\
+    <Btn1Up>: insert-selection(CLIPBOARD)
+
+! Adding menus for Copy, Paste, Read Only
+XTerm*mainMenu: \
+    "Copy"          :copy-selection(CLIPBOARD) \n\
+    "Paste"         :insert-selection(CLIPBOARD) \n\
+    "Read Only"     :set-readonly()
