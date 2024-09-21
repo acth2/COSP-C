@@ -63,6 +63,8 @@ void WindowManager::listExistingWindows() {
     if (xDisplay) {
         Atom netWmWindowType = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE", False);
         Atom netWmWindowTypeNormal = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", False);
+        Atom netWmWindowTypeNormal = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
+        Atom netWmWindowTypeNormal = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DOCK", False);
 
         Window windowRoot = DefaultRootWindow(xDisplay);
         Window parent, *children;
@@ -81,7 +83,7 @@ void WindowManager::listExistingWindows() {
                                    &type, &format, &nItems, &bytesAfter, &data) == Success) {
                     if (data) {
                         Atom *atoms = (Atom *)data;
-                        if (atoms[0] != netWmWindowTypeNormal ||atoms[0] == netWmWindowTypeDesktop) {
+                        if (atoms[0] != netWmWindowTypeNormal || atoms[0] == netWmWindowTypeDesktop || atoms[0] == netWmWindowTypeDock) {
                             appendLog("INFO: Skipping desktop or dock window: " + QString::number(child));
                             XFree(data);
                             continue;
