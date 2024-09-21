@@ -39,10 +39,6 @@ xterm*ScrollBar: false
 xterm*scrollTtyOutput: false
 
 ! Copy and paste settings
-XTerm*VT100.Translations: #override \
-    Ctrl <KeyPress> C: string( "\033]52;0;" )  \n\
-    Ctrl <KeyPress> V: string( "\033]52;0;" )  \n\
-    <Button-3>: popup-menu
-
-XTerm*selectToClipboard: true
-XTerm*copyToClipboard: true
+XTerm*vt100.translations: #override \
+    Shift Ctrl <Key> C: copy-selection(CLIPBOARD) \n\
+    Shift Ctrl <Key> V: insert-selection(CLIPBOARD)
