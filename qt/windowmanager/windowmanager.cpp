@@ -79,6 +79,7 @@ void WindowManager::listExistingWindows() {
 
                 if (XGetWindowProperty(xDisplay, child, netWmWindowType, 0, 1, False, XA_ATOM,
                                    &type, &format, &nItems, &bytesAfter, &data) == Success) {
+                    /*
                     if (data) {
                         Atom *atoms = (Atom *)data;
                         if (atoms[0] != netWmWindowTypeNormal) {
@@ -87,6 +88,7 @@ void WindowManager::listExistingWindows() {
                         }
                         XFree(data);
                     }
+                    */
                 }
 
                 XWindowAttributes attributes;
