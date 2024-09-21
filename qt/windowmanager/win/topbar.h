@@ -11,6 +11,7 @@
 #include <QEvent>
 #include <QObject>
 #include <QMouseEvent>
+#include <QRect>
 
 class WindowManager;
 
@@ -49,6 +50,8 @@ private:
     QPoint windowStartPos;
     WindowManager *windowManager;
     QWindow *trackedWindow;
+    QRect restoreGeometry;
+    bool isMaximized;
 };
 
 #endif // TOPBAR_H
