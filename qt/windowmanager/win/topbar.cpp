@@ -90,6 +90,7 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
 
         if (getTrackedWindow()) {
             getTrackedWindow()->requestActivate();
+            this->raise();
         }
 
         if (getPopup()->isVisible() && !getPopup()->geometry().contains(mouseEvent->globalPos())) {
