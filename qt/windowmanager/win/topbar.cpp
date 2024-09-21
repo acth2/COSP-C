@@ -8,6 +8,7 @@
 #include <QObject>
 #include <QString>
 #include <QGuiApplication>
+#include <QScreen>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
