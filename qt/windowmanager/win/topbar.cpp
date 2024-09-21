@@ -77,6 +77,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
         maximizeButton->setStyleSheet(
             "QPushButton {"
             "   background-color: black;"
+            "   color: white;"
             "   border-radius: 15px;"
             "   font-size: 18px;"
             "}"
