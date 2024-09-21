@@ -53,6 +53,8 @@ private:
     QWindow *trackedWindow;
     QRect restoreGeometry;
     bool isMaximized;
+
+    bool isDarkMode;
 };
 
 #endif // TOPBAR_H
