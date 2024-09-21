@@ -144,7 +144,7 @@ void UserInteractRight::paintEvent(QPaintEvent *event) {
 void UserInteractRight::button1Clicked() {
     QProcess *xtermProcess = new QProcess(this);
 
-    QString program = "uxterm";
+    QString program = "qterminal";
     QStringList arguments;
 
     xtermProcess->start(program, arguments);
