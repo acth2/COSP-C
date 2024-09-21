@@ -31,15 +31,15 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
         "   background-color: white;"
         "   color: black;"
         "   border: none;"
+        "   font-weight: bold;"
         "}"
         "QPushButton:hover {"
         "   background-color: red;"
         "}"
         "QPushButton:pressed {"
-        "   background-color: darkred;"
+        "   background-color: #8B0000;"
         "}"
     );
-
     connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
