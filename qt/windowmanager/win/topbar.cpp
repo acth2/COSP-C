@@ -13,6 +13,7 @@
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
     trackedWindow->installEventFilter(this);
+    isMaximized = false;
 
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::WindowDoesNotAcceptFocus);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -61,7 +62,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     );
 
     connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
-    connect(maximizeButton, &QPushButton::clicked, this, &TopBar::maximizeWindow);
+    connect(maximizeButton, &QPushButton::clicked, this, &TopBar::toggleMaximizeRestore);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
@@ -170,6 +171,17 @@ void TopBar::closeTrackedWindow() {
             QProcess::execute("kill -9 " + QString::number(pid));
         }
         this->close();
+    }
+}
+
+void TopBar::toggleMaximizeRestore() {
+    if (isMaximized) {
+        trackedWindow->setGeometry(restoreGeometry);
+        isMaximized = false;
+    } else {
+        restoreGeometry = trackedWindow->geometry();
+        maximizeWindow();
+        isMaximized = true;
     }
 }
 
