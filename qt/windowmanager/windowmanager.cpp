@@ -171,6 +171,7 @@ void WindowManager::trackWindowEvents(Window xorgWindowId) {
     } else {
         appendLog("ERR: Failed to open X Display ..");
     }
+}
 
 void WindowManager::processX11Events() {
     XEvent event;
