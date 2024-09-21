@@ -55,8 +55,7 @@ private:
     QMap<QWindow*, TaskBar*> windowTaskbars;
     QTimer *windowCheckTimer;
 
-    int trackedWindowDimX;
-    int trackedWindowDimY;
+    QMap<WId, QSize> windowOriginalSizes;
 
     void setupCloseButton(QWindow *window);
 };
