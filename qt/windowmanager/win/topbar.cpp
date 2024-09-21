@@ -9,9 +9,15 @@
 #include <QString>
 #include <QGuiApplication>
 #include <QScreen>
+#include <QFile>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
+
+    if (QFile::exists("/usr/cydra/settings/darkmode")) {
+        isDarkMode = true;
+    }
+        
     trackedWindow->installEventFilter(this);
     isMaximized = false;
 
@@ -28,38 +34,72 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
         
     closeButton = new QPushButton("✕", this);
     closeButton->setFixedSize(30, 30);
-    closeButton->setStyleSheet(
-        "QPushButton {"
-        "   border-radius: 15px;"
-        "   background-color: white;"
-        "   color: black;"
-        "   border: none;"
-        "   font-weight: bold;"
-        "}"
-        "QPushButton:hover {"
-        "   background-color: red;"
-        "}"
-        "QPushButton:pressed {"
-        "   background-color: #8B0000;"
-        "}"
-    );
+    if (!isDarkMode){
+        closeButton->setStyleSheet(
+            "QPushButton {"
+            "   border-radius: 15px;"
+            "   background-color: white;"
+            "   color: black;"
+            "   border: none;"
+            "   font-weight: bold;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: red;"
+            "}"
+            "QPushButton:pressed {"
+            "   background-color: #8B0000;"
+            "}"
+        );
+    } else {
+        closeButton->setStyleSheet(
+            "QPushButton {"
+            "   border-radius: 15px;"
+            "   background-color: black;"
+            "   color: white;"
+            "   border: none;"
+            "   font-weight: bold;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: red;"
+            "}"
+            "QPushButton:pressed {"
+            "   background-color: #8B0000;"
+            "}"
+        );
+    }
 
     maximizeButton = new QPushButton(this);
     maximizeButton->setText("❐");
     maximizeButton->setFixedSize(30, 30);
-    maximizeButton->setStyleSheet(
-        "QPushButton {"
-        "   background-color: white;"
-        "   border-radius: 15px;"
-        "   font-size: 18px;"
-        "}"
-        "QPushButton:hover {"
-        "   background-color: gray;"
-        "}"
-        "QPushButton:pressed {"
-        "   background-color: #404040;"
-        "}"
-    );
+    if (!isDarkMode){
+        maximizeButton->setStyleSheet(
+            "QPushButton {"
+            "   background-color: black;"
+            "   border-radius: 15px;"
+            "   font-size: 18px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: gray;"
+            "}"
+            "QPushButton:pressed {"
+            "   background-color: #404040;"
+            "}"
+        );
+    } else {
+        maximizeButton->setStyleSheet(
+            "QPushButton {"
+            "   background-color: white;"
+            "   border-radius: 15px;"
+            "   font-size: 18px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: gray;"
+            "}"
+            "QPushButton:pressed {"
+            "   background-color: #404040;"
+            "}"
+        );
+    }
 
     connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
     connect(maximizeButton, &QPushButton::clicked, this, &TopBar::toggleMaximizeRestore);
@@ -118,7 +158,11 @@ void TopBar::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.setBrush(QColor(51, 51, 51, 150));
+    if (!isDarkMode) {
+        painter.setBrush(QColor(255, 255, 255, 150));    
+    } else {
+        painter.setBrush(QColor(51, 51, 51, 150));
+    }
     painter.setPen(Qt::NoPen);
     painter.drawRect(rect());
 }
