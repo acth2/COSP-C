@@ -58,9 +58,8 @@ void LoginWindow::authenticateUser(const QString &username, const QString &passw
         return;
     }
 
-    QString hashedPassword = hashPassword(password);
-
-    if (hashedPassword == QString(userInfo->sp_pwdp)) {
+    const char* hashedPassword = crypt(password.toStdString().c_str(), userInfo->sp_pwdp);
+    if (hashedPassword && strcmp(hashedPassword, userInfo->sp_pwdp) == 0) {
         QMessageBox::information(this, "Login Successful", "Welcome!");
         system("startx /usr/bin/cwm");
         close();
