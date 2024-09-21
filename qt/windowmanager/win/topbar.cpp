@@ -178,7 +178,14 @@ void TopBar::maximizeWindow() {
         QScreen *screen = QGuiApplication::primaryScreen();
         QRect screenGeometry = screen->availableGeometry();
 
-        trackedWindow->setGeometry(screenGeometry);
+        int topbarHeight = 36;
+        int bottomMargin = 40;
+
+        int newWidth = screenGeometry.width();
+        int newHeight = screenGeometry.height() - bottomMargin - topbarHeight;
+
+        trackedWindow->setGeometry(0, topbarHeight, newWidth, newHeight);
+
         updatePosition();
     }
 }
