@@ -212,8 +212,6 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         QWidget *containerWidget = new QWidget(this);
         QVBoxLayout *layout = new QVBoxLayout(containerWidget);
 
-        containerWidget->setMinimumSize(800, 600);
-
         QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
 
         QRect geometry = x11Window->geometry();
