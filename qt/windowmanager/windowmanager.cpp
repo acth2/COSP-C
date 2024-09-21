@@ -93,7 +93,8 @@ void WindowManager::listExistingWindows() {
 
                 XWindowAttributes attributes;
                 if (XGetWindowAttributes(xDisplay, child, &attributes) == 0 || attributes.map_state != IsViewable) {
-                    continue;
+                    appendLog("INFO: Skipping attribute window" + QString::number(child));
+                    //continue;
                 }
 
                 QRect windowGeometry(attributes.x, attributes.y, attributes.width, attributes.height);
