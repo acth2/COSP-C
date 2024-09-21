@@ -79,20 +79,13 @@ void WindowManager::listExistingWindows() {
 
                 if (XGetWindowProperty(xDisplay, child, netWmWindowType, 0, 1, False, XA_ATOM,
                                    &type, &format, &nItems, &bytesAfter, &data) == Success) {
-                    XWindowAttributes attributes;
-
-                    if (XGetWindowAttributes(xDisplay, child, &attributes) == 0) {
-                        continue;
-                    }
-
-                    if (attributes.map_state == IsViewable && attributes.width > 0 && attributes.height > 0) {
-                        appendLog("INFO: Adding topbar to graphical window: " + QString::number(child));
-    
-                        if (!trackedWindows.contains(child)) {
-                            createAndTrackWindow(child);
+                    if (data) {
+                        Atom *atoms = (Atom *)data;
+                        if (atoms[0] != netWmWindowTypeNormal) {
+                            XFree(data);
+                            continue;
                         }
-                    } else {
-                        appendLog("INFO: Skipping non-graphical window: " + QString::number(child));
+                        XFree(data);
                     }
                 }
 
