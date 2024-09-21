@@ -9,7 +9,8 @@
 #include <crypt.h>
 #include <shadow.h>
 #include <unistd.h>
-LoginWindow::LoginWindow(QWidget *parent)
+
+LoginWindow::LoginWindow(QWidget *parent) {
     : QWidget(parent) {
 
     QVBoxLayout *layout = new QVBoxLayout(this);
