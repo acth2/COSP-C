@@ -67,6 +67,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
     layout->addStretch();
+    layout->addWidget(maximizeButton);
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
 
