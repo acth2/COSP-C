@@ -204,6 +204,7 @@ void WindowManager::toggleConsole() {
     logLabel->setVisible(isConsoleVisible);
     appendLog("Welcome into the DEBUG window (Where my nightmare comes true), Press ESC to exit it");
 }
+
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
     if (x11Window) {
@@ -217,18 +218,20 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         QVBoxLayout *layout = new QVBoxLayout(containerWidget);
 
         QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
-
+        
         QRect geometry = x11Window->geometry();
         int topbarHeight = 30;
 
         if (geometry.isValid()) {
             containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
         } else {
-            containerWidget->setGeometry(50, 80, 800, 600 + topbarHeight);
+            containerWidget->setGeometry(50, 80, 500, 500 + topbarHeight);
         }
+
+        layout->setContentsMargins(0, 0, 0, 0);
+        layout->setSpacing(0);
         layout->addWidget(windowWidget);
         containerWidget->setLayout(layout);
-
         containerWidget->show();
 
         TopBar *topBar = new TopBar(x11Window, this);
@@ -243,8 +246,6 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         appendLog("ERR: Failed to create a window from X11 ID");
     }
 }
-
-
 void WindowManager::closeWindow(WId windowId) {
     if (trackedWindows.contains(windowId)) {
         QWindow* window = trackedWindows.value(windowId);
