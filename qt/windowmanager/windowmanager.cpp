@@ -202,15 +202,14 @@ void WindowManager::toggleConsole() {
     logLabel->setVisible(isConsoleVisible);
     appendLog("Welcome into the DEBUG window (Where my nightmare comes true), Press ESC to exit it");
 }
-
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
     if (x11Window) {
-        QSize originalSize = x11Window->size();
-        windowOriginalSizes.insert(xorgWindowId, originalSize);
-        
         trackedWindows.insert(xorgWindowId, x11Window);
         appendLog(QString("INFO: Detected new window: %1").arg(xorgWindowId));
+
+        QSize originalSize = x11Window->size();
+        windowOriginalSizes.insert(xorgWindowId, originalSize);
 
         QWidget *containerWidget = new QWidget(this);
         QVBoxLayout *layout = new QVBoxLayout(containerWidget);
@@ -220,15 +219,11 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         QRect geometry = x11Window->geometry();
         int topbarHeight = 30;
 
-        if (windowOriginalSizes.contains(window->winId())) {
-            QSize originalSize = windowOriginalSizes.value(window->winId());
-            windowWidth = originalSize.width();
-            windowHeight = originalSize.height();
+        if (geometry.isValid()) {
+            containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
         } else {
-            windowWidth = window->width();
-            windowHeight = window->height();
+            containerWidget->setGeometry(50, 80, 800, 600 + topbarHeight);
         }
-        
         layout->addWidget(windowWidget);
         containerWidget->setLayout(layout);
 
@@ -247,25 +242,37 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     }
 }
 
+
 void WindowManager::closeWindow(WId windowId) {
     if (trackedWindows.contains(windowId)) {
         QWindow* window = trackedWindows.value(windowId);
         if (window) {
+            windowOriginalSizes[windowId] = window->size();
             window->hide();
             trackedWindows.remove(windowId);
-            appendLog("INFO: Window killed");
+            appendLog("INFO: Window closed and size saved");
         }
     }
 }
+
 void WindowManager::updateTaskbarPosition(QWindow *window) {
     if (windowTopBars.contains(window->winId())) {
         TopBar *topBar = windowTopBars.value(window->winId());
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
-        
-        int windowWidth = window->width();
-        int windowHeight = window->height();
+
+        int windowWidth;
+        int windowHeight;
         int topbarHeight = 30;
+
+        if (windowOriginalSizes.contains(window->winId())) {
+            QSize originalSize = windowOriginalSizes.value(window->winId());
+            windowWidth = originalSize.width();
+            windowHeight = originalSize.height();
+        } else {
+            windowWidth = window->width();
+            windowHeight = window->height();
+        }
 
         int centeredX = (screenGeometry.width() - windowWidth) / 2;
         int centeredY = (screenGeometry.height() - windowHeight) / 2;
@@ -273,8 +280,6 @@ void WindowManager::updateTaskbarPosition(QWindow *window) {
         if (windowWidth <= 0 || windowHeight <= 0) {
             windowWidth = 800;
             windowHeight = 600;
-            centeredX = (screenGeometry.width() - windowWidth) / 2;
-            centeredY = (screenGeometry.height() - windowHeight) / 2;
         }
 
         window->setGeometry(centeredX, centeredY, windowWidth, windowHeight);
