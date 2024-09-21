@@ -61,8 +61,8 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     );
 
     maximizeButton->move(closeButton->x() - 40, 5);
-    connect(closeButton, &QPushButton::clicked, this, &TopBar::maximizeWindow);
-    connect(maximizeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
+    connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
+    connect(maximizeButton, &QPushButton::clicked, this, &TopBar::maximizeWindow);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
