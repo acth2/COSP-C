@@ -10,8 +10,7 @@
 #include <shadow.h>
 #include <unistd.h>
 
-LoginWindow::LoginWindow(QWidget *parent) {
-    : QWidget(parent) {
+LoginWindow::LoginWindow(QWidget *parent) : QWidget(parent) {
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     QLabel *userLabel = new QLabel("Username:");
