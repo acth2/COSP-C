@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QObject>
 #include <QString>
+#include <QGuiApplication>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
@@ -40,6 +41,26 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
         "   background-color: #8B0000;"
         "}"
     );
+
+    maximizeButton = new QPushButton(this);
+    maximizeButton->setText("❐");
+    maximizeButton->setFixedSize(30, 30);
+    maximizeButton->setStyleSheet(
+        "QPushButton {"
+        "   background-color: white;"
+        "   border-radius: 15px;"
+        "   font-size: 18px;"
+        "}"
+        "QPushButton:hover {"
+        "   background-color: gray;"
+        "}"
+        "QPushButton:pressed {"
+        "   background-color: #404040;"
+        "}"
+    );
+
+    maximizeButton->move(closeButton->x() - 40, 5);
+    connect(closeButton, &QPushButton::clicked, this, &TopBar::maximizeWindow);
     connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
@@ -148,5 +169,19 @@ void TopBar::closeTrackedWindow() {
             QProcess::execute("kill -9 " + QString::number(pid));
         }
         this->close();
+    }
+}
+
+void TopBar::closeTrackedWindow() {
+    if (parentWidget()) {
+        QWidget *parentWindow = parentWidget();
+
+        QScreen *screen = QGuiApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
+
+        int screenWidth = screenGeometry.width();
+        int screenHeight = screenGeometry.height() - 40;
+
+        parentWindow->setGeometry(0, 0, screenWidth, screenHeight);
     }
 }
