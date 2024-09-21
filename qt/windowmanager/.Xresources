@@ -15,7 +15,7 @@ xterm*charClass: 33:48,36-47:48,58-59:48,61:48,63-64:48,95:48,126:48
 xterm*foreground: rgb:a8/a8/a8
 xterm*background: rgb:00/00/00
 xterm*color0: rgb:00/00/00
-xterm*color1: rgb:a8/00/00
+xterm*color1: rgb:a8/00/00https://github.com/acth2/COSP-C/blob/main/qt/windowmanager/.Xresources
 xterm*color2: rgb:00/a8/00
 xterm*color3: rgb:a8/54/00
 xterm*color4: rgb:00/00/a8
@@ -48,9 +48,3 @@ XTerm*VT100.translations: #override \
     ~Ctrl Shift <Btn3Down>: popup-menu(mainMenu) \n\
     Shift Ctrl <Key> C: copy-selection(CLIPBOARD) \n\
     Shift Ctrl <Key> V: insert-selection(CLIPBOARD)
-
-! Defining the custom right-click menu (Copy, Paste, Read Only)
-XTerm*mainMenu: \
-    "Copy" :copy-selection(CLIPBOARD) \n\
-    "Paste" :insert-selection(CLIPBOARD) \n\
-    "Read Only" :set-readonly()
