@@ -44,7 +44,7 @@ void LoginWindow::onLoginClicked() {
     authenticateUser(username, password);
 }
 
-QString hashPassword(const QString &password) {
+QString LoginWindow::hashPassword(const QString &password) {
     QByteArray hashed = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256);
     return QString(hashed.toHex());
 }
