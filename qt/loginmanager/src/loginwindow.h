@@ -12,19 +12,17 @@ class LoginWindow : public QWidget {
 
 public:
     explicit LoginWindow(QWidget *parent = nullptr);
-    QString hashPassword(const QString &password);
 
 private slots:
     void onLoginClicked();
 
 private:
+    void authenticateUser(const QString &username, const QString &password);
     QLineEdit *usernameField;
     QLineEdit *passwordField;
     QPushButton *loginButton;
-    QLabel *messageLabel;
 
-    void authenticateUser(const QString &username, const QString &password);
-    void showMessage(const QString &message, bool isError);
+    QString executeCommand(const QString &command);
 };
 
 #endif // LOGINWINDOW_H
