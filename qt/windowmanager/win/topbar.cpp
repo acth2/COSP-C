@@ -9,7 +9,6 @@
 #include <QString>
 #include <QGuiApplication>
 #include <QScreen>
-#include <QCursor>
 #include <QFile>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
@@ -78,7 +77,6 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
         maximizeButton->setStyleSheet(
             "QPushButton {"
             "   background-color: black;"
-            "   color: white;"
             "   border-radius: 15px;"
             "   font-size: 18px;"
             "}"
@@ -145,7 +143,6 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
     }
     return QWidget::eventFilter(obj, event);
 }
-
 void TopBar::updatePosition() {
     if (trackedWindow) {
         QRect windowGeometry = trackedWindow->geometry();
@@ -172,42 +169,34 @@ void TopBar::paintEvent(QPaintEvent *event) {
     painter.drawRect(rect());
 }
 
-void TopBar::mouseMoveEvent(QMouseEvent *event) {
-    if (resizing) {
-        QSize newSize = resizeStartSize + QSize(event->globalPos().x() - resizeStartPosition.x(),
-                                                event->globalPos().y() - resizeStartPosition.y());
-        parentWindow->resize(newSize);
-    } else if (dragging) {
-        parentWindow->move(event->globalPos() - dragStartPosition);
-    }
+void TopBar::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        isDragging = true;
+        dragStartPos = event->globalPos();
+        windowStartPos = trackedWindow->geometry().topLeft();
 
-    QWidget::mouseMoveEvent(event);
+        if (trackedWindow) {
+            trackedWindow->requestActivate();
+        }
+    }
 }
 
-void TopBar::mousePressEvent(QMouseEvent *event) {
-    int margin = 10;
-
-    bool onRightEdge = event->x() > (parentWindow->width() - margin);
-    bool onBottomEdge = event->y() > (parentWindow->height() - margin);
-
-    if (onRightEdge || onBottomEdge) {
-        resizing = true;
-        resizeStartPosition = event->globalPos();
-        resizeStartSize = parentWindow->size();
-    } else {
-        dragging = true;
-        dragStartPosition = event->globalPos() - parentWindow->frameGeometry().topLeft();
+void TopBar::mouseMoveEvent(QMouseEvent *event) {
+    if (isDragging) {
+        QPoint delta = event->globalPos() - dragStartPos;
+        QPoint newWindowPos = windowStartPos + delta;
+        QApplication::setOverrideCursor(Qt::ClosedHandCursor);
+        trackedWindow->setGeometry(QRect(newWindowPos, trackedWindow->geometry().size()));
+        updatePosition();
     }
-    QWidget::mousePressEvent(event);
 }
 
 void TopBar::mouseReleaseEvent(QMouseEvent *event) {
-    resizing = false;
-    dragging = false;
-    setCursor(Qt::ArrowCursor);
-    QWidget::mouseReleaseEvent(event);
+    if (event->button() == Qt::LeftButton) {
+        isDragging = false;
+        QApplication::setOverrideCursor(Qt::ArrowCursor);
+    }
 }
-
 
 void TopBar::closePopup() {
     if (popup->isVisible()) {
