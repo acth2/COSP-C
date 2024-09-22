@@ -160,19 +160,9 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
 void TopBar::updatePosition() {
     if (trackedWindow) {
         QRect windowGeometry = trackedWindow->geometry();
-
-        this->move(windowGeometry.x(), windowGeometry.y() - this->height());
-
-        int handleWidth = 10;
-        int handleHeight = 10;
-
-        rightResizeHandle->setGeometry(windowGeometry.width() - handleWidth, 0, handleWidth, windowGeometry.height());
-        leftResizeHandle->setGeometry(0, 0, handleWidth, windowGeometry.height());
-        bottomResizeHandle->setGeometry(0, windowGeometry.height() - handleHeight, windowGeometry.width(), handleHeight);
-
-        rightResizeHandle->move(windowGeometry.x() + windowGeometry.width() - handleWidth, windowGeometry.y());
-        leftResizeHandle->move(windowGeometry.x() - handleWidth, windowGeometry.y());
-        bottomResizeHandle->move(windowGeometry.x(), windowGeometry.y() + windowGeometry.height() - handleHeight);
+        int topbarHeight = 36;
+        setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
+        show();
     }
 }
 
@@ -210,7 +200,6 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
         windowStartPos = trackedWindow->position();
         setCursor(Qt::ClosedHandCursor);
     }
-    updatePosition();
     QWidget::mousePressEvent(event);
 }
 
@@ -221,7 +210,6 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
     isDragging = false;
     setCursor(Qt::ArrowCursor);
     QWidget::mouseReleaseEvent(event);
-    updatePosition();
 }
 
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
@@ -238,7 +226,6 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
         }
         trackedWindow->setPosition(windowStartPos + (event->globalPos() - dragStartPos));
     }
-    updatePosition();
     QWidget::mouseMoveEvent(event);
 }
 
