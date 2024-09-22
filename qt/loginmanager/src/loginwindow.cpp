@@ -76,8 +76,9 @@ void LoginWindow::authenticateUser(const QString &username, const QString &passw
 
     if (process.exitCode() == 0) {
         showMessage("Welcome!", false);
-        system("/usr/bin/cwm");
-        close();
+        QTimer::singleShot(1000, this, [=]() {
+            close();
+        });
     } else {
         QTimer::singleShot(3000, this, [=]() {
             showMessage("Invalid username or password.", true);
