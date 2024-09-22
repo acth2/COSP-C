@@ -61,8 +61,6 @@ void LoginWindow::authenticateUser(const QString &username, const QString &passw
 
     if (result.contains("Last login")) {
         QMessageBox::information(this, "Login Successful", "Welcome!");
-        system("startx /usr/bin/cwm");
-        close();
     } else {
         QTimer::singleShot(3000, this, [=]() {
             QMessageBox::warning(this, "Login Failed", "Invalid username or password.");
