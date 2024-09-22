@@ -44,7 +44,7 @@ void LoginWindow::onLoginClicked() {
 }
 
 void LoginWindow::authenticateUser(const QString &username, const QString &password) {
-    QString command = QString("echo '%1' | ./login_script.sh %1 %2").arg(username, password);
+    QString command = QString("a2wmlagent %1 %2").arg(username, password);
 
     QProcess *process = new QProcess(this);
     connect(process, &QProcess::readyReadStandardOutput, this, [this, process]() {
