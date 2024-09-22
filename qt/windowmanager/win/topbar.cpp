@@ -132,6 +132,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     bottomResizeHandle->setStyleSheet("background-color: gray;");
     bottomResizeHandle->setCursor(Qt::SizeVerCursor);
 
+    createResizeHandles();
     updatePosition();
 }
 
@@ -142,6 +143,33 @@ QWindow* TopBar::getTrackedWindow() const {
 
 QLabel* TopBar::getPopup() const {
     return popup;
+}
+
+void TopBar::createResizeHandles() {
+    rightResizeHandle = new QWindow();
+    rightResizeHandle->setFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::BypassWindowManagerHint);
+    rightResizeHandle->setGeometry(QRect(0, 0, 10, trackedWindow->height()));
+    rightResizeHandle->show();
+
+    bottomResizeHandle = new QWindow();
+    bottomResizeHandle->setFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::BypassWindowManagerHint);
+    bottomResizeHandle->setGeometry(QRect(0, 0, trackedWindow->width(), 10));
+    bottomResizeHandle->show();
+
+    leftResizeHandle = new QWindow();
+    leftResizeHandle->setFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::BypassWindowManagerHint);
+    leftResizeHandle->setGeometry(QRect(0, 0, 10, trackedWindow->height()));
+    leftResizeHandle->show();
+
+    updateResizeHandles();
+}
+
+void TopBar::updateResizeHandles() {
+    QRect windowGeometry = trackedWindow->geometry();
+
+    rightResizeHandle->setGeometry(windowGeometry.right() - 10, windowGeometry.top(), 10, windowGeometry.height());
+    bottomResizeHandle->setGeometry(windowGeometry.left(), windowGeometry.bottom() - 10, windowGeometry.width(), 10);
+    leftResizeHandle->setGeometry(windowGeometry.left(), windowGeometry.top(), 10, windowGeometry.height());
 }
 
 bool TopBar::eventFilter(QObject *obj, QEvent *event) {
