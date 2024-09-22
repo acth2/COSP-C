@@ -64,8 +64,6 @@ private:
     bool resizingLeft = false;
     bool resizingBottom = false;
 
-    void setupResizeHandles();
-
     void handleResizeRight(const QPoint &mousePos);
     void handleResizeLeft(const QPoint &mousePos);
     void handleResizeBottom(const QPoint &mousePos);
