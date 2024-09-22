@@ -27,4 +27,4 @@ INSTALLS += target
 target.path = /usr/bin
 target.files = $$DESTDIR/windowmanager
 
-target.extra = mv $$DESTDIR/windowmanager /usr/bin/cwm 2> /dev/null
+target.extra = mv $$DESTDIR/windowmanager /usr/bin/a2wm 2> /dev/null
