@@ -47,6 +47,7 @@ private:
     QPushButton *closeButton;
     QPushButton *maximizeButton;
     bool isDragging = false;
+    bool isResiring = false;
     QPoint dragStartPos;
     QPoint windowStartPos;
 
