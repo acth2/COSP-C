@@ -76,7 +76,7 @@ void LoginWindow::authenticateUser(const QString &username, const QString &passw
 
     if (process.exitCode() == 0) {
         showMessage("Welcome!", false);
-        system("startx /usr/bin/cwm");
+        system("/usr/bin/cwm");
         close();
     } else {
         QTimer::singleShot(3000, this, [=]() {
