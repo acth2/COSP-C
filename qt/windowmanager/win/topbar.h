@@ -59,14 +59,11 @@ private:
     QWindow *rightResizeHandle;
     QWindow *leftResizeHandle;
     QWindow *bottomResizeHandle;
-    QPoint resizeStartPos;
-    bool resizingRight = false;
-    bool resizingLeft = false;
-    bool resizingBottom = false;
 
-    void handleResizeRight(const QPoint &mousePos);
-    void handleResizeLeft(const QPoint &mousePos);
-    void handleResizeBottom(const QPoint &mousePos);
+    QPoint resizeStartPos;
+    bool isResizing = false;
+    Qt::Edge resizeEdge;
+    QRect initialWindowGeometry;
 
     void createResizeHandles();
     void updateResizeHandles();
