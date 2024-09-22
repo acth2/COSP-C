@@ -69,6 +69,12 @@ private:
     void handleResizeRight(const QPoint &mousePos);
     void handleResizeLeft(const QPoint &mousePos);
     void handleResizeBottom(const QPoint &mousePos);
+
+    void setupResizeHandle(QWindow *handle, Qt::Edge edge);
+    bool resizingRight;
+    bool resizingLeft;
+    bool resizingBottom;
+
 };
 
 #endif // TOPBAR_H
