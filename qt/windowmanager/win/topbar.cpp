@@ -115,31 +115,19 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 
     setLayout(layout);
 
-    setupResizeHandles();
-    updatePosition();
-}
-
-void TopBar::setupResizeHandles() {
     rightResizeHandle = new QWidget(this);
-    rightResizeHandle->setFixedWidth(10);
+    rightResizeHandle->setStyleSheet("background-color: gray;");
     rightResizeHandle->setCursor(Qt::SizeHorCursor);
-    rightResizeHandle->setStyleSheet("background-color: transparent;");
-    rightResizeHandle->move(trackedWindow->geometry().width() - 10, 0);
-    rightResizeHandle->setFixedHeight(trackedWindow->geometry().height());
 
     leftResizeHandle = new QWidget(this);
-    leftResizeHandle->setFixedWidth(10);
+    leftResizeHandle->setStyleSheet("background-color: gray;");
     leftResizeHandle->setCursor(Qt::SizeHorCursor);
-    leftResizeHandle->setStyleSheet("background-color: transparent;");
-    leftResizeHandle->move(0, 0);
-    leftResizeHandle->setFixedHeight(trackedWindow->geometry().height());
 
     bottomResizeHandle = new QWidget(this);
-    bottomResizeHandle->setFixedHeight(10);
+    bottomResizeHandle->setStyleSheet("background-color: gray;");
     bottomResizeHandle->setCursor(Qt::SizeVerCursor);
-    bottomResizeHandle->setStyleSheet("background-color: transparent;");
-    bottomResizeHandle->move(0, trackedWindow->geometry().height() - 10);
-    bottomResizeHandle->setFixedWidth(trackedWindow->geometry().width());
+
+    updatePosition();
 }
 
 
@@ -199,16 +187,29 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
     resizeStartPos = event->globalPos();
     if (rightResizeHandle->geometry().contains(event->pos())) {
         resizingRight = true;
+        setCursor(Qt::SizeHorCursor);
     } else if (leftResizeHandle->geometry().contains(event->pos())) {
         resizingLeft = true;
+        setCursor(Qt::SizeHorCursor);
     } else if (bottomResizeHandle->geometry().contains(event->pos())) {
         resizingBottom = true;
+        setCursor(Qt::SizeVerCursor);
     } else {
         isDragging = true;
         dragStartPos = event->globalPos();
         windowStartPos = trackedWindow->position();
+        setCursor(Qt::ClosedHandCursor);
     }
     QWidget::mousePressEvent(event);
+}
+
+void TopBar::mouseReleaseEvent(QMouseEvent *event) {
+    resizingRight = false;
+    resizingLeft = false;
+    resizingBottom = false;
+    isDragging = false;
+    setCursor(Qt::ArrowCursor);
+    QWidget::mouseReleaseEvent(event);
 }
 
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
@@ -219,37 +220,39 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
     } else if (resizingBottom) {
         handleResizeBottom(event->globalPos());
     } else if (isDragging) {
+        if (isMaximized) {
+            trackedWindow->setGeometry(restoreGeometry);
+            isMaximized = false;
+        }
         trackedWindow->setPosition(windowStartPos + (event->globalPos() - dragStartPos));
     }
     QWidget::mouseMoveEvent(event);
 }
 
-void TopBar::mouseReleaseEvent(QMouseEvent *event) {
-    resizingRight = false;
-    resizingLeft = false;
-    resizingBottom = false;
-    isDragging = false;
-    QWidget::mouseReleaseEvent(event);
-}
-
 void TopBar::handleResizeRight(const QPoint &mousePos) {
     int deltaX = mousePos.x() - resizeStartPos.x();
     QRect windowGeometry = trackedWindow->geometry();
-    trackedWindow->setGeometry(windowGeometry.x(), windowGeometry.y(), windowGeometry.width() + deltaX, windowGeometry.height());
+    if (windowGeometry.width() + deltaX >= minimumWidth()) {
+        trackedWindow->setGeometry(windowGeometry.x(), windowGeometry.y(), windowGeometry.width() + deltaX, windowGeometry.height());
+    }
     resizeStartPos = mousePos;
 }
 
 void TopBar::handleResizeLeft(const QPoint &mousePos) {
     int deltaX = mousePos.x() - resizeStartPos.x();
     QRect windowGeometry = trackedWindow->geometry();
-    trackedWindow->setGeometry(windowGeometry.x() + deltaX, windowGeometry.y(), windowGeometry.width() - deltaX, windowGeometry.height());
+    if (windowGeometry.width() - deltaX >= minimumWidth()) {
+        trackedWindow->setGeometry(windowGeometry.x() + deltaX, windowGeometry.y(), windowGeometry.width() - deltaX, windowGeometry.height());
+    }
     resizeStartPos = mousePos;
 }
 
 void TopBar::handleResizeBottom(const QPoint &mousePos) {
     int deltaY = mousePos.y() - resizeStartPos.y();
     QRect windowGeometry = trackedWindow->geometry();
-    trackedWindow->setGeometry(windowGeometry.x(), windowGeometry.y(), windowGeometry.width(), windowGeometry.height() + deltaY);
+    if (windowGeometry.height() + deltaY >= minimumHeight()) {
+        trackedWindow->setGeometry(windowGeometry.x(), windowGeometry.y(), windowGeometry.width(), windowGeometry.height() + deltaY);
+    }
     resizeStartPos = mousePos;
 }
 
