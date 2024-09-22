@@ -7,20 +7,26 @@
 #include <QDesktopWidget>
 #include <QCryptographicHash>
 #include <QPushButton>
+#include <QCursor>
 #include <QProcess>
 #include <cstdlib>
-#include <crypt.h>
-#include <shadow.h>
-#include <unistd.h>
 
 LoginWindow::LoginWindow(QWidget *parent) : QWidget(parent) {
-
     QVBoxLayout *layout = new QVBoxLayout(this);
+
+    messageLabel = new QLabel();
+    messageLabel->setAlignment(Qt::AlignCenter);
+    layout->addWidget(messageLabel);
+
     QLabel *userLabel = new QLabel("Username:");
+    userLabel->setAlignment(Qt::AlignCenter);
     usernameField = new QLineEdit;
+    
     QLabel *passLabel = new QLabel("Password:");
+    passLabel->setAlignment(Qt::AlignCenter);
     passwordField = new QLineEdit;
     passwordField->setEchoMode(QLineEdit::Password);
+    
     loginButton = new QPushButton("Login");
 
     layout->addWidget(userLabel);
@@ -36,6 +42,8 @@ LoginWindow::LoginWindow(QWidget *parent) : QWidget(parent) {
     int screenHeight = QApplication::desktop()->screen()->height();
     move((screenWidth - windowSize.width()) / 2, (screenHeight - windowSize.height()) / 2);
     resize(windowSize);
+
+    QCursor::setPos(mapToGlobal(QPoint(width() / 2, height() / 2)));
 }
 
 void LoginWindow::onLoginClicked() {
@@ -45,9 +53,9 @@ void LoginWindow::onLoginClicked() {
     authenticateUser(username, password);
 }
 
-QString LoginWindow::hashPassword(const QString &password) {
-    QByteArray hashed = QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256);
-    return QString(hashed.toHex());
+void LoginWindow::showMessage(const QString &message, bool isError) {
+    messageLabel->setText(message);
+    messageLabel->setStyleSheet(isError ? "color: red;" : "color: green;");
 }
 
 void LoginWindow::authenticateUser(const QString &username, const QString &password) {
@@ -57,7 +65,7 @@ void LoginWindow::authenticateUser(const QString &username, const QString &passw
 
     if (process.exitCode() != 0) {
         QTimer::singleShot(3000, this, [=]() {
-            QMessageBox::warning(this, "Login Failed", "Invalid username or password.");
+            showMessage("Invalid username or password.", true);
         });
         return;
     }
@@ -67,12 +75,12 @@ void LoginWindow::authenticateUser(const QString &username, const QString &passw
     process.waitForFinished();
 
     if (process.exitCode() == 0) {
-        QMessageBox::information(this, "Login Successful", "Welcome!");
+        showMessage("Welcome!", false);
         system("startx /usr/bin/cwm");
         close();
     } else {
         QTimer::singleShot(3000, this, [=]() {
-            QMessageBox::warning(this, "Login Failed", "Invalid username or password.");
+            showMessage("Invalid username or password.", true);
         });
     }
 }
