@@ -56,17 +56,19 @@ private:
 
     bool isDarkMode;
 
-    QWindow *rightResizeHandle;
     QWindow *leftResizeHandle;
+    QWindow *rightResizeHandle;
     QWindow *bottomResizeHandle;
-
-    QPoint resizeStartPos;
     bool isResizing = false;
     Qt::Edge resizeEdge;
+    QPoint resizeStartPos;
     QRect initialWindowGeometry;
-
     void createResizeHandles();
     void updateResizeHandles();
+
+    void handleResizeRight(const QPoint &mousePos);
+    void handleResizeLeft(const QPoint &mousePos);
+    void handleResizeBottom(const QPoint &mousePos);
 };
 
 #endif // TOPBAR_H
