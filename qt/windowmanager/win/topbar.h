@@ -51,24 +51,12 @@ private:
     QPoint dragStartPos;
     QPoint windowStartPos;
 
-    enum ResizeRegion {
-        NoResize,
-        TopEdge,
-        BottomEdge,
-        LeftEdge,
-        RightEdge,
-        TopLeftCorner,
-        TopRightCorner,
-        BottomLeftCorner,
-        BottomRightCorner
-    };
+    bool dragging;
+    bool resizing;
+    QPoint dragStartPosition;
+    QPoint resizeStartPosition;
+    QSize resizeStartSize;
 
-    const int EDGE_THRESHOLD = 5;
-    ResizeRegion currentResizeRegion = NoResize;
-
-    void detectEdge(const QPoint &pos);
-    void startResize();
-    QCursor cursorForResizeRegion(ResizeRegion region) const;
     WindowManager *windowManager;
     QWindow *trackedWindow;
     QRect restoreGeometry;
