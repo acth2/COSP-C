@@ -9,6 +9,7 @@
 #include <QString>
 #include <QGuiApplication>
 #include <QScreen>
+#include <QCursor>
 #include <QFile>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
@@ -171,24 +172,20 @@ void TopBar::paintEvent(QPaintEvent *event) {
     painter.drawRect(rect());
 }
 
-void TopBar::mousePressEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
-        isDragging = true;
-        dragStartPos = event->globalPos();
 
-        if (isMaximized) {
-            trackedWindow->setGeometry(restoreGeometry);
-            isMaximized = false;
-        }
+enum ResizeRegion {
+    NoResize,
+    TopEdge,
+    BottomEdge,
+    LeftEdge,
+    RightEdge,
+    TopLeftCorner,
+    TopRightCorner,
+    BottomLeftCorner,
+    BottomRightCorner
+};
 
-        windowStartPos = trackedWindow->geometry().topLeft();
-
-        if (trackedWindow) {
-            trackedWindow->requestActivate();
-        }
-    }
-}
-
+ResizeRegion currentResizeRegion = NoResize;
 
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
     if (isDragging) {
@@ -197,13 +194,133 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
         QApplication::setOverrideCursor(Qt::ClosedHandCursor);
         trackedWindow->setGeometry(QRect(newWindowPos, trackedWindow->geometry().size()));
         updatePosition();
+    } else {
+        detectEdge(event->pos());
+        if (currentResizeRegion != NoResize) {
+            QApplication::setOverrideCursor(cursorForResizeRegion(currentResizeRegion));
+        } else {
+            QApplication::restoreOverrideCursor();
+        }
+    }
+}
+
+void TopBar::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        if (currentResizeRegion != NoResize) {
+            isDragging = true;
+            dragStartPos = event->globalPos();
+            windowStartPos = trackedWindow->geometry().topLeft();
+            startResize();
+        } else {
+            isDragging = true;
+            dragStartPos = event->globalPos();
+            windowStartPos = trackedWindow->geometry().topLeft();
+            if (trackedWindow) {
+                trackedWindow->requestActivate();
+            }
+        }
+    }
+}
+
+void TopBar::startResize() {
+    QRect geometry = trackedWindow->geometry();
+    QRect newGeometry = geometry;
+
+    QPoint globalMousePos = QCursor::pos();
+    QPoint delta = globalMousePos - dragStartPos;
+
+    switch (currentResizeRegion) {
+        case TopEdge:
+            newGeometry.setTop(geometry.top() + delta.y());
+            break;
+        case BottomEdge:
+            newGeometry.setBottom(geometry.bottom() + delta.y());
+            break;
+        case LeftEdge:
+            newGeometry.setLeft(geometry.left() + delta.x());
+            break;
+        case RightEdge:
+            newGeometry.setRight(geometry.right() + delta.x());
+            break;
+        case TopLeftCorner:
+            newGeometry.setTop(geometry.top() + delta.y());
+            newGeometry.setLeft(geometry.left() + delta.x());
+            break;
+        case TopRightCorner:
+            newGeometry.setTop(geometry.top() + delta.y());
+            newGeometry.setRight(geometry.right() + delta.x());
+            break;
+        case BottomLeftCorner:
+            newGeometry.setBottom(geometry.bottom() + delta.y());
+            newGeometry.setLeft(geometry.left() + delta.x());
+            break;
+        case BottomRightCorner:
+            newGeometry.setBottom(geometry.bottom() + delta.y());
+            newGeometry.setRight(geometry.right() + delta.x());
+            break;
+        default:
+            break;
+    }
+
+    if (trackedWindow) {
+        trackedWindow->setGeometry(newGeometry);
+        updatePosition();
+    }
+}
+
+void TopBar::detectEdge(const QPoint &pos) {
+    QRect windowGeometry = trackedWindow->geometry();
+
+    bool isNearLeft = pos.x() <= EDGE_THRESHOLD;
+    bool isNearRight = pos.x() >= windowGeometry.width() - EDGE_THRESHOLD;
+    bool isNearTop = pos.y() <= EDGE_THRESHOLD;
+    bool isNearBottom = pos.y() >= windowGeometry.height() - EDGE_THRESHOLD;
+
+    if (isNearTop && isNearLeft) {
+        currentResizeRegion = TopLeftCorner;
+    } else if (isNearTop && isNearRight) {
+        currentResizeRegion = TopRightCorner;
+    } else if (isNearBottom && isNearLeft) {
+        currentResizeRegion = BottomLeftCorner;
+    } else if (isNearBottom && isNearRight) {
+        currentResizeRegion = BottomRightCorner;
+    } else if (isNearTop) {
+        currentResizeRegion = TopEdge;
+    } else if (isNearBottom) {
+        currentResizeRegion = BottomEdge;
+    } else if (isNearLeft) {
+        currentResizeRegion = LeftEdge;
+    } else if (isNearRight) {
+        currentResizeRegion = RightEdge;
+    } else {
+        currentResizeRegion = NoResize;
+    }
+}
+
+QCursor TopBar::cursorForResizeRegion(ResizeRegion region) const {
+    switch (region) {
+        case TopEdge:
+        case BottomEdge:
+            return Qt::SizeVerCursor;
+        case LeftEdge:
+        case RightEdge:
+            return Qt::SizeHorCursor;
+        case TopLeftCorner:
+        case BottomRightCorner:
+            return Qt::SizeFDiagCursor;
+        case TopRightCorner:
+        case BottomLeftCorner:
+            return Qt::SizeBDiagCursor;
+        default:
+            return Qt::ArrowCursor;
     }
 }
 
 void TopBar::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         isDragging = false;
-        QApplication::setOverrideCursor(Qt::ArrowCursor);
+        isResizing = false;
+        QApplication::restoreOverrideCursor();
     }
 }
 
