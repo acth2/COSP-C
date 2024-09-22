@@ -39,6 +39,7 @@ protected:
 private slots:
     void closeTrackedWindow();
     void maximizeWindow();
+    void toggleMaximizeRestore();
 
 private:
     QLabel *titleLabel;
@@ -52,6 +53,8 @@ private:
     QWindow *trackedWindow;
     QRect restoreGeometry;
     bool isMaximized;
+
+    bool isDarkMode;
 };
 
 #endif // TOPBAR_H
