@@ -186,7 +186,6 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
         if (trackedWindow) {
             trackedWindow->requestActivate();
         }
-        updatePosition();
     }
 }
 
