@@ -119,19 +119,6 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     int windowX = windowGeometry.x();
     int windowY = windowGeometry.y();
     
-    rightResizeHandle = new QWidget(this);
-    rightResizeHandle->setStyleSheet("background-color: gray;");
-    rightResizeHandle->move(windowX * 2, windowY);
-    rightResizeHandle->setCursor(Qt::SizeHorCursor);
-
-    leftResizeHandle = new QWidget(this);
-    leftResizeHandle->setStyleSheet("background-color: gray;");
-    leftResizeHandle->setCursor(Qt::SizeHorCursor);
-
-    bottomResizeHandle = new QWidget(this);
-    bottomResizeHandle->setStyleSheet("background-color: gray;");
-    bottomResizeHandle->setCursor(Qt::SizeVerCursor);
-
     createResizeHandles();
     updatePosition();
 }
