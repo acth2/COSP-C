@@ -55,25 +55,17 @@ QString LoginWindow::executeCommand(const QString &command) {
 }
 
 void LoginWindow::authenticateUser(const QString &username, const QString &password) {
-    QString userCheckCommand = "getent passwd " + username;
-    QString userCheckResult = executeCommand(userCheckCommand);
+    QString command = QString("echo '%1' | ./login_script.sh %1 %2").arg(username, password);
 
-    if (userCheckResult.isEmpty()) {
-        QTimer::singleShot(3000, this, [=]() {
-            QMessageBox::warning(this, "Login Failed", "Invalid username.");
-        });
-        return;
-    }
+    QString result = executeCommand(command);
 
-    QString passwordCheckCommand = "echo " + password + " | sudo -S -u " + username + " -i whoami";
-    QString passwordCheckResult = executeCommand(passwordCheckCommand);
-
-    if (passwordCheckResult.contains(username)) {
+    if (result.contains("Last login")) {
         QMessageBox::information(this, "Login Successful", "Welcome!");
+        system("startx /usr/bin/cwm");
+        close();
     } else {
         QTimer::singleShot(3000, this, [=]() {
-            QMessageBox::warning(this, "Login Failed", "Invalid password.");
+            QMessageBox::warning(this, "Login Failed", "Invalid username or password.");
         });
     }
 }
-
