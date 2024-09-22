@@ -43,8 +43,10 @@ LoginWindow::LoginWindow(QWidget *parent) : QWidget(parent) {
     move((screenWidth - windowSize.width()) / 2, (screenHeight - windowSize.height()) / 2);
     resize(windowSize);
 
-    QCursor::setPos((screenWidth - windowSize.width()) / 2 + windowSize.width() / 2,
-                    (screenHeight - windowSize.height()) / 2 + windowSize.height() / 2);
+    QTimer::singleShot(100, this, [=]() {
+        QCursor::setPos(QCursor::pos().x() + (screenWidth - windowSize.width()) / 2 + windowSize.width() / 2,
+                         QCursor::pos().y() + (screenHeight - windowSize.height()) / 2 + windowSize.height() / 2);
+    });
 }
 
 void LoginWindow::onLoginClicked() {
@@ -60,6 +62,13 @@ void LoginWindow::showMessage(const QString &message, bool isError) {
 }
 
 void LoginWindow::authenticateUser(const QString &username, const QString &password) {
+    if (username.isEmpty() || password.isEmpty()) {
+        QTimer::singleShot(3000, this, [=]() {
+            showMessage("Username and password cannot be empty.", true);
+        });
+        return;
+    }
+
     QProcess process;
     process.start("getent", QStringList() << "passwd" << username);
     process.waitForFinished();
