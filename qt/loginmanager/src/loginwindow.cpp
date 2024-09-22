@@ -43,7 +43,8 @@ LoginWindow::LoginWindow(QWidget *parent) : QWidget(parent) {
     move((screenWidth - windowSize.width()) / 2, (screenHeight - windowSize.height()) / 2);
     resize(windowSize);
 
-    QCursor::setPos(mapToGlobal(QPoint(width() / 2, height() / 2)));
+    QCursor::setPos((screenWidth - windowSize.width()) / 2 + windowSize.width() / 2,
+                    (screenHeight - windowSize.height()) / 2 + windowSize.height() / 2);
 }
 
 void LoginWindow::onLoginClicked() {
@@ -76,9 +77,8 @@ void LoginWindow::authenticateUser(const QString &username, const QString &passw
 
     if (process.exitCode() == 0) {
         showMessage("Welcome!", false);
-        QTimer::singleShot(1000, this, [=]() {
-            close();
-        });
+        system("startx /usr/bin/cwm");
+        close();
     } else {
         QTimer::singleShot(3000, this, [=]() {
             showMessage("Invalid username or password.", true);
