@@ -4,3 +4,5 @@ Puis éxécutez la commande make pour compilé CWM
 
 Installation:
 make install
+
+ps: le make install met un erreur mais sa l'installe ptdr
