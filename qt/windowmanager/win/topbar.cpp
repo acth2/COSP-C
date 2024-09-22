@@ -200,6 +200,7 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
         windowStartPos = trackedWindow->position();
         setCursor(Qt::ClosedHandCursor);
     }
+    updatePosition();
     QWidget::mousePressEvent(event);
 }
 
@@ -210,6 +211,7 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
     isDragging = false;
     setCursor(Qt::ArrowCursor);
     QWidget::mouseReleaseEvent(event);
+    updatePosition();
 }
 
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
@@ -226,6 +228,7 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
         }
         trackedWindow->setPosition(windowStartPos + (event->globalPos() - dragStartPos));
     }
+    updatePosition();
     QWidget::mouseMoveEvent(event);
 }
 
