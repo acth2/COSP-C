@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
 
-    logFile.setFileName("/usr/cydra/logs/cwm.log");
+    logFile.setFileName("/usr/cydra/logs/a2wm.log");
     logFile.open(QIODevice::Append | QIODevice::Text);
 
     qInstallMessageHandler(customLogOutput);
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
         manager.setGeometry(screenGeometry);
     }
 
-    manager.setWindowTitle("CWM");
+    manager.setWindowTitle("A2WM");
     manager.showFullScreen();
 
     taskBar.show();
