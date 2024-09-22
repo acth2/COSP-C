@@ -59,7 +59,7 @@ void LoginWindow::authenticateUser(const QString &username, const QString &passw
 
     QString result = executeCommand(command);
 
-    if (result.contains("success")) {
+    if (result.contains("Last")) {
         QMessageBox::information(this, "Login Successful", "Welcome!");
     } else {
         QTimer::singleShot(3000, this, [=]() {
