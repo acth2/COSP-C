@@ -39,7 +39,6 @@ protected:
 private slots:
     void closeTrackedWindow();
     void maximizeWindow();
-    void toggleMaximizeRestore();
 
 private:
     QLabel *titleLabel;
@@ -47,22 +46,12 @@ private:
     QPushButton *closeButton;
     QPushButton *maximizeButton;
     bool isDragging = false;
-    bool isResizing = false;
     QPoint dragStartPos;
     QPoint windowStartPos;
-
-    bool dragging;
-    bool resizing;
-    QPoint dragStartPosition;
-    QPoint resizeStartPosition;
-    QSize resizeStartSize;
-
     WindowManager *windowManager;
     QWindow *trackedWindow;
     QRect restoreGeometry;
     bool isMaximized;
-
-    bool isDarkMode;
 };
 
 #endif // TOPBAR_H
