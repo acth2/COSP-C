@@ -1,6 +1,6 @@
 Éxecutez la commande 'qmake' pour construire le Makefile
 
-Puis éxécutez la commande make pour compilé CWM 
+Puis éxécutez la commande make pour compilé A2WM
 
 Installation:
 make install
