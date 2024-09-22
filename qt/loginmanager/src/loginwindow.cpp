@@ -69,25 +69,18 @@ void LoginWindow::authenticateUser(const QString &username, const QString &passw
         return;
     }
 
-    QProcess process;
-    process.start("getent", QStringList() << "passwd" << username);
-    process.waitForFinished();
-
-    if (process.exitCode() != 0) {
+    struct spwd *userInfo = getspnam(username.toStdString().c_str());
+    if (!userInfo) {
         QTimer::singleShot(3000, this, [=]() {
             showMessage("Invalid username or password.", true);
         });
         return;
     }
 
-    QString command = QString("echo '%1' | sudo -S -u %2 /bin/true").arg(password, username);
-    process.start("bash", QStringList() << "-c" << command);
-    process.waitForFinished();
+    const char *hashedPassword = crypt(password.toStdString().c_str(), userInfo->sp_pwdp);
 
-    if (process.exitCode() == 0) {
+    if (hashedPassword && QString(hashedPassword) == QString(userInfo->sp_pwdp)) {
         showMessage("Welcome!", false);
-        system("startx /usr/bin/cwm");
-        close();
     } else {
         QTimer::singleShot(3000, this, [=]() {
             showMessage("Invalid username or password.", true);
