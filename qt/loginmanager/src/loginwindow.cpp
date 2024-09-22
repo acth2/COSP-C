@@ -5,10 +5,8 @@
 #include <QTimer>
 #include <QApplication>
 #include <QDesktopWidget>
-#include <cstdlib>
-#include <cstdio>
-#include <memory>
-#include <array>
+#include <QTextEdit>
+#include <QProcess>
 
 LoginWindow::LoginWindow(QWidget *parent) : QWidget(parent) {
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -19,11 +17,15 @@ LoginWindow::LoginWindow(QWidget *parent) : QWidget(parent) {
     passwordField->setEchoMode(QLineEdit::Password);
     loginButton = new QPushButton("Login");
 
+    outputArea = new QTextEdit;
+    outputArea->setReadOnly(true);
+
     layout->addWidget(userLabel);
     layout->addWidget(usernameField);
     layout->addWidget(passLabel);
     layout->addWidget(passwordField);
     layout->addWidget(loginButton);
+    layout->addWidget(outputArea);
 
     connect(loginButton, &QPushButton::clicked, this, &LoginWindow::onLoginClicked);
 
@@ -41,29 +43,18 @@ void LoginWindow::onLoginClicked() {
     authenticateUser(username, password);
 }
 
-QString LoginWindow::executeCommand(const QString &command) {
-    std::array<char, 128> buffer;
-    std::string result;
-
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.toStdString().c_str(), "r"), pclose);
-    if (!pipe) return "popen() failed!";
-
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-        result += buffer.data();
-    }
-    return QString::fromStdString(result);
-}
-
 void LoginWindow::authenticateUser(const QString &username, const QString &password) {
     QString command = QString("echo '%1' | ./login_script.sh %1 %2").arg(username, password);
 
-    QString result = executeCommand(command);
+    QProcess *process = new QProcess(this);
+    connect(process, &QProcess::readyReadStandardOutput, this, [this, process]() {
+        QString output = process->readAllStandardOutput();
+        outputArea->append(output);
+    });
+    connect(process, &QProcess::readyReadStandardError, this, [this, process]() {
+        QString errorOutput = process->readAllStandardError();
+        outputArea->append(errorOutput);
+    });
 
-    if (result.contains("Last login")) {
-        QMessageBox::information(this, "Login Successful", "Welcome!");
-    } else {
-        QTimer::singleShot(3000, this, [=]() {
-            QMessageBox::warning(this, "Login Failed", "Invalid username or password.");
-        });
-    }
+    process->start(command);
 }
