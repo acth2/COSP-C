@@ -144,6 +144,7 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
     }
     return QWidget::eventFilter(obj, event);
 }
+
 void TopBar::updatePosition() {
     if (trackedWindow) {
         QRect windowGeometry = trackedWindow->geometry();
@@ -174,11 +175,25 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         isDragging = true;
         dragStartPos = event->globalPos();
+        QPoint cursorOffset;
+
         if (isMaximized) {
+            restoreGeometry = trackedWindow->geometry();
+            QRect windowGeometry = restoreGeometry;
+
+            cursorOffset = dragStartPos - windowGeometry.topLeft();
+
             trackedWindow->setGeometry(restoreGeometry);
             isMaximized = false;
+
+            windowStartPos = trackedWindow->geometry().topLeft();
+            windowStartPos = dragStartPos - cursorOffset;
+
+            trackedWindow->move(windowStartPos);
+        } else {
+            windowStartPos = trackedWindow->geometry().topLeft();
         }
-        windowStartPos = trackedWindow->geometry().topLeft();
+
         if (trackedWindow) {
             trackedWindow->requestActivate();
         }
