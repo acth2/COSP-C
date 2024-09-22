@@ -4,8 +4,7 @@
 #include <QWidget>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QLabel>
-#include <QString>
+#include <QTextEdit>
 
 class LoginWindow : public QWidget {
     Q_OBJECT
@@ -15,14 +14,13 @@ public:
 
 private slots:
     void onLoginClicked();
+    void authenticateUser(const QString &username, const QString &password);
 
 private:
-    void authenticateUser(const QString &username, const QString &password);
     QLineEdit *usernameField;
     QLineEdit *passwordField;
     QPushButton *loginButton;
-
-    QString executeCommand(const QString &command);
+    QTextEdit *outputArea;
 };
 
 #endif // LOGINWINDOW_H
