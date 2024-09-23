@@ -14,6 +14,7 @@
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false),
       isResizingLeft(false), isResizingRight(false), isResizingBottom(false) {
+    setMouseTracking(true);
         
     if (QFile::exists("/usr/cydra/settings/darkmode")) {
         isDarkMode = true;
@@ -192,60 +193,59 @@ void TopBar::paintEvent(QPaintEvent *event) {
     painter.setPen(Qt::NoPen);
     painter.drawRect(rect());
 }
-
 void TopBar::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         QRect windowGeometry = trackedWindow->geometry();
-        const int margin = 10;
-
         QPoint localMousePos = event->pos();
 
-        if (localMousePos.x() <= margin) {
-            isResizingLeft = true;
-        } else if (localMousePos.x() >= windowGeometry.width() - margin) {
-            isResizingRight = true;
-        } else if (localMousePos.y() >= windowGeometry.height() - margin) {
-            isResizingBottom = true;
+        resizeDirection = getResizeDirection(localMousePos);
+
+        if (resizeDirection != None) {
+            isResizing = true;
+            resizeStartPos = event->globalPos();
         } else {
             isDragging = true;
             dragStartPos = event->globalPos();
-            windowStartPos = trackedWindow->position();
         }
-
-        resizeStartPos = event->globalPos();
     }
 }
 
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
-    const int margin = 10;
-    QRect windowGeometry = trackedWindow->geometry();
     QPoint localMousePos = event->pos();
+    updateCursorShape(localMousePos);
 
-    if (localMousePos.x() <= margin) {
-        QApplication::setOverrideCursor(Qt::SizeHorCursor);
-    } else if (localMousePos.x() >= windowGeometry.width() - margin) {
-        QApplication::setOverrideCursor(Qt::SizeHorCursor);
-    } else if (localMousePos.y() >= windowGeometry.height() - margin) {
-        QApplication::setOverrideCursor(Qt::SizeVerCursor);
-    } else {
-        QApplication::restoreOverrideCursor();
+    if (isDragging && !isResizing) {
+        QPoint delta = event->globalPos() - dragStartPos;
+        trackedWindow->setPosition(trackedWindow->position() + delta);
+        dragStartPos = event->globalPos();
     }
 
-    if (isDragging && trackedWindow) {
-        QPoint delta = event->globalPos() - dragStartPos;
-        trackedWindow->setPosition(windowStartPos + delta);
-    } else if (isResizingLeft || isResizingRight || isResizingBottom) {
+    if (isResizing && !isDragging) {
         QPoint currentMousePos = event->globalPos();
+        QRect windowGeometry = trackedWindow->geometry();
         int deltaX = currentMousePos.x() - resizeStartPos.x();
         int deltaY = currentMousePos.y() - resizeStartPos.y();
 
-        if (isResizingLeft) {
-            int newWidth = windowGeometry.width() - deltaX;
-            trackedWindow->setGeometry(windowGeometry.x() + deltaX, windowGeometry.y(), newWidth, windowGeometry.height());
-        } else if (isResizingRight) {
-            trackedWindow->resize(windowGeometry.width() + deltaX, windowGeometry.height());
-        } else if (isResizingBottom) {
-            trackedWindow->resize(windowGeometry.width(), windowGeometry.height() + deltaY);
+        switch (resizeDirection) {
+            case Left:
+                trackedWindow->setGeometry(windowGeometry.x() + deltaX, windowGeometry.y(),
+                                           windowGeometry.width() - deltaX, windowGeometry.height());
+                break;
+            case Right:
+                trackedWindow->resize(windowGeometry.width() + deltaX, windowGeometry.height());
+                break;
+            case Bottom:
+                trackedWindow->resize(windowGeometry.width(), windowGeometry.height() + deltaY);
+                break;
+            case BottomLeft:
+                trackedWindow->setGeometry(windowGeometry.x() + deltaX, windowGeometry.y(),
+                                           windowGeometry.width() - deltaX, windowGeometry.height() + deltaY);
+                break;
+            case BottomRight:
+                trackedWindow->resize(windowGeometry.width() + deltaX, windowGeometry.height() + deltaY);
+                break;
+            default:
+                break;
         }
 
         resizeStartPos = currentMousePos;
@@ -255,13 +255,53 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
 void TopBar::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         isDragging = false;
-        isResizingLeft = false;
-        isResizingRight = false;
-        isResizingBottom = false;
+        isResizing = false;
+        resizeDirection = None;
         QApplication::restoreOverrideCursor();
     }
 }
 
+void TopBar::updateCursorShape(const QPoint &localMousePos) {
+    ResizeDirection direction = getResizeDirection(localMousePos);
+
+    switch (direction) {
+        case Left:
+        case Right:
+            QApplication::setOverrideCursor(Qt::SizeHorCursor);
+            break;
+        case Bottom:
+        case BottomLeft:
+        case BottomRight:
+            QApplication::setOverrideCursor(Qt::SizeVerCursor);
+            break;
+        default:
+            QApplication::restoreOverrideCursor();
+            break;
+    }
+}
+
+TopBar::ResizeDirection TopBar::getResizeDirection(const QPoint &localMousePos) {
+    const int margin = 10;
+    QRect windowGeometry = trackedWindow->geometry();
+
+    bool nearLeft = localMousePos.x() <= margin;
+    bool nearRight = localMousePos.x() >= windowGeometry.width() - margin;
+    bool nearBottom = localMousePos.y() >= windowGeometry.height() - margin;
+
+    if (nearLeft && nearBottom) {
+        return BottomLeft;
+    } else if (nearRight && nearBottom) {
+        return BottomRight;
+    } else if (nearLeft) {
+        return Left;
+    } else if (nearRight) {
+        return Right;
+    } else if (nearBottom) {
+        return Bottom;
+    }
+
+    return None;
+}
 
 void TopBar::closePopup() {
     if (popup->isVisible()) {
