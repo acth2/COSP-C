@@ -53,9 +53,9 @@ private:
 
     bool isDarkMode;
 
-    QWidget *leftHandle;
-    QWidget *rightHandle;
-    QWidget *bottomHandle;
+    QWindow *leftHandle;
+    QWindow *rightHandle;
+    QWindow *bottomHandle;
 
     bool isDragging;
     bool isResizingLeft;
