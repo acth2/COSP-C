@@ -60,9 +60,6 @@ private:
     QRect restoreGeometry;
     bool isMaximized;
 
-    QSize resizeStartSize;
-    QPoint resizeStartPosition;
-
 
     bool isDarkMode;
 
