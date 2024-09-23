@@ -183,52 +183,52 @@ void TopBar::paintEvent(QPaintEvent *event) {
     painter.drawRect(rect());
 }
 
-void TopBar::mousePressEvent(QMouseEvent *event) {
-    resizeStartPos = event->globalPos();
-    if (rightResizeHandle->geometry().contains(event->pos())) {
-        resizingRight = true;
-        setCursor(Qt::SizeHorCursor);
-    } else if (leftResizeHandle->geometry().contains(event->pos())) {
-        resizingLeft = true;
-        setCursor(Qt::SizeHorCursor);
-    } else if (bottomResizeHandle->geometry().contains(event->pos())) {
-        resizingBottom = true;
-        setCursor(Qt::SizeVerCursor);
+void TerminalWindow::mousePressEvent(QMouseEvent *event) {
+    int margin = 10;
+    bool onRightEdge = event->x() > (width() - margin);
+    bool onBottomEdge = event->y() > (height() - margin);
+
+    if (onRightEdge || onBottomEdge) {
+        resizing = true;
+        resizeStartPosition = event->globalPos();
+        resizeStartSize = size();
     } else {
-        isDragging = true;
-        dragStartPos = event->globalPos();
-        windowStartPos = trackedWindow->position();
-        setCursor(Qt::ClosedHandCursor);
+        dragging = true;
+        dragStartPosition = event->globalPos() - frameGeometry().topLeft();
     }
-    updatePosition();
     QWidget::mousePressEvent(event);
 }
 
-void TopBar::mouseReleaseEvent(QMouseEvent *event) {
-    resizingRight = false;
-    resizingLeft = false;
-    resizingBottom = false;
-    isDragging = false;
-    setCursor(Qt::ArrowCursor);
+void TerminalWindow::mouseReleaseEvent(QMouseEvent *event) {
+    resizing = false;
+    dragging = false;
     QWidget::mouseReleaseEvent(event);
-    updatePosition();
 }
 
-void TopBar::mouseMoveEvent(QMouseEvent *event) {
-    if (resizingRight) {
-        handleResizeRight(event->globalPos());
-    } else if (resizingLeft) {
-        handleResizeLeft(event->globalPos());
-    } else if (resizingBottom) {
-        handleResizeBottom(event->globalPos());
-    } else if (isDragging) {
-        if (isMaximized) {
-            trackedWindow->setGeometry(restoreGeometry);
-            isMaximized = false;
-        }
-        trackedWindow->setPosition(windowStartPos + (event->globalPos() - dragStartPos));
+void TerminalWindow::mouseMoveEvent(QMouseEvent *event) {
+    int margin = 35;
+    int marginIconing = 20;
+
+    bool onRightEdge = event->x() > (width() - marginIconing);
+    bool onBottomEdge = event->y() > (height() - marginIconing);
+
+    if (onRightEdge && onBottomEdge) {
+        setCursor(Qt::SizeFDiagCursor);
+    } else if (onRightEdge) {
+        setCursor(Qt::SizeHorCursor);
+    } else if (onBottomEdge) {
+        setCursor(Qt::SizeVerCursor);
+    } else {
+        setCursor(Qt::ArrowCursor);
     }
-    updatePosition();
+
+    if (resizing) {
+        QSize newSize = resizeStartSize + QSize(event->globalPos().x() - resizeStartPosition.x(),
+                                                event->globalPos().y() - resizeStartPosition.y());
+        resize(newSize);
+    } else if (dragging) {
+        move(event->globalPos() - dragStartPosition);
+    }
     QWidget::mouseMoveEvent(event);
 }
 
