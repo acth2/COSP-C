@@ -115,18 +115,6 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 
     setLayout(layout);
 
-    rightResizeHandle = new QWidget(this);
-    rightResizeHandle->setStyleSheet("background-color: gray;");
-    rightResizeHandle->setCursor(Qt::SizeHorCursor);
-
-    leftResizeHandle = new QWidget(this);
-    leftResizeHandle->setStyleSheet("background-color: gray;");
-    leftResizeHandle->setCursor(Qt::SizeHorCursor);
-
-    bottomResizeHandle = new QWidget(this);
-    bottomResizeHandle->setStyleSheet("background-color: gray;");
-    bottomResizeHandle->setCursor(Qt::SizeVerCursor);
-
     updatePosition();
 }
 
@@ -207,23 +195,6 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
 
         updatePosition();
     }
-}
-
-
-void TopBar::handleResizeRight(const QPoint &mousePos) {
-    int newWidth = windowStartPos.x() + mousePos.x() - this->pos().x();
-    trackedWindow->setWidth(newWidth);
-}
-
-void TopBar::handleResizeLeft(const QPoint &mousePos) {
-    int newWidth = windowStartPos.x() - (mousePos.x() - this->pos().x());
-    trackedWindow->setWidth(newWidth);
-    trackedWindow->setPosition(mousePos.x(), trackedWindow->y());
-}
-
-void TopBar::handleResizeBottom(const QPoint &mousePos) {
-    int newHeight = windowStartPos.y() + mousePos.y() - this->pos().y();
-    trackedWindow->setHeight(newHeight);
 }
 
 void TopBar::closePopup() {
