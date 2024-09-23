@@ -29,6 +29,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     for (QWidget* handle : {leftHandle, rightHandle, bottomHandle}) {
         handle->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
         handle->setStyleSheet("background-color: rgba(255, 255, 255, 255);");
+        handle->setFixedSize(100, 10);
         handle->show();
     }
 
