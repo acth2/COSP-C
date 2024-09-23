@@ -154,6 +154,7 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
             return true;
         }
     }
+
     return QWidget::eventFilter(obj, event);
 }
 
@@ -221,42 +222,25 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
         handleResizeLeft(event->globalPos());
     } else if (resizingBottom) {
         handleResizeBottom(event->globalPos());
-    } else if (isDragging) {
-        if (isMaximized) {
-            trackedWindow->setGeometry(restoreGeometry);
-            isMaximized = false;
-        }
-        trackedWindow->setPosition(windowStartPos + (event->globalPos() - dragStartPos));
+    } else {
+        QWidget::mouseMoveEvent(event);
     }
-    updatePosition();
-    QWidget::mouseMoveEvent(event);
 }
 
 void TopBar::handleResizeRight(const QPoint &mousePos) {
-    int deltaX = mousePos.x() - resizeStartPos.x();
-    QRect windowGeometry = trackedWindow->geometry();
-    if (windowGeometry.width() + deltaX >= minimumWidth()) {
-        trackedWindow->setGeometry(windowGeometry.x(), windowGeometry.y(), windowGeometry.width() + deltaX, windowGeometry.height());
-    }
-    resizeStartPos = mousePos;
+    int newWidth = windowStartPos.x() + mousePos.x() - this->pos().x();
+    trackedWindow->setWidth(newWidth);
 }
 
 void TopBar::handleResizeLeft(const QPoint &mousePos) {
-    int deltaX = mousePos.x() - resizeStartPos.x();
-    QRect windowGeometry = trackedWindow->geometry();
-    if (windowGeometry.width() - deltaX >= minimumWidth()) {
-        trackedWindow->setGeometry(windowGeometry.x() + deltaX, windowGeometry.y(), windowGeometry.width() - deltaX, windowGeometry.height());
-    }
-    resizeStartPos = mousePos;
+    int newWidth = windowStartPos.x() - (mousePos.x() - this->pos().x());
+    trackedWindow->setWidth(newWidth);
+    trackedWindow->move(mousePos.x(), trackedWindow->y());
 }
 
 void TopBar::handleResizeBottom(const QPoint &mousePos) {
-    int deltaY = mousePos.y() - resizeStartPos.y();
-    QRect windowGeometry = trackedWindow->geometry();
-    if (windowGeometry.height() + deltaY >= minimumHeight()) {
-        trackedWindow->setGeometry(windowGeometry.x(), windowGeometry.y(), windowGeometry.width(), windowGeometry.height() + deltaY);
-    }
-    resizeStartPos = mousePos;
+    int newHeight = windowStartPos.y() + mousePos.y() - this->pos().y();
+    trackedWindow->setHeight(newHeight);
 }
 
 void TopBar::closePopup() {
