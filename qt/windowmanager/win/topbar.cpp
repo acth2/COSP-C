@@ -26,10 +26,8 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 
 
     for (QWidget* handle : {leftHandle, rightHandle, bottomHandle}) {
-        handle->setAttribute(Qt::WA_TransparentForMouseEvents);
-        handle->setAttribute(Qt::WA_NoSystemBackground);
         handle->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-        handle->setStyleSheet("background-color: rgba(255, 255, 255, 150);");
+        handle->setStyleSheet("background-color: rgba(255, 255, 255, 255);");
         handle->show();
     }
 
