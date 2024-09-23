@@ -233,7 +233,7 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
 
     if (isDragging && trackedWindow) {
         QPoint delta = event->globalPos() - dragStartPos;
-        trackedWindow->setPosition(windowStartPos + delta, trackedWindow.y());
+        trackedWindow->setPosition(windowStartPos + delta, trackedWindow->y());
     } else if (isResizingLeft || isResizingRight || isResizingBottom) {
         QPoint currentMousePos = event->globalPos();
         int deltaX = currentMousePos.x() - resizeStartPos.x();
