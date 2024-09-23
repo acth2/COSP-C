@@ -12,9 +12,6 @@
 #include <QObject>
 #include <QMouseEvent>
 #include <QRect>
-#include <QResizeEvent>
-#include <QFocusEvent>
-#include <QCloseEvent>
 
 class WindowManager;
 
@@ -32,9 +29,6 @@ public:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override;
-    void closeEvent(QCloseEvent *event) override;
-    void focusInEvent(QFocusEvent *event) override;
 
 signals:
     void closeRequested();
@@ -65,17 +59,14 @@ private:
     QWidget *rightResizeHandle;
     QWidget *leftResizeHandle;
     QWidget *bottomResizeHandle;
-    QSize resizeStartSize;
-    QPoint resizeStartPosition;
-    bool dragging;
-    bool resizing;
-    
-    bool isFullScreenMode = false;
-    bool windowedFull = false;
-    QPoint dragStartPosition;
-    QSize resizeStartSize;
-    QPoint resizeStartPosition;
-    void setupUI();
+    QPoint resizeStartPos;
+    bool resizingRight = false;
+    bool resizingLeft = false;
+    bool resizingBottom = false;
+
+    void handleResizeRight(const QPoint &mousePos);
+    void handleResizeLeft(const QPoint &mousePos);
+    void handleResizeBottom(const QPoint &mousePos);
 };
 
 #endif // TOPBAR_H
