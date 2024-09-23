@@ -183,49 +183,32 @@ void TopBar::paintEvent(QPaintEvent *event) {
     painter.setPen(Qt::NoPen);
     painter.drawRect(rect());
 }
-
 void TopBar::mousePressEvent(QMouseEvent *event) {
-    resizeStartPos = event->globalPos();
-    if (rightResizeHandle->geometry().contains(event->pos())) {
-        resizingRight = true;
-        setCursor(Qt::SizeHorCursor);
-    } else if (leftResizeHandle->geometry().contains(event->pos())) {
-        resizingLeft = true;
-        setCursor(Qt::SizeHorCursor);
-    } else if (bottomResizeHandle->geometry().contains(event->pos())) {
-        resizingBottom = true;
-        setCursor(Qt::SizeVerCursor);
-    } else {
+    if (event->button() == Qt::LeftButton) {
         isDragging = true;
         dragStartPos = event->globalPos();
-        windowStartPos = trackedWindow->position();
-        setCursor(Qt::ClosedHandCursor);
+        windowStartPos = trackedWindow->geometry().topLeft();
     }
-    updatePosition();
-    QWidget::mousePressEvent(event);
 }
 
 void TopBar::mouseReleaseEvent(QMouseEvent *event) {
-    resizingRight = false;
-    resizingLeft = false;
-    resizingBottom = false;
-    isDragging = false;
-    setCursor(Qt::ArrowCursor);
-    QWidget::mouseReleaseEvent(event);
-    updatePosition();
+    if (event->button() == Qt::LeftButton) {
+        isDragging = false;
+    }
 }
 
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
-    if (resizingRight) {
-        handleResizeRight(event->globalPos());
-    } else if (resizingLeft) {
-        handleResizeLeft(event->globalPos());
-    } else if (resizingBottom) {
-        handleResizeBottom(event->globalPos());
-    } else {
-        QWidget::mouseMoveEvent(event);
+    if (isDragging && trackedWindow) {
+        QPoint currentPos = event->globalPos();
+        QPoint delta = currentPos - dragStartPos;
+        QRect windowGeometry = trackedWindow->geometry();
+        windowGeometry.moveTopLeft(windowStartPos + delta);
+        trackedWindow->setGeometry(windowGeometry);
+
+        updatePosition();
     }
 }
+
 
 void TopBar::handleResizeRight(const QPoint &mousePos) {
     int newWidth = windowStartPos.x() + mousePos.x() - this->pos().x();
