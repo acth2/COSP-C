@@ -19,7 +19,20 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     } else {
         isDarkMode = false;
     }
-        
+
+    leftHandle = new QWidget();
+    rightHandle = new QWidget();
+    bottomHandle = new QWidget();
+
+
+    for (QWidget* handle : {leftHandle, rightHandle, bottomHandle}) {
+        handle->setAttribute(Qt::WA_TransparentForMouseEvents);
+        handle->setAttribute(Qt::WA_NoSystemBackground);
+        handle->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+        handle->setStyleSheet("background-color: rgba(255, 255, 255, 150);");
+        handle->show();
+    }
+
     trackedWindow->installEventFilter(this);
     isMaximized = false;
 
@@ -151,6 +164,14 @@ void TopBar::updatePosition() {
         QRect windowGeometry = trackedWindow->geometry();
         int topbarHeight = 36;
         setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
+
+        int handleWidth = 10;
+        int handleHeight = windowGeometry.height();
+
+        leftHandle->setGeometry(windowGeometry.x() - handleWidth, windowGeometry.y(), handleWidth, handleHeight);
+        rightHandle->setGeometry(windowGeometry.x() + windowGeometry.width(), windowGeometry.y(), handleWidth, handleHeight);
+        bottomHandle->setGeometry(windowGeometry.x(), windowGeometry.y() + windowGeometry.height(), windowGeometry.width(), handleWidth);
+        
         show();
     }
 }
