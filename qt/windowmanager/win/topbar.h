@@ -15,13 +15,6 @@
 
 class WindowManager;
 
-enum ResizeDirection {
-    NoResize,
-    ResizeLeft,
-    ResizeRight,
-    ResizeBottom
-};
-
 class TopBar : public QWidget {
     Q_OBJECT
 
@@ -53,31 +46,27 @@ private:
     QLabel *popup;
     QPushButton *closeButton;
     QPushButton *maximizeButton;
+    bool isDragging = false;
+    QPoint dragStartPos;
+    QPoint windowStartPos;
     WindowManager *windowManager;
     QWindow *trackedWindow;
     QRect restoreGeometry;
     bool isMaximized;
 
     bool isDarkMode;
-    bool isDragging;
 
-    bool isResizingLeft;
-    bool isResizingRight;
-    bool isResizingBottom;
+    QWidget *rightResizeHandle;
+    QWidget *leftResizeHandle;
+    QWidget *bottomResizeHandle;
     QPoint resizeStartPos;
-    QPoint dragStartPos; 
+    bool resizingRight = false;
+    bool resizingLeft = false;
+    bool resizingBottom = false;
 
-
-    bool isResizing;
-    void updateCursorShape(const QPoint &localMousePos);
-    void resizeWindow(const QPoint &mousePos);
-    void startResizing(const QPoint &localMousePos);
-    void stopResizing();
-    bool isNearEdge(const QPoint &localMousePos, const QRect &windowGeometry, int margin = 10);
-
-    enum ResizeDirection { None, Left, Right, Bottom, BottomLeft, BottomRight } resizeDirection;
-    ResizeDirection getResizeDirection(const QPoint &localMousePos);
-
+    void handleResizeRight(const QPoint &mousePos);
+    void handleResizeLeft(const QPoint &mousePos);
+    void handleResizeBottom(const QPoint &mousePos);
 };
 
 #endif // TOPBAR_H
