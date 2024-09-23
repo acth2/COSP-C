@@ -32,9 +32,9 @@ public:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override; // For handling resize events
-    void closeEvent(QCloseEvent *event) override;   // For handling window close
-    void focusInEvent(QFocusEvent *event) override; // To handle focus changes
+    void resizeEvent(QResizeEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
+    void focusInEvent(QFocusEvent *event) override;
 
 signals:
     void closeRequested();
