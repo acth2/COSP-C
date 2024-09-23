@@ -49,20 +49,25 @@ private:
     WindowManager *windowManager;
     QWindow *trackedWindow;
     QRect restoreGeometry;
-    QPoint resizeStartPos;
     bool isMaximized;
 
     bool isDarkMode;
     bool isDragging;
 
-    QPoint dragStartPos;
+    bool isResizingLeft;
+    bool isResizingRight;
+    bool isResizingBottom;
     QPoint resizeStartPos;
-    QSize windowStartSize;
-    QPoint windowStartPos;
+
 
     bool isResizing;
-    enum ResizeDirection { None, Left, Right, Bottom, BottomLeft, BottomRight } resizeDirection;
+    void updateCursorShape(const QPoint &localMousePos);
+    void resizeWindow(const QPoint &mousePos);
+    void startResizing(const QPoint &localMousePos);
+    void stopResizing();
+    bool isNearEdge(const QPoint &localMousePos, const QRect &windowGeometry, int margin = 10);
 
+    enum ResizeDirection { None, Left, Right, Bottom, BottomLeft, BottomRight } resizeDirection;
     void updateCursorShape(const QPoint &localMousePos);
     ResizeDirection getResizeDirection(const QPoint &localMousePos);
 
