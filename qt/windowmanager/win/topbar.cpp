@@ -164,10 +164,10 @@ void TopBar::updatePosition() {
 
         int handleWidth = 10;
 
-        leftHandle->setGeometry(windowGeometry.x() - handleWidth, windowGeometry.y(), handleWidth, windowGeometry.height());
-        rightHandle->setGeometry(windowGeometry.x() + windowGeometry.width(), windowGeometry.y(), handleWidth, windowGeometry.height());
-        bottomHandle->setGeometry(windowGeometry.x(), windowGeometry.y() + windowGeometry.height(), windowGeometry.width(), handleWidth);
-        
+        leftHandle->setGeometry(0, 0, 50, 50);
+        rightHandle->setGeometry(50, 0, 50, 50);
+        bottomHandle->setGeometry(0, 50, 50, 50);
+
         leftHandle->show();
         rightHandle->show();
         bottomHandle->show();
