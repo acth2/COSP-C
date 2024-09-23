@@ -59,10 +59,10 @@ private:
     QWidget *rightResizeHandle;
     QWidget *leftResizeHandle;
     QWidget *bottomResizeHandle;
-    QPoint resizeStartPos;
-    bool resizingRight = false;
-    bool resizingLeft = false;
-    bool resizingBottom = false;
+    QSize resizeStartSize;
+    QPoint resizeStartPosition;
+    bool dragging;
+    bool resizing;
 
     void handleResizeRight(const QPoint &mousePos);
     void handleResizeLeft(const QPoint &mousePos);
