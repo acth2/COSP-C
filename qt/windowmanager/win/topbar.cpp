@@ -21,15 +21,13 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
         isDarkMode = false;
     }
 
-    leftHandle = new QWidget();
-    rightHandle = new QWidget();
-    bottomHandle = new QWidget();
+    leftHandle = new QWindow();
+    rightHandle = new QWindow();
+    bottomHandle = new QWindow();
 
-
-    for (QWidget* handle : {leftHandle, rightHandle, bottomHandle}) {
-        handle->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-        handle->setStyleSheet("background-color: rgba(255, 255, 255, 255);");
-        handle->setFixedSize(100, 10);
+    for (QWindow* handle : {leftHandle, rightHandle, bottomHandle}) {
+        handle->setFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+        handle->setGeometry(0, 0, 10, 100);
         handle->show();
     }
 
@@ -158,7 +156,6 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
 
     return QWidget::eventFilter(obj, event);
 }
-
 void TopBar::updatePosition() {
     if (trackedWindow) {
         QRect windowGeometry = trackedWindow->geometry();
@@ -166,12 +163,14 @@ void TopBar::updatePosition() {
         setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
 
         int handleWidth = 10;
-        int handleHeight = windowGeometry.height();
 
-        leftHandle->setGeometry(windowGeometry.x() - handleWidth, windowGeometry.y(), handleWidth, handleHeight);
-        rightHandle->setGeometry(windowGeometry.x() + windowGeometry.width(), windowGeometry.y(), handleWidth, handleHeight);
+        leftHandle->setGeometry(windowGeometry.x() - handleWidth, windowGeometry.y(), handleWidth, windowGeometry.height());
+        rightHandle->setGeometry(windowGeometry.x() + windowGeometry.width(), windowGeometry.y(), handleWidth, windowGeometry.height());
         bottomHandle->setGeometry(windowGeometry.x(), windowGeometry.y() + windowGeometry.height(), windowGeometry.width(), handleWidth);
         
+        leftHandle->show();
+        rightHandle->show();
+        bottomHandle->show();
         show();
     }
 }
