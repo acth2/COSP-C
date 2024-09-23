@@ -49,27 +49,23 @@ private:
     WindowManager *windowManager;
     QWindow *trackedWindow;
     QRect restoreGeometry;
+    QPoint resizeStartPos;
     bool isMaximized;
 
     bool isDarkMode;
-
-    QWindow *leftHandle;
-    QWindow *rightHandle;
-    QWindow *bottomHandle;
-
     bool isDragging;
-    bool isResizingLeft;
-    bool isResizingRight;
-    bool isResizingBottom;
 
     QPoint dragStartPos;
     QPoint resizeStartPos;
     QSize windowStartSize;
     QPoint windowStartPos;
 
-    void handleResizeRight(const QPoint &mousePos);
-    void handleResizeLeft(const QPoint &mousePos);
-    void handleResizeBottom(const QPoint &mousePos);
+    bool isResizing;
+    enum ResizeDirection { None, Left, Right, Bottom, BottomLeft, BottomRight } resizeDirection;
+
+    void updateCursorShape(const QPoint &localMousePos);
+    ResizeDirection getResizeDirection(const QPoint &localMousePos);
+
 };
 
 #endif // TOPBAR_H
