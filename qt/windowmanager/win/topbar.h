@@ -15,6 +15,13 @@
 
 class WindowManager;
 
+enum ResizeDirection {
+    NoResize,
+    ResizeLeft,
+    ResizeRight,
+    ResizeBottom
+};
+
 class TopBar : public QWidget {
     Q_OBJECT
 
@@ -58,6 +65,7 @@ private:
     bool isResizingRight;
     bool isResizingBottom;
     QPoint resizeStartPos;
+    QPoint dragStartPos; 
 
 
     bool isResizing;
