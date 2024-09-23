@@ -209,7 +209,7 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
         } else {
             isDragging = true;
             dragStartPos = event->globalPos();
-            windowStartPos = windowGeometry.topLeft();
+            windowStartPos = trackedWindow->position();
         }
 
         resizeStartPos = event->globalPos();
@@ -233,7 +233,7 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
 
     if (isDragging && trackedWindow) {
         QPoint delta = event->globalPos() - dragStartPos;
-        trackedWindow->setPosition(windowStartPos + delta, trackedWindow->y());
+        trackedWindow->setPosition(windowStartPos + delta);
     } else if (isResizingLeft || isResizingRight || isResizingBottom) {
         QPoint currentMousePos = event->globalPos();
         int deltaX = currentMousePos.x() - resizeStartPos.x();
@@ -261,6 +261,7 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
         QApplication::restoreOverrideCursor();
     }
 }
+
 
 void TopBar::closePopup() {
     if (popup->isVisible()) {
