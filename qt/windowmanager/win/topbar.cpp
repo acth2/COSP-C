@@ -230,9 +230,13 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
     }
     updatePosition();
 }
+
 void TopBar::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         isDragging = false;
+        isResizingLeft = false;
+        isResizingRight = false;
+        isResizingBottom = false;
     }
     updatePosition();
 }
