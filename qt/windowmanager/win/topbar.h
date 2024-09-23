@@ -68,7 +68,6 @@ private:
     bool isNearEdge(const QPoint &localMousePos, const QRect &windowGeometry, int margin = 10);
 
     enum ResizeDirection { None, Left, Right, Bottom, BottomLeft, BottomRight } resizeDirection;
-    void updateCursorShape(const QPoint &localMousePos);
     ResizeDirection getResizeDirection(const QPoint &localMousePos);
 
 };
