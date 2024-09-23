@@ -59,7 +59,6 @@ private:
     QWidget *rightResizeHandle;
     QWidget *leftResizeHandle;
     QWidget *bottomResizeHandle;
-    QPoint resizeStartPos;
     bool resizingRight = false;
     bool resizingLeft = false;
     bool resizingBottom = false;
