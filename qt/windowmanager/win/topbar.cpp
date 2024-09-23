@@ -12,8 +12,9 @@
 #include <QFile>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
-    : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
-
+    : QWidget(parent), trackedWindow(parentWindow), isDragging(false),
+      isResizingLeft(false), isResizingRight(false), isResizingBottom(false) {
+        
     if (QFile::exists("/usr/cydra/settings/darkmode")) {
         isDarkMode = true;
     } else {
