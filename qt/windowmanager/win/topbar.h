@@ -30,6 +30,13 @@ public:
     void mouseMoveEvent(QMouseEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
 
+    QPoint dragStartPos;
+    bool resizing;
+    bool dragging = false;
+    QPoint dragStartPosition;
+    QSize resizeStartSize;
+    QPoint resizeStartPosition;
+
 signals:
     void closeRequested();
 
@@ -47,14 +54,12 @@ private:
     QPushButton *closeButton;
     QPushButton *maximizeButton;
     bool isDragging = false;
-    QPoint dragStartPos;
     QPoint windowStartPos;
     WindowManager *windowManager;
     QWindow *trackedWindow;
     QRect restoreGeometry;
     bool isMaximized;
 
-    bool resizing;
     QSize resizeStartSize;
     QPoint resizeStartPosition;
 
