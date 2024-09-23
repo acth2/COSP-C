@@ -218,7 +218,7 @@ void TopBar::handleResizeRight(const QPoint &mousePos) {
 void TopBar::handleResizeLeft(const QPoint &mousePos) {
     int newWidth = windowStartPos.x() - (mousePos.x() - this->pos().x());
     trackedWindow->setWidth(newWidth);
-    trackedWindow->move(mousePos.x(), trackedWindow->y());
+    trackedWindow->setPosition(mousePos.x(), trackedWindow->y());
 }
 
 void TopBar::handleResizeBottom(const QPoint &mousePos) {
