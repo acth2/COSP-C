@@ -60,6 +60,16 @@ private:
     QWidget *rightHandle;
     QWidget *bottomHandle;
 
+    bool isDragging;
+    bool isResizingLeft;
+    bool isResizingRight;
+    bool isResizingBottom;
+
+    QPoint dragStartPos;
+    QPoint resizeStartPos;
+    QSize windowStartSize;
+    QPoint windowStartPos;
+
     void handleResizeRight(const QPoint &mousePos);
     void handleResizeLeft(const QPoint &mousePos);
     void handleResizeBottom(const QPoint &mousePos);
