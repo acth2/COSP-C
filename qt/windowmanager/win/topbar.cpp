@@ -195,15 +195,17 @@ void TopBar::paintEvent(QPaintEvent *event) {
 
 void TopBar::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
-        if (event->source() == leftHandle) {
+        QPoint mousePos = event->globalPos();
+
+        if (leftHandle->geometry().contains(mousePos)) {
             isResizingLeft = true;
             resizeStartPos = event->globalPos();
             windowStartSize = trackedWindow->geometry().size();
-        } else if (event->source() == rightHandle) {
+        } else if (rightHandle->geometry().contains(mousePos)) {
             isResizingRight = true;
             resizeStartPos = event->globalPos();
             windowStartSize = trackedWindow->geometry().size();
-        } else if (event->source() == bottomHandle) {
+        } else if (bottomHandle->geometry().contains(mousePos)) {
             isResizingBottom = true;
             resizeStartPos = event->globalPos();
             windowStartSize = trackedWindow->geometry().size();
