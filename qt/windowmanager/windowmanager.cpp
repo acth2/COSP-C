@@ -218,7 +218,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         QVBoxLayout *layout = new QVBoxLayout(containerWidget);
 
         QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
-        
+
         QRect geometry = x11Window->geometry();
         int topbarHeight = 30;
 
@@ -236,16 +236,35 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
         TopBar *topBar = new TopBar(x11Window, this);
         windowTopBars.insert(xorgWindowId, topBar);
-
         topBar->setGeometry(geometry.x(), geometry.y() - topbarHeight, geometry.width(), topbarHeight);
         topBar->updatePosition();
         topBar->show();
-        
         appendLog(QString("INFO: TopBar created for window: %1").arg(xorgWindowId));
+
+        const int squareSize = 20;
+
+        QWidget *leftSquare = new QWidget(containerWidget);
+        leftSquare->setStyleSheet("background-color: red;");
+        leftSquare->setGeometry(geometry.x() - squareSize, geometry.y() + geometry.height() / 2 - squareSize / 2, squareSize, squareSize);
+        leftSquare->show();
+
+        QWidget *rightSquare = new QWidget(containerWidget);
+        rightSquare->setStyleSheet("background-color: green;");
+        rightSquare->setGeometry(geometry.x() + geometry.width(), geometry.y() + geometry.height() / 2 - squareSize / 2, squareSize, squareSize);
+        rightSquare->show();
+
+        QWidget *bottomSquare = new QWidget(containerWidget);
+        bottomSquare->setStyleSheet("background-color: blue;");
+        bottomSquare->setGeometry(geometry.x() + geometry.width() / 2 - squareSize / 2, geometry.y() + geometry.height(), squareSize, squareSize);
+        bottomSquare->show();
+
+        windowSquares.insert(xorgWindowId, {leftSquare, rightSquare, bottomSquare});
     } else {
         appendLog("ERR: Failed to create a window from X11 ID");
     }
 }
+
+
 void WindowManager::closeWindow(WId windowId) {
     if (trackedWindows.contains(windowId)) {
         QWindow* window = trackedWindows.value(windowId);
@@ -263,14 +282,20 @@ void WindowManager::updateTaskbarPosition(QWindow *window) {
         TopBar *topBar = windowTopBars.value(window->winId());
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
-        
-        int topbarHeight = 30;
 
+        int topbarHeight = 30;
         QRect windowGeometry = window->geometry();
         window->setGeometry(windowGeometry.x(), windowGeometry.y(), windowGeometry.width(), windowGeometry.height());
 
         topBar->setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
         topBar->show();
+
+        if (windowSquares.contains(window->winId())) {
+            QList<QWidget *> squares = windowSquares.value(window->winId());
+            squares[0]->setGeometry(windowGeometry.x() - 20, windowGeometry.y() + windowGeometry.height() / 2 - 10, 20, 20);
+            squares[1]->setGeometry(windowGeometry.x() + windowGeometry.width(), windowGeometry.y() + windowGeometry.height() / 2 - 10, 20, 20);
+            squares[2]->setGeometry(windowGeometry.x() + windowGeometry.width() / 2 - 10, windowGeometry.y() + windowGeometry.height(), 20, 20);
+        }
     }
 }
 
