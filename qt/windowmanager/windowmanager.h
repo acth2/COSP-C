@@ -56,6 +56,7 @@ private:
     QTimer *windowCheckTimer;
 
     QMap<WId, QSize> windowOriginalSizes;
+    QMap<WId, QList<QWidget*>> windowSquares;
 
     void setupCloseButton(QWindow *window);
 };
