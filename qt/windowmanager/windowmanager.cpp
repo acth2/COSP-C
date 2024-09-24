@@ -63,7 +63,14 @@ void WindowManager::listExistingWindows() {
     if (xDisplay) {
         Atom netWmWindowType = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE", False);
         Atom netWmWindowTypeNormal = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", False);
-
+        Atom netWmWindowTypeDesktop = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
+        Atom netWmWindowTypeDock = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DOCK", False);
+        Atom netWmWindowTypeToolbar = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_TOOLBAR", False);
+        Atom netWmWindowTypeMenu = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_MENU", False);
+        Atom netWmWindowTypeUtility = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_UTILITY", False);
+        Atom netWmWindowTypeSplash = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_SPLASH", False);
+        Atom netWmWindowTypeDialog = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DIALOG", False);
+        
         Window windowRoot = DefaultRootWindow(xDisplay);
         Window parent, *children;
         unsigned int nChildren;
@@ -72,6 +79,18 @@ void WindowManager::listExistingWindows() {
             for (unsigned int i = 0; i < nChildren; i++) {
                 Window child = children[i];
 
+                char *windowName = nullptr;
+                if (XFetchName(xDisplay, child, &windowName) && windowName) {
+                    QString name(windowName);
+                    if (name == "QTerminal") {
+                        appendLog("INFO: Detected QTerminal window: " + QString::number(child));
+                        createAndTrackWindow(child);
+                        XFree(windowName);
+                        continue;
+                    }
+                    XFree(windowName);
+                }
+
                 Atom type;
                 int format;
                 unsigned long nItems, bytesAfter;
@@ -79,25 +98,26 @@ void WindowManager::listExistingWindows() {
 
                 if (XGetWindowProperty(xDisplay, child, netWmWindowType, 0, 1, False, XA_ATOM,
                                    &type, &format, &nItems, &bytesAfter, &data) == Success) {
-                    XWindowAttributes attributes;
-
-                    if (XGetWindowAttributes(xDisplay, child, &attributes) == 0) {
-                        continue;
-                    }
-
-                    if (attributes.map_state == IsViewable && attributes.width > 0 && attributes.height > 0) {
-                        appendLog("INFO: Adding topbar to graphical window: " + QString::number(child));
-    
-                        if (!trackedWindows.contains(child)) {
-                            createAndTrackWindow(child);
+                    if (data) {
+                        Atom *atoms = (Atom *)data;
+                        if (atoms[0] != netWmWindowTypeNormal &&
+                            atoms[0] != netWmWindowTypeDesktop &&
+                            atoms[0] != netWmWindowTypeDock &&
+                            atoms[0] != netWmWindowTypeToolbar &&
+                            atoms[0] != netWmWindowTypeMenu &&
+                            atoms[0] != netWmWindowTypeUtility &&
+                            atoms[0] != netWmWindowTypeSplash &&
+                            atoms[0] != netWmWindowTypeDialog) {
+                            appendLog("INFO: Skipping non-desktop-dock-toolbar-menu-utility-splash-dialog window: " + QString::number(child));
+                            XFree(data);
+                            continue;
                         }
-                    } else {
-                        appendLog("INFO: Skipping non-graphical window: " + QString::number(child));
                     }
                 }
 
                 XWindowAttributes attributes;
                 if (XGetWindowAttributes(xDisplay, child, &attributes) == 0 || attributes.map_state != IsViewable) {
+                    appendLog("INFO: Skipping attribute window: " + QString::number(child));
                     continue;
                 }
 
@@ -191,8 +211,6 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
         QWidget *containerWidget = new QWidget(this);
         QVBoxLayout *layout = new QVBoxLayout(containerWidget);
-
-        containerWidget->setMinimumSize(800, 600);
 
         QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
 
