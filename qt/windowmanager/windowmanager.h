@@ -8,6 +8,7 @@
 #include <QSet>
 #include <QTimer>
 #include <QMap>
+#include <QResizeEvent>
 #include "taskbar.h"
 #include "konami_code_handler.h"
 #include "userinteractright.h"
@@ -29,6 +30,7 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
     void updateTaskbarPosition(QWindow* window);
     void trackWindowEvents(Window xorgWindowId);
     void centerWindow(QWindow *window);
@@ -59,7 +61,8 @@ private:
     QLabel *bottomSquare;
 
     void createTrackingSquares();
-    void updateTrackingSquares();
+    void updateTrackingSquares(QWindow*);
+
     void setupCloseButton(QWindow *window);
 };
 
