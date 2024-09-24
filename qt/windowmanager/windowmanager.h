@@ -18,6 +18,20 @@
 
 class TopBar;
 
+class CubeWidget : public QWidget {
+public:
+    CubeWidget(QWidget *parent = nullptr) : QWidget(parent) {
+        setFixedSize(10, 10);
+    }
+
+protected:
+    void paintEvent(QPaintEvent *) override {
+        QPainter painter(this);
+        painter.setBrush(QBrush(Qt::green));
+        painter.drawRect(0, 0, width(), height());
+    }
+};
+
 class WindowManager : public QWidget {
     Q_OBJECT
 
@@ -32,7 +46,7 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    void resizeEvent(QResizeEvent *event);
+    void resizeEvent(QResizeEvent *event) override;
     void updateTaskbarPosition(QWindow* window);
     void trackWindowEvents(Window xorgWindowId);
     void centerWindow(QWindow *window);
@@ -45,7 +59,6 @@ private slots:
     void cleanUpClosedWindows();
 
 private:
-
     QString backgroundImagePath;
     QLabel *logLabel;
     QSet<QString> loggedMessages;
@@ -62,26 +75,10 @@ private:
     QMap<WId, QSize> windowOriginalSizes;
 
     void createCubes(QWidget *parentWidget, const QRect &geometry);
-    QList<QWidget*> cubes;
-    void updateCubesPosition(QWidget *leftCube, QWidget *rightCube, QWidget *bottomCube, const QRect &geometry);
+    QList<CubeWidget*> cubes;
+    void updateCubesPosition(const QRect &geometry);
     void setupCloseButton(QWindow *window);
     void closeCubes();
 };
-
-
-class CubeWidget : public QWidget {
-public:
-    CubeWidget(QWidget *parent = nullptr) : QWidget(parent) {
-        setFixedSize(10, 10);
-    }
-
-protected:
-    void paintEvent(QPaintEvent *) override {
-        QPainter painter(this);
-        painter.setBrush(QBrush(Qt::green));
-        painter.drawRect(0, 0, width(), height());
-    }
-};
-
 
 #endif // WINDOWMANAGER_H
