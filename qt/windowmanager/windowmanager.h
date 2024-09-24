@@ -61,6 +61,7 @@ private:
     QList<QWidget*> cubes;
     void updateCubesPosition(QWidget *leftCube, QWidget *rightCube, QWidget *bottomCube, const QRect &geometry);
     void setupCloseButton(QWindow *window);
+    void closeCubes();
 };
 
 
