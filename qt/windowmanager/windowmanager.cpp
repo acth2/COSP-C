@@ -222,27 +222,37 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         return;
     }
     
-    containerWidget->setFixedSize(400, 400);
-    containerWidget->show();
-    
     QRect geometry = x11Window->geometry();
-    if (geometry.isValid()) {
-        containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + 30);
-    } else {
-        containerWidget->setGeometry(50, 80, 400, 400 + 30);
-    }
+    int topbarHeight = 30;
 
+    if (geometry.isValid()) {
+        containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
+    } else {
+        containerWidget->setGeometry(50, 80, 400, 400 + topbarHeight);
+    }
+    
     QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
     if (!windowWidget) {
         appendLog("ERR: Failed to create window container.");
         return;
     }
 
-    containerWidget->setLayout(new QVBoxLayout());
+    containerWidget->setLayout(new QVBoxLayout(containerWidget));
     containerWidget->layout()->addWidget(windowWidget);
+    
+    TopBar *topBar = new TopBar(x11Window, this);
+    if (!topBar) {
+        appendLog("ERR: Failed to create TopBar.");
+        return;
+    }
+    
+    topBar->setGeometry(containerWidget->geometry().x(), containerWidget->geometry().y() - topbarHeight, 
+                        containerWidget->geometry().width(), topbarHeight);
+    
+    topBar->show();
     containerWidget->show();
 
-    appendLog(QString("INFO: Successfully created container for window: %1").arg(xorgWindowId));
+    appendLog(QString("INFO: Successfully created container and TopBar for window: %1").arg(xorgWindowId));
 }
 
 
