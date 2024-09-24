@@ -294,6 +294,18 @@ void WindowManager::closeCubes() {
     cubes.clear();
 }
 
+void WindowManager::updateCubesPosition(const QRect &geometry) {
+    if (cubes.size() < 3) return;
+
+    QWidget *leftCube = cubes[0];
+    QWidget *rightCube = cubes[1];
+    QWidget *bottomCube = cubes[2];
+
+    leftCube->move(geometry.x(), geometry.y() + (geometry.height() / 2) - (leftCube->height() / 2)); // Left side center
+    rightCube->move(geometry.x() + geometry.width() - rightCube->width(), geometry.y() + (geometry.height() / 2) - (rightCube->height() / 2)); // Right side center
+    bottomCube->move(geometry.x() + (geometry.width() / 2) - (bottomCube->width() / 2), geometry.y() + geometry.height() - bottomCube->height()); // Bottom center
+}
+
 void WindowManager::updateTaskbarPosition(QWindow *window) {
     if (windowTopBars.contains(window->winId())) {
         TopBar *topBar = windowTopBars.value(window->winId());
