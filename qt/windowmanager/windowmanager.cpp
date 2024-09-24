@@ -16,7 +16,6 @@
 #include <QWindow>
 #include <QResizeEvent>
 #include <QDateTime>
-#include <QLabel>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
@@ -167,8 +166,6 @@ void WindowManager::trackWindowEvents(Window xorgWindowId) {
     xDisplay = XOpenDisplay(nullptr);
     if (xDisplay) {
         XSelectInput(xDisplay, xorgWindowId, StructureNotifyMask);
-        
-        XResizeWindow(xDisplay, xorgWindowId, 500, 500);
     } else {
         appendLog("ERR: Failed to open X Display ..");
     }
@@ -212,27 +209,22 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         trackedWindows.insert(xorgWindowId, x11Window);
         appendLog(QString("INFO: Detected new window: %1").arg(xorgWindowId));
 
-        QSize originalSize = x11Window->size();
-        windowOriginalSizes.insert(xorgWindowId, originalSize);
-
         QWidget *containerWidget = new QWidget(this);
         QVBoxLayout *layout = new QVBoxLayout(containerWidget);
 
         QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
-        
+
         QRect geometry = x11Window->geometry();
         int topbarHeight = 30;
 
         if (geometry.isValid()) {
             containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
         } else {
-            containerWidget->setGeometry(50, 80, 500, 500 + topbarHeight);
+            containerWidget->setGeometry(50, 80, 800, 600 + topbarHeight);
         }
-
-        layout->setContentsMargins(0, 0, 0, 0);
-        layout->setSpacing(0);
         layout->addWidget(windowWidget);
         containerWidget->setLayout(layout);
+
         containerWidget->show();
 
         TopBar *topBar = new TopBar(x11Window, this);
@@ -241,78 +233,52 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         topBar->setGeometry(geometry.x(), geometry.y() - topbarHeight, geometry.width(), topbarHeight);
         topBar->updatePosition();
         topBar->show();
-
-        createCubes(containerWidget, geometry);
-
+        
         appendLog(QString("INFO: TopBar created for window: %1").arg(xorgWindowId));
     } else {
         appendLog("ERR: Failed to create a window from X11 ID");
     }
 }
 
-void WindowManager::createCubes(QWidget *parentWidget, const QRect &geometry) {
-    closeCubes();
-
-    CubeWidget *leftCube = new CubeWidget(parentWidget);
-    leftCube->move(geometry.left() - leftCube->width(), geometry.top() + (geometry.height() / 2) - (leftCube->height() / 2));
-    leftCube->show();
-    cubes.append(leftCube);
-
-    CubeWidget *rightCube = new CubeWidget(parentWidget);
-    rightCube->move(geometry.right(), geometry.top() + (geometry.height() / 2) - (rightCube->height() / 2));
-    rightCube->show();
-    cubes.append(rightCube);
-
-    CubeWidget *bottomCube = new CubeWidget(parentWidget);
-    bottomCube->move(geometry.left() + (geometry.width() / 2) - (bottomCube->width() / 2), geometry.bottom());
-    bottomCube->show();
-    cubes.append(bottomCube);
-}
-
-void WindowManager::updateCubesPosition(const QRect &geometry) {
-    if (cubes.size() >= 3) {
-        cubes[0]->move(geometry.left() - cubes[0]->width(), geometry.top() + (geometry.height() / 2) - (cubes[0]->height() / 2));
-        cubes[1]->move(geometry.right(), geometry.top() + (geometry.height() / 2) - (cubes[1]->height() / 2));
-        cubes[2]->move(geometry.left() + (geometry.width() / 2) - (cubes[2]->width() / 2), geometry.bottom());
+void WindowManager::closeWindow(WId windowId) {
+    if (trackedWindows.contains(windowId)) {
+        QWindow* window = trackedWindows.value(windowId);
+        if (window) {
+            window->hide();
+            trackedWindows.remove(windowId);
+            appendLog("INFO: Window killed");
+        }
     }
 }
-
-void WindowManager::resizeEvent(QResizeEvent *event) {
-    QWidget::resizeEvent(event);
-    updateCubesPosition(geometry());
-}
-
-void WindowManager::moveEvent(QMoveEvent *event) {
-    QWidget::moveEvent(event);
-    updateCubesPosition(geometry());
-}
-
-void WindowManager::closeCubes() {
-    for (CubeWidget *cube : cubes) {
-        cube->close();
-        delete cube;
-    }
-    cubes.clear();
-}
-
 void WindowManager::updateTaskbarPosition(QWindow *window) {
     if (windowTopBars.contains(window->winId())) {
         TopBar *topBar = windowTopBars.value(window->winId());
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
         
+        int windowWidth = window->width();
+        int windowHeight = window->height();
         int topbarHeight = 30;
 
-        QRect windowGeometry = window->geometry();
-        window->setGeometry(windowGeometry.x(), windowGeometry.y(), windowGeometry.width(), windowGeometry.height());
+        int centeredX = (screenGeometry.width() - windowWidth) / 2;
+        int centeredY = (screenGeometry.height() - windowHeight) / 2;
 
-        topBar->setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
+        if (windowWidth <= 0 || windowHeight <= 0) {
+            windowWidth = 800;
+            windowHeight = 600;
+            centeredX = (screenGeometry.width() - windowWidth) / 2;
+            centeredY = (screenGeometry.height() - windowHeight) / 2;
+        }
+
+        window->setGeometry(centeredX, centeredY, windowWidth, windowHeight);
+
+        topBar->setGeometry(centeredX, centeredY - topbarHeight, windowWidth, topbarHeight);
         topBar->show();
     }
 }
 
 void WindowManager::appendLog(const QString &message) {
-    QFile logFile("/usr/cydra/logs/a2wm.log");
+    QFile logFile("/usr/cydra/logs/cwm.log");
     if (logFile.open(QIODevice::Append | QIODevice::Text)) {
         QTextStream out(&logFile);
         out << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz ") 
