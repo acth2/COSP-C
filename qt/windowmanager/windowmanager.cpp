@@ -307,6 +307,8 @@ bool WindowManager::eventFilter(QObject *watched, QEvent *event) {
         QWindow* trackedWindow = qobject_cast<QWindow*>(watched);
         if (trackedWindow) {
             updateTrackingSquares(trackedWindow);
+        } else {
+            appendLog("ERR: Event filter trackedWindow cast failed.");
         }
     }
 
