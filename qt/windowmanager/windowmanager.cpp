@@ -214,8 +214,8 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         QSize originalSize = x11Window->size();
         windowOriginalSizes.insert(xorgWindowId, originalSize);
 
-        QWidget *containerWidget = new QWidget(this);
-        QVBoxLayout *layout = new QVBoxLayout(containerWidget);
+        CustomContainerWidget *containerWidget = new CustomContainerWidget(this);
+        containerWidget->setSquareSize(20);
 
         QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
         
@@ -228,6 +228,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
             containerWidget->setGeometry(50, 80, 500, 500 + topbarHeight);
         }
 
+        QVBoxLayout *layout = new QVBoxLayout(containerWidget);
         layout->setContentsMargins(0, 0, 0, 0);
         layout->setSpacing(0);
         layout->addWidget(windowWidget);
@@ -246,6 +247,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         appendLog("ERR: Failed to create a window from X11 ID");
     }
 }
+
 void WindowManager::closeWindow(WId windowId) {
     if (trackedWindows.contains(windowId)) {
         QWindow* window = trackedWindows.value(windowId);
