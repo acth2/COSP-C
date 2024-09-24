@@ -29,6 +29,7 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
+
     void updateTaskbarPosition(QWindow* window);
     void trackWindowEvents(Window xorgWindowId);
     void centerWindow(QWindow *window);
@@ -58,6 +59,7 @@ private:
     QMap<WId, QSize> windowOriginalSizes;
 
     void createCubes(QWidget *parentWidget, const QRect &geometry);
+    QList<QWidget*> cubes;
     void updateCubesPosition(QWidget *leftCube, QWidget *rightCube, QWidget *bottomCube, const QRect &geometry);
     void setupCloseButton(QWindow *window);
 };
