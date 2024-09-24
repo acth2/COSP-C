@@ -205,9 +205,9 @@ void WindowManager::toggleConsole() {
 
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
-    
+
     QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
-    
+
     if (!x11Window) {
         appendLog("ERR: Failed to create QWindow from X11 ID.");
         return;
@@ -263,45 +263,60 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     windowTopBars.insert(xorgWindowId, topBar);
 
-    createTrackingSquares();
+    x11Window->installEventFilter(this);
+
     updateTrackingSquares(x11Window);
 }
 
 void WindowManager::createTrackingSquares() {
-    int squareSize = 20;
-
     leftSquare = new QLabel(this);
-    leftSquare->setFixedSize(squareSize, squareSize);
-    leftSquare->setStyleSheet("background-color: red;");
-
     rightSquare = new QLabel(this);
-    rightSquare->setFixedSize(squareSize, squareSize);
-    rightSquare->setStyleSheet("background-color: blue;");
-
     bottomSquare = new QLabel(this);
-    bottomSquare->setFixedSize(squareSize, squareSize);
-    bottomSquare->setStyleSheet("background-color: green;");
 
-    leftSquare->show();
-    rightSquare->show();
-    bottomSquare->show();
+    QString squareStyle = "background-color: red;";
+    leftSquare->setStyleSheet(squareStyle);
+    rightSquare->setStyleSheet(squareStyle);
+    bottomSquare->setStyleSheet(squareStyle);
+
+    QSize squareSize(30, 30);
+    leftSquare->setFixedSize(squareSize);
+    rightSquare->setFixedSize(squareSize);
+    bottomSquare->setFixedSize(squareSize);
+
+    leftSquare->hide();
+    rightSquare->hide();
+    bottomSquare->hide();
 }
 
 void WindowManager::updateTrackingSquares(QWindow* trackedWindow) {
-    if (trackedWindow) {
-        QRect windowGeometry = trackedWindow->geometry();
-        int squareOffset = 10;
+    QRect windowGeometry = trackedWindow->geometry();
+    int margin = 10;
 
-        leftSquare->move(windowGeometry.left() - leftSquare->width() - squareOffset, windowGeometry.top());
-        rightSquare->move(windowGeometry.right() + squareOffset, windowGeometry.top());
-        bottomSquare->move(windowGeometry.center().x() - (bottomSquare->width() / 2), windowGeometry.bottom() + squareOffset);
+    leftSquare->move(windowGeometry.x() - leftSquare->width() - margin, windowGeometry.y() + windowGeometry.height() / 2 - leftSquare->height() / 2);
+    leftSquare->show();
+
+    rightSquare->move(windowGeometry.x() + windowGeometry.width() + margin, windowGeometry.y() + windowGeometry.height() / 2 - rightSquare->height() / 2);
+    rightSquare->show();
+
+    bottomSquare->move(windowGeometry.x() + windowGeometry.width() / 2 - bottomSquare->width() / 2, windowGeometry.y() + windowGeometry.height() + margin);
+    bottomSquare->show();
+}
+
+bool WindowManager::eventFilter(QObject *watched, QEvent *event) {
+    if (event->type() == QEvent::Move) {
+        QWindow* trackedWindow = qobject_cast<QWindow*>(watched);
+        if (trackedWindow) {
+            updateTrackingSquares(trackedWindow);
+        }
     }
+
+    return QWidget::eventFilter(watched, event);
 }
 
 void WindowManager::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
-
-    for (QWindow* trackedWindow : trackedWindows) {
+    
+    for (QWindow *trackedWindow : trackedWindows) {
         updateTrackingSquares(trackedWindow);
     }
 }
