@@ -8,6 +8,8 @@
 #include <QSet>
 #include <QTimer>
 #include <QMap>
+#include <QObject>
+#include <QEvent>
 #include <QResizeEvent>
 #include "taskbar.h"
 #include "konami_code_handler.h"
@@ -35,6 +37,7 @@ protected:
     void trackWindowEvents(Window xorgWindowId);
     void centerWindow(QWindow *window);
     void removeCloseButton(WId windowId);
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
 private slots:
     void checkForNewWindows();
