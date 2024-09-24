@@ -263,98 +263,47 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     windowTopBars.insert(xorgWindowId, topBar);
 
-    QTimer::singleShot(0, [this]() {
-        createTrackingSquares();
-    });
+    createTrackingSquares();
+    updateTrackingSquares(x11Window);
 }
 
-void WindowManager::createTrackingSquares(QWindow* trackedWindow) {
-    if (!trackedWindow) {
-        appendLog("ERR: Tracked window is null in createTrackingSquares.");
-        return;
-    }
+void WindowManager::createTrackingSquares() {
+    int squareSize = 20;
 
-    appendLog("INFO: Creating tracking squares.");
+    leftSquare = new QLabel(this);
+    leftSquare->setFixedSize(squareSize, squareSize);
+    leftSquare->setStyleSheet("background-color: red;");
 
-    if (!leftSquare) leftSquare = new QLabel(this);
-    if (!rightSquare) rightSquare = new QLabel(this);
-    if (!bottomSquare) bottomSquare = new QLabel(this);
+    rightSquare = new QLabel(this);
+    rightSquare->setFixedSize(squareSize, squareSize);
+    rightSquare->setStyleSheet("background-color: blue;");
 
-    QString squareStyle = "background-color: red;";
-    leftSquare->setStyleSheet(squareStyle);
-    rightSquare->setStyleSheet(squareStyle);
-    bottomSquare->setStyleSheet(squareStyle);
-
-    QSize squareSize(50, 50);
-    leftSquare->setFixedSize(squareSize);
-    rightSquare->setFixedSize(squareSize);
-    bottomSquare->setFixedSize(squareSize);
-
-    QRect windowGeometry = trackedWindow->geometry();
-
-    leftSquare->move(windowGeometry.left() - squareSize.width(), windowGeometry.top());
-    rightSquare->move(windowGeometry.right(), windowGeometry.top());
-    bottomSquare->move(windowGeometry.left() + (windowGeometry.width() / 2) - (squareSize.width() / 2), windowGeometry.bottom());
+    bottomSquare = new QLabel(this);
+    bottomSquare->setFixedSize(squareSize, squareSize);
+    bottomSquare->setStyleSheet("background-color: green;");
 
     leftSquare->show();
     rightSquare->show();
     bottomSquare->show();
-
-    appendLog("INFO: Tracking squares positioned.");
 }
 
 void WindowManager::updateTrackingSquares(QWindow* trackedWindow) {
-    if (!trackedWindow) {
-        appendLog("ERR: trackedWindow is null in updateTrackingSquares.");
-        return;
+    if (trackedWindow) {
+        QRect windowGeometry = trackedWindow->geometry();
+        int squareOffset = 10;
+
+        leftSquare->move(windowGeometry.left() - leftSquare->width() - squareOffset, windowGeometry.top());
+        rightSquare->move(windowGeometry.right() + squareOffset, windowGeometry.top());
+        bottomSquare->move(windowGeometry.center().x() - (bottomSquare->width() / 2), windowGeometry.bottom() + squareOffset);
     }
-
-    QRect windowGeometry = trackedWindow->geometry();
-    int margin = 10;
-
-    appendLog(QString("INFO: Updating squares for window geometry: (%1, %2, %3, %4)")
-               .arg(windowGeometry.x())
-               .arg(windowGeometry.y())
-               .arg(windowGeometry.width())
-               .arg(windowGeometry.height()));
-
-    leftSquare->move(windowGeometry.x() - leftSquare->width() - margin, windowGeometry.y() + windowGeometry.height() / 2 - leftSquare->height() / 2);
-    appendLog("INFO: Moved left square.");
-
-    rightSquare->move(windowGeometry.x() + windowGeometry.width() + margin, windowGeometry.y() + windowGeometry.height() / 2 - rightSquare->height() / 2);
-    appendLog("INFO: Moved right square.");
-
-    bottomSquare->move(windowGeometry.x() + windowGeometry.width() / 2 - bottomSquare->width() / 2, windowGeometry.y() + windowGeometry.height() + margin);
-    appendLog("INFO: Moved bottom square.");
-
-    leftSquare->show();
-    rightSquare->show();
-    bottomSquare->show();
 }
 
-bool WindowManager::eventFilter(QObject *watched, QEvent *event) {
-    if (event->type() == QEvent::Move) {
-        QWindow* trackedWindow = qobject_cast<QWindow*>(watched);
-        if (trackedWindow) {
-            updateTrackingSquares(trackedWindow);
-        } else {
-            appendLog("ERR: Event filter trackedWindow cast failed.");
-        }
-    }
-
-    return QWidget::eventFilter(watched, event);
-}
-
-void WindowManager::resizeEvent(QResizeEvent* event, QWindow* trackedWindow) {
-    createTrackingSquares(trackedWindow);
-
+void WindowManager::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
-}
 
-void WindowManager::moveEvent(QMoveEvent* event, QWindow* trackedWindow) {
-    createTrackingSquares(trackedWindow);
-
-    QWidget::moveEvent(event);
+    for (QWindow* trackedWindow : trackedWindows) {
+        updateTrackingSquares(trackedWindow);
+    }
 }
 
 void WindowManager::closeWindow(WId windowId) {
