@@ -205,9 +205,9 @@ void WindowManager::toggleConsole() {
 
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
-
+    
     QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
-
+    
     if (!x11Window) {
         appendLog("ERR: Failed to create QWindow from X11 ID.");
         return;
@@ -263,15 +263,15 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     windowTopBars.insert(xorgWindowId, topBar);
 
-    x11Window->installEventFilter(this);
-
-    updateTrackingSquares(x11Window);
+    QTimer::singleShot(0, [this, x11Window]() {
+        createTrackingSquares(x11Window);
+    });
 }
 
 void WindowManager::createTrackingSquares() {
-    leftSquare = new QLabel(this);
-    rightSquare = new QLabel(this);
-    bottomSquare = new QLabel(this);
+    if (!leftSquare) leftSquare = new QLabel(this);
+    if (!rightSquare) rightSquare = new QLabel(this);
+    if (!bottomSquare) bottomSquare = new QLabel(this);
 
     QString squareStyle = "background-color: red;";
     leftSquare->setStyleSheet(squareStyle);
@@ -289,16 +289,31 @@ void WindowManager::createTrackingSquares() {
 }
 
 void WindowManager::updateTrackingSquares(QWindow* trackedWindow) {
+    if (!trackedWindow) {
+        appendLog("ERR: trackedWindow is null in updateTrackingSquares.");
+        return;
+    }
+
     QRect windowGeometry = trackedWindow->geometry();
     int margin = 10;
 
+    appendLog(QString("INFO: Updating squares for window geometry: (%1, %2, %3, %4)")
+               .arg(windowGeometry.x())
+               .arg(windowGeometry.y())
+               .arg(windowGeometry.width())
+               .arg(windowGeometry.height()));
+
     leftSquare->move(windowGeometry.x() - leftSquare->width() - margin, windowGeometry.y() + windowGeometry.height() / 2 - leftSquare->height() / 2);
-    leftSquare->show();
+    appendLog("INFO: Moved left square.");
 
     rightSquare->move(windowGeometry.x() + windowGeometry.width() + margin, windowGeometry.y() + windowGeometry.height() / 2 - rightSquare->height() / 2);
-    rightSquare->show();
+    appendLog("INFO: Moved right square.");
 
     bottomSquare->move(windowGeometry.x() + windowGeometry.width() / 2 - bottomSquare->width() / 2, windowGeometry.y() + windowGeometry.height() + margin);
+    appendLog("INFO: Moved bottom square.");
+
+    leftSquare->show();
+    rightSquare->show();
     bottomSquare->show();
 }
 
