@@ -301,9 +301,9 @@ void WindowManager::updateCubesPosition(const QRect &geometry) {
     QWidget *rightCube = cubes[1];
     QWidget *bottomCube = cubes[2];
 
-    leftCube->move(geometry.x(), geometry.y() + (geometry.height() / 2) - (leftCube->height() / 2)); // Left side center
-    rightCube->move(geometry.x() + geometry.width() - rightCube->width(), geometry.y() + (geometry.height() / 2) - (rightCube->height() / 2)); // Right side center
-    bottomCube->move(geometry.x() + (geometry.width() / 2) - (bottomCube->width() / 2), geometry.y() + geometry.height() - bottomCube->height()); // Bottom center
+    leftCube->move(geometry.x(), geometry.y() + (geometry.height() / 2) - (leftCube->height() / 2));
+    rightCube->move(geometry.x() + geometry.width() - rightCube->width(), geometry.y() + (geometry.height() / 2) - (rightCube->height() / 2));
+    bottomCube->move(geometry.x() + (geometry.width() / 2) - (bottomCube->width() / 2), geometry.y() + geometry.height() - bottomCube->height());
 }
 
 void WindowManager::updateTaskbarPosition(QWindow *window) {
