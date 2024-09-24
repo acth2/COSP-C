@@ -207,16 +207,24 @@ void WindowManager::toggleConsole() {
 
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
-    
+
     QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
-    
+    appendLog("INFO: QWindow created successfully from WinId.");
+
     if (!x11Window) {
         appendLog("ERR: Failed to create QWindow from X11 ID.");
         return;
     }
 
+    appendLog("INFO: Window geometry:");
+    appendLog(QString("X: %1, Y: %2, Width: %3, Height: %4")
+              .arg(x11Window->geometry().x())
+              .arg(x11Window->geometry().y())
+              .arg(x11Window->geometry().width())
+              .arg(x11Window->geometry().height()));
+
     trackedWindows.insert(xorgWindowId, x11Window);
-    appendLog(QString("INFO: Detected new window: %1").arg(xorgWindowId));
+    appendLog("INFO: Inserted window into trackedWindows.");
 
     QWidget *containerWidget = new QWidget(this);
     if (!containerWidget) {
@@ -224,27 +232,27 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         return;
     }
 
+    appendLog("INFO: Created container widget.");
+
     QRect geometry = x11Window->geometry();
     int topbarHeight = 30;
 
-    appendLog(QString("INFO: Geometry for window %1: (%2, %3, %4, %5)")
-               .arg(xorgWindowId)
-               .arg(geometry.x())
-               .arg(geometry.y())
-               .arg(geometry.width())
-               .arg(geometry.height()));
-
+    appendLog("INFO: Updating container widget geometry.");
     if (geometry.isValid()) {
         containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
     } else {
         containerWidget->setGeometry(50, 80, 400, 400 + topbarHeight);
     }
 
+    appendLog("INFO: Geometry set for container widget.");
+
     QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
     if (!windowWidget) {
         appendLog("ERR: Failed to create window container.");
         return;
     }
+
+    appendLog("INFO: Created window container widget.");
 
     QVBoxLayout *layout = new QVBoxLayout(containerWidget);
     layout->addWidget(windowWidget);
@@ -257,7 +265,8 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     topBar->setGeometry(containerWidget->geometry().x(), containerWidget->geometry().y() - topbarHeight, 
                         containerWidget->geometry().width(), topbarHeight);
-    
+    appendLog("INFO: TopBar created and geometry set.");
+
     topBar->show();
     containerWidget->show();
 
@@ -265,6 +274,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     windowTopBars.insert(xorgWindowId, topBar);
 }
+
 
 void WindowManager::closeWindow(WId windowId) {
     if (trackedWindows.contains(windowId)) {
