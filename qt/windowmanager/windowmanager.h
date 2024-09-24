@@ -63,7 +63,7 @@ private:
     QLabel *rightSquare;
     QLabel *bottomSquare;
 
-    void createTrackingSquares();
+    void createTrackingSquares(QWindow*);
     void updateTrackingSquares(QWindow*);
 
     void setupCloseButton(QWindow *window);
