@@ -144,6 +144,7 @@ void WindowManager::listExistingWindows() {
 void WindowManager::checkForNewWindows() {
     xDisplay = XOpenDisplay(nullptr);
     if (xDisplay) {
+        appendLog("INFO: Checking for new windows...");
         listExistingWindows();
         processX11Events(); 
         cleanUpClosedWindows();
@@ -161,7 +162,6 @@ void WindowManager::checkForNewWindows() {
         appendLog("ERR: Failed to open X Display ..");
     }
 }
-
 void WindowManager::trackWindowEvents(Window xorgWindowId) {
     xDisplay = XOpenDisplay(nullptr);
     if (xDisplay) {
@@ -206,6 +206,8 @@ void WindowManager::toggleConsole() {
 }
 
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
+    appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
+    
     QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
     
     if (!x11Window) {
@@ -224,6 +226,13 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     QRect geometry = x11Window->geometry();
     int topbarHeight = 30;
+
+    appendLog(QString("INFO: Geometry for window %1: (%2, %3, %4, %5)")
+               .arg(xorgWindowId)
+               .arg(geometry.x())
+               .arg(geometry.y())
+               .arg(geometry.width())
+               .arg(geometry.height()));
 
     if (geometry.isValid()) {
         containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
