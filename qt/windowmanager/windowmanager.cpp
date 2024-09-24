@@ -264,7 +264,10 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     windowTopBars.insert(xorgWindowId, topBar);
 
     createTrackingSquares();
-    updateTrackingSquares(x11Window);
+
+    resizeWindowCubesTimer = new QTimer(this);
+    connect(resizeWindowCubesTimer, &QTimer::timeout, this, updateTrackingSquares(x11Window));
+    windowCheckTimer->start(1500);
 
     topBar->updatePosition();
 }
@@ -292,7 +295,7 @@ void WindowManager::createTrackingSquares() {
 void WindowManager::updateTrackingSquares(QWindow* trackedWindow) {
     if (trackedWindow) {
         QRect windowGeometry = trackedWindow->geometry();
-        int squareOffset = 10;
+        int squareOffset = 0;
 
         leftSquare->move(windowGeometry.left() - leftSquare->width() - squareOffset, windowGeometry.top());
         rightSquare->move(windowGeometry.right() + squareOffset, windowGeometry.top());
