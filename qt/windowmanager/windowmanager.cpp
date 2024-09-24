@@ -205,6 +205,7 @@ void WindowManager::toggleConsole() {
     logLabel->setVisible(isConsoleVisible);
     appendLog("Welcome into the DEBUG window (Where my nightmare comes true), Press ESC to exit it");
 }
+
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
     if (x11Window) {
@@ -249,6 +250,15 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     }
 }
 
+void WindowManager::resizeEvent(QResizeEvent *event) {
+    QWidget *parentWidget = event->widget();
+    QRect newGeometry = parentWidget->geometry();
+    
+    if (!cubes.isEmpty()) {
+        updateCubesPosition(cubes[0], cubes[1], cubes[2], newGeometry);
+    }
+}
+
 void WindowManager::createCubes(QWidget *parentWidget, const QRect &geometry) {
     QWidget *leftCube = new QWidget(parentWidget);
     QWidget *rightCube = new QWidget(parentWidget);
@@ -264,20 +274,17 @@ void WindowManager::createCubes(QWidget *parentWidget, const QRect &geometry) {
 
     updateCubesPosition(leftCube, rightCube, bottomCube, geometry);
 
+    // Show the cubes
     leftCube->show();
     rightCube->show();
     bottomCube->show();
 
     cubes << leftCube << rightCube << bottomCube;
 
-    connect(parentWidget, &QWidget::destroyed, this, [this, leftCube, rightCube, bottomCube]() {
+    connect(parentWidget, &QWidget::destroyed, this, [leftCube, rightCube, bottomCube]() {
         leftCube->deleteLater();
         rightCube->deleteLater();
         bottomCube->deleteLater();
-    });
-
-    connect(parentWidget, &QWidget::geometryChanged, this, [this, leftCube, rightCube, bottomCube](const QRect &newGeometry) {
-        updateCubesPosition(leftCube, rightCube, bottomCube, newGeometry);
     });
 }
 
