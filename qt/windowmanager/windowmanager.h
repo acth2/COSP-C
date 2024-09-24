@@ -8,10 +8,6 @@
 #include <QSet>
 #include <QTimer>
 #include <QMap>
-#include <QPainter>
-#include <QPaintEvent>
-#include <QResizeEvent>
-#include <QMoveEvent>
 #include "taskbar.h"
 #include "konami_code_handler.h"
 #include "userinteractright.h"
@@ -33,8 +29,6 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override;
-    void moveEvent(QMoveEvent *event) override;
     void updateTaskbarPosition(QWindow* window);
     void trackWindowEvents(Window xorgWindowId);
     void centerWindow(QWindow *window);
@@ -47,6 +41,7 @@ private slots:
     void cleanUpClosedWindows();
 
 private:
+
     QString backgroundImagePath;
     QLabel *logLabel;
     QSet<QString> loggedMessages;
@@ -60,13 +55,7 @@ private:
     QMap<QWindow*, TaskBar*> windowTaskbars;
     QTimer *windowCheckTimer;
 
-    QMap<WId, QSize> windowOriginalSizes;
-
-    void createCubes(QWidget *parentWidget, const QRect &geometry);
-    QList<CubeWidget*> cubes;
-    void updateCubesPosition(const QRect &geometry);
     void setupCloseButton(QWindow *window);
-    void closeCubes();
 };
 
 #endif // WINDOWMANAGER_H
