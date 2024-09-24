@@ -236,7 +236,6 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
         QApplication::restoreOverrideCursor();
     }
 }
-
 void TopBar::closePopup() {
     if (popup->isVisible()) {
         popup->hide();
