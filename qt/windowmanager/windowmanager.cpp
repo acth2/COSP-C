@@ -237,8 +237,8 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         return;
     }
 
-    containerWidget->setLayout(new QVBoxLayout(containerWidget));
-    containerWidget->layout()->addWidget(windowWidget);
+    QVBoxLayout *layout = new QVBoxLayout(containerWidget);
+    layout->addWidget(windowWidget);
     
     TopBar *topBar = new TopBar(x11Window, this);
     if (!topBar) {
