@@ -198,7 +198,7 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
 
     QRect windowGeometry = trackedWindow->geometry();
     bool onRightEdge = event->x() > (windowGeometry.width() - marginIconing);
-    bool onBottomEdge = event->y() > windowGeometry.height() - marginIconing);
+    bool onBottomEdge = event->y() > (windowGeometry.height() - marginIconing);
 
     if (onRightEdge && onBottomEdge) {
         QApplication::setOverrideCursor(Qt::SizeFDiagCursor);
@@ -217,33 +217,6 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
     } else if (dragging) {
         move(event->globalPos() - dragStartPosition);
     }
-}
-
-void TopBar::handleResizeRight(const QPoint &mousePos) {
-    int deltaX = mousePos.x() - resizeStartPos.x();
-    QRect windowGeometry = trackedWindow->geometry();
-    if (windowGeometry.width() + deltaX >= minimumWidth()) {
-        trackedWindow->setGeometry(windowGeometry.x(), windowGeometry.y(), windowGeometry.width() + deltaX, windowGeometry.height());
-    }
-    resizeStartPos = mousePos;
-}
-
-void TopBar::handleResizeLeft(const QPoint &mousePos) {
-    int deltaX = mousePos.x() - resizeStartPos.x();
-    QRect windowGeometry = trackedWindow->geometry();
-    if (windowGeometry.width() - deltaX >= minimumWidth()) {
-        trackedWindow->setGeometry(windowGeometry.x() + deltaX, windowGeometry.y(), windowGeometry.width() - deltaX, windowGeometry.height());
-    }
-    resizeStartPos = mousePos;
-}
-
-void TopBar::handleResizeBottom(const QPoint &mousePos) {
-    int deltaY = mousePos.y() - resizeStartPos.y();
-    QRect windowGeometry = trackedWindow->geometry();
-    if (windowGeometry.height() + deltaY >= minimumHeight()) {
-        trackedWindow->setGeometry(windowGeometry.x(), windowGeometry.y(), windowGeometry.width(), windowGeometry.height() + deltaY);
-    }
-    resizeStartPos = mousePos;
 }
 
 void TopBar::closePopup() {
