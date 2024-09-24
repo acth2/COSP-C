@@ -174,7 +174,7 @@ void TopBar::paintEvent(QPaintEvent *event) {
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
     int margin = 10;
     QRect windowGeometry = trackedWindow->geometry();
-
+    
     bool onRightEdge = (event->globalPos().x() >= windowGeometry.right() - margin);
     bool onBottomEdge = (event->globalPos().y() >= windowGeometry.bottom() - margin);
 
@@ -193,19 +193,13 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
                                                 event->globalPos().y() - resizeStartPosition.y());
 
         if (newSize.width() >= 100 && newSize.height() >= 100) {
-            trackedWindow->setGeometry(windowGeometry.x(),
-                                       windowGeometry.y(),
-                                       newSize.width(),
-                                       newSize.height());
+            trackedWindow->setGeometry(windowGeometry.x(), windowGeometry.y(), newSize.width(), newSize.height());
             updatePosition();
         }
     } 
     else if (dragging) {
         QPoint newTopLeft = event->globalPos() - dragStartPosition;
-        trackedWindow->setGeometry(newTopLeft.x(),
-                                   newTopLeft.y(),
-                                   windowGeometry.width(),
-                                   windowGeometry.height());
+        trackedWindow->setGeometry(newTopLeft.x(), newTopLeft.y(), windowGeometry.width(), windowGeometry.height());
         updatePosition();
     }
 }
@@ -222,7 +216,8 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
             resizing = true;
             resizeStartPosition = event->globalPos();
             resizeStartSize = trackedWindow->size();
-        } else {
+        } 
+        else {
             dragging = true;
             dragStartPosition = event->globalPos() - windowGeometry.topLeft();
         }
@@ -236,6 +231,8 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
         QApplication::restoreOverrideCursor();
     }
 }
+
+
 void TopBar::closePopup() {
     if (popup->isVisible()) {
         popup->hide();
