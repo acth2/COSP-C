@@ -268,7 +268,14 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     });
 }
 
-void WindowManager::createTrackingSquares() {
+void WindowManager::createTrackingSquares(QWindow* trackedWindow) {
+    if (!trackedWindow) {
+        appendLog("ERR: Tracked window is null in createTrackingSquares.");
+        return;
+    }
+
+    appendLog("INFO: Creating tracking squares.");
+
     if (!leftSquare) leftSquare = new QLabel(this);
     if (!rightSquare) rightSquare = new QLabel(this);
     if (!bottomSquare) bottomSquare = new QLabel(this);
@@ -278,14 +285,22 @@ void WindowManager::createTrackingSquares() {
     rightSquare->setStyleSheet(squareStyle);
     bottomSquare->setStyleSheet(squareStyle);
 
-    QSize squareSize(30, 30);
+    QSize squareSize(50, 50);
     leftSquare->setFixedSize(squareSize);
     rightSquare->setFixedSize(squareSize);
     bottomSquare->setFixedSize(squareSize);
 
-    leftSquare->hide();
-    rightSquare->hide();
-    bottomSquare->hide();
+    QRect windowGeometry = trackedWindow->geometry();
+
+    leftSquare->move(windowGeometry.left() - squareSize.width(), windowGeometry.top());
+    rightSquare->move(windowGeometry.right(), windowGeometry.top());
+    bottomSquare->move(windowGeometry.left() + (windowGeometry.width() / 2) - (squareSize.width() / 2), windowGeometry.bottom());
+
+    leftSquare->show();
+    rightSquare->show();
+    bottomSquare->show();
+
+    appendLog("INFO: Tracking squares positioned.");
 }
 
 void WindowManager::updateTrackingSquares(QWindow* trackedWindow) {
