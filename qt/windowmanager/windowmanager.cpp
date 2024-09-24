@@ -345,12 +345,16 @@ bool WindowManager::eventFilter(QObject *watched, QEvent *event) {
     return QWidget::eventFilter(watched, event);
 }
 
-void WindowManager::resizeEvent(QResizeEvent *event) {
+void WindowManager::resizeEvent(QResizeEvent* event, QWindow* trackedWindow) {
+    createTrackingSquares(trackedWindow);
+
     QWidget::resizeEvent(event);
-    
-    for (QWindow *trackedWindow : trackedWindows) {
-        updateTrackingSquares(trackedWindow);
-    }
+}
+
+void WindowManager::moveEvent(QMoveEvent* event, QWindow* trackedWindow) {
+    createTrackingSquares(trackedWindow);
+
+    QWidget::moveEvent(event);
 }
 
 void WindowManager::closeWindow(WId windowId) {
