@@ -11,6 +11,7 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QResizeEvent>
+#include <QMoveEvent>
 #include "taskbar.h"
 #include "konami_code_handler.h"
 #include "userinteractright.h"
@@ -47,6 +48,7 @@ protected:
     void closeEvent(QCloseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
+    void moveEvent(QMoveEvent *event) override;
     void updateTaskbarPosition(QWindow* window);
     void trackWindowEvents(Window xorgWindowId);
     void centerWindow(QWindow *window);
