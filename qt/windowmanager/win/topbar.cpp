@@ -171,33 +171,12 @@ void TopBar::paintEvent(QPaintEvent *event) {
     painter.drawRect(rect());
 }
 
-void TopBar::mousePressEvent(QMouseEvent *event) {
-    int margin = 10;
-    QRect windowGeometry = trackedWindow->geometry();
-    bool onRightEdge = event->x() > (windowGeometry.width() - margin);
-    bool onBottomEdge = event->y() > (windowGeometry.height() - margin);
-
-    if (onRightEdge || onBottomEdge) {
-        resizing = true;
-        resizeStartPosition = event->globalPos();
-        resizeStartSize = size();
-    } else {
-        dragging = true;
-        dragStartPosition = event->globalPos() - frameGeometry().topLeft();
-    }
-}
-
-void TopBar::mouseReleaseEvent(QMouseEvent *event) {
-    resizing = false;
-    dragging = false;
-}
-
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
     int margin = 10;
     QRect windowGeometry = trackedWindow->geometry();
     
-    bool onRightEdge = event->x() > (windowGeometry.width() - margin);
-    bool onBottomEdge = event->y() > (windowGeometry.height() - margin);
+    bool onRightEdge = (event->globalPos().x() >= windowGeometry.right() - margin);
+    bool onBottomEdge = (event->globalPos().y() >= windowGeometry.bottom() - margin);
 
     if (onRightEdge && onBottomEdge) {
         QApplication::setOverrideCursor(Qt::SizeFDiagCursor);
@@ -212,16 +191,46 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
     if (resizing) {
         QSize newSize = resizeStartSize + QSize(event->globalPos().x() - resizeStartPosition.x(),
                                                 event->globalPos().y() - resizeStartPosition.y());
-        
-        trackedWindow->setGeometry(trackedWindow->geometry().x(),
-                                   trackedWindow->geometry().y(),
-                                   newSize.width(),
-                                   newSize.height());
 
+        if (newSize.width() >= 100 && newSize.height() >= 100) {
+            trackedWindow->setGeometry(trackedWindow->geometry().x(),
+                                       trackedWindow->geometry().y(),
+                                       newSize.width(),
+                                       newSize.height());
+            updatePosition();
+        }
+    } 
+    else if (dragging) {
+        QPoint newTopLeft = event->globalPos() - dragStartPosition;
+        trackedWindow->move(newTopLeft);
         updatePosition();
-    } else if (dragging) {
-        trackedWindow->setPosition(event->globalPos() - dragStartPosition);
-        updatePosition();
+    }
+}
+
+void TopBar::mousePressEvent(QMouseEvent *event) {
+    QRect windowGeometry = trackedWindow->geometry();
+    int margin = 10;
+
+    bool onRightEdge = (event->globalPos().x() >= windowGeometry.right() - margin);
+    bool onBottomEdge = (event->globalPos().y() >= windowGeometry.bottom() - margin);
+
+    if (event->button() == Qt::LeftButton) {
+        if (onRightEdge || onBottomEdge) {
+            resizing = true;
+            resizeStartPosition = event->globalPos();
+            resizeStartSize = trackedWindow->size();
+        } else {
+            dragging = true;
+            dragStartPosition = event->globalPos() - trackedWindow->pos();
+        }
+    }
+}
+
+void TopBar::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        resizing = false;
+        dragging = false;
+        QApplication::restoreOverrideCursor();
     }
 }
 
