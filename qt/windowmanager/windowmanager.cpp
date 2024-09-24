@@ -250,25 +250,41 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 }
 
 void WindowManager::createCubes(QWidget *parentWidget, const QRect &geometry) {
-    QLabel *leftCube = new QLabel(parentWidget);
-    QLabel *rightCube = new QLabel(parentWidget);
-    QLabel *bottomCube = new QLabel(parentWidget);
+    QWidget *leftCube = new QWidget(parentWidget);
+    QWidget *rightCube = new QWidget(parentWidget);
+    QWidget *bottomCube = new QWidget(parentWidget);
 
-    leftCube->setFixedSize(10, 10);
-    rightCube->setFixedSize(10, 10);
-    bottomCube->setFixedSize(10, 10);
+    leftCube->setFixedSize(20, 20);
+    rightCube->setFixedSize(20, 20);
+    bottomCube->setFixedSize(20, 20);
 
     leftCube->setStyleSheet("background-color: red;");
     rightCube->setStyleSheet("background-color: blue;");
     bottomCube->setStyleSheet("background-color: green;");
 
-    leftCube->move(geometry.x() - 10, geometry.y() + (geometry.height() / 2) - 5);
-    rightCube->move(geometry.x() + geometry.width(), geometry.y() + (geometry.height() / 2) - 5);
-    bottomCube->move(geometry.x() + (geometry.width() / 2) - 5, geometry.y() + geometry.height());
+    updateCubesPosition(leftCube, rightCube, bottomCube, geometry);
 
     leftCube->show();
     rightCube->show();
     bottomCube->show();
+
+    cubes << leftCube << rightCube << bottomCube;
+
+    connect(parentWidget, &QWidget::destroyed, this, [this, leftCube, rightCube, bottomCube]() {
+        leftCube->deleteLater();
+        rightCube->deleteLater();
+        bottomCube->deleteLater();
+    });
+
+    connect(parentWidget, &QWidget::geometryChanged, this, [this, leftCube, rightCube, bottomCube](const QRect &newGeometry) {
+        updateCubesPosition(leftCube, rightCube, bottomCube, newGeometry);
+    });
+}
+
+void WindowManager::updateCubesPosition(QWidget *leftCube, QWidget *rightCube, QWidget *bottomCube, const QRect &geometry) {
+    leftCube->move(geometry.x() - 20, geometry.y() + (geometry.height() / 2) - 10);
+    rightCube->move(geometry.x() + geometry.width(), geometry.y() + (geometry.height() / 2) - 10);
+    bottomCube->move(geometry.x() + (geometry.width() / 2) - 10, geometry.y() + geometry.height());
 }
 
 void WindowManager::updateTaskbarPosition(QWindow *window) {
