@@ -56,6 +56,7 @@ private:
     QMap<WId, QWindow*> trackedWindows;
     QMap<QWindow*, TaskBar*> windowTaskbars;
     QTimer *windowCheckTimer;
+    QTimer *resizeWindowCubesTimer;
     QLabel *leftSquare;
     QLabel *rightSquare;
     QLabel *bottomSquare;
