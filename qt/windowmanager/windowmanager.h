@@ -54,7 +54,12 @@ private:
     QMap<WId, QWindow*> trackedWindows;
     QMap<QWindow*, TaskBar*> windowTaskbars;
     QTimer *windowCheckTimer;
+    QLabel *leftSquare;
+    QLabel *rightSquare;
+    QLabel *bottomSquare;
 
+    void createTrackingSquares();
+    void updateTrackingSquares();
     void setupCloseButton(QWindow *window);
 };
 
