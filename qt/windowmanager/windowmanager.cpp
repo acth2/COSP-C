@@ -259,39 +259,39 @@ void WindowManager::resizeEvent(QResizeEvent *event) {
     }
 }
 
-void WindowManager::createCubes(QWidget *parentWidget, const QRect &geometry) {
-    QWidget *leftCube = new QWidget(parentWidget);
-    QWidget *rightCube = new QWidget(parentWidget);
-    QWidget *bottomCube = new QWidget(parentWidget);
+void WindowManager::createCubes(QWidget *window, const QRect &windowGeometry) {
+    closeCubes();
 
-    leftCube->setFixedSize(20, 20);
-    rightCube->setFixedSize(20, 20);
-    bottomCube->setFixedSize(20, 20);
-
-    leftCube->setStyleSheet("background-color: red;");
-    rightCube->setStyleSheet("background-color: blue;");
-    bottomCube->setStyleSheet("background-color: green;");
-
-    updateCubesPosition(leftCube, rightCube, bottomCube, geometry);
-
-    // Show the cubes
+    CubeWidget *leftCube = new CubeWidget(this);
+    leftCube->move(windowGeometry.left() - 10, windowGeometry.center().y() - 5);
     leftCube->show();
+    cubes.append(leftCube);
+
+    CubeWidget *rightCube = new CubeWidget(this);
+    rightCube->move(windowGeometry.right(), windowGeometry.center().y() - 5);
     rightCube->show();
+    cubes.append(rightCube);
+
+    CubeWidget *bottomCube = new CubeWidget(this);
+    bottomCube->move(windowGeometry.center().x() - 5, windowGeometry.bottom());
     bottomCube->show();
-
-    cubes << leftCube << rightCube << bottomCube;
-
-    connect(parentWidget, &QWidget::destroyed, this, [leftCube, rightCube, bottomCube]() {
-        leftCube->deleteLater();
-        rightCube->deleteLater();
-        bottomCube->deleteLater();
-    });
+    cubes.append(bottomCube);
 }
 
-void WindowManager::updateCubesPosition(QWidget *leftCube, QWidget *rightCube, QWidget *bottomCube, const QRect &geometry) {
-    leftCube->move(geometry.x() - 20, geometry.y() + (geometry.height() / 2) - 10);
-    rightCube->move(geometry.x() + geometry.width(), geometry.y() + (geometry.height() / 2) - 10);
-    bottomCube->move(geometry.x() + (geometry.width() / 2) - 10, geometry.y() + geometry.height());
+void WindowManager::updateCubesPosition(const QRect &windowGeometry) {
+    if (cubes.size() >= 3) {
+        cubes[0]->move(windowGeometry.left() - 10, windowGeometry.center().y() - 5);
+        cubes[1]->move(windowGeometry.right(), windowGeometry.center().y() - 5);
+        cubes[2]->move(windowGeometry.center().x() - 5, windowGeometry.bottom());
+    }
+}
+
+void WindowManager::closeCubes() {
+    for (CubeWidget* cube : cubes) {
+        cube->close();
+        delete cube;
+    }
+    cubes.clear();
 }
 
 void WindowManager::updateTaskbarPosition(QWindow *window) {
