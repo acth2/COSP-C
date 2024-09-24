@@ -112,24 +112,6 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addWidget(maximizeButton);
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
-        
-    bottomSquare = new QWidget(this);
-    leftSquare = new QWidget(this);
-    rightSquare = new QWidget(this);
-
-    bottomSquare->setFixedSize(20, 20);
-    leftSquare->setFixedSize(20, 20);
-    rightSquare->setFixedSize(20, 20);
-
-    bottomSquare->setStyleSheet("background-color: red;");
-    leftSquare->setStyleSheet("background-color: blue;");
-    rightSquare->setStyleSheet("background-color: green;");
-
-    layout->addWidget(leftSquare);
-    layout->addWidget(bottomSquare);
-    layout->addWidget(rightSquare);
-
-    setLayout(layout);
 
     updatePosition();
 }
