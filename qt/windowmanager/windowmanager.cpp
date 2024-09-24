@@ -235,17 +235,18 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         containerWidget->show();
 
         TopBar *topBar = new TopBar(x11Window, this);
-        windowTopBars.insert(xorgWindowId, topBar);
+        //windowTopBars.insert(xorgWindowId, topBar);
 
-        topBar->setGeometry(geometry.x(), geometry.y() - topbarHeight, geometry.width(), topbarHeight);
-        topBar->updatePosition();
-        topBar->show();
+        //topBar->setGeometry(geometry.x(), geometry.y() - topbarHeight, geometry.width(), topbarHeight);
+        //topBar->updatePosition();
+        //topBar->show();
         
         appendLog(QString("INFO: TopBar created for window: %1").arg(xorgWindowId));
     } else {
         appendLog("ERR: Failed to create a window from X11 ID");
     }
 }
+
 void WindowManager::closeWindow(WId windowId) {
     if (trackedWindows.contains(windowId)) {
         QWindow* window = trackedWindows.value(windowId);
