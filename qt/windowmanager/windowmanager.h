@@ -63,4 +63,20 @@ private:
     void setupCloseButton(QWindow *window);
 };
 
+
+class CubeWidget : public QWidget {
+public:
+    CubeWidget(QWidget *parent = nullptr) : QWidget(parent) {
+        setFixedSize(10, 10);
+    }
+
+protected:
+    void paintEvent(QPaintEvent *) override {
+        QPainter painter(this);
+        painter.setBrush(QBrush(Qt::green));
+        painter.drawRect(0, 0, width(), height());
+    }
+};
+
+
 #endif // WINDOWMANAGER_H
