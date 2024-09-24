@@ -275,7 +275,7 @@ void WindowManager::updateTaskbarPosition(QWindow *window) {
 }
 
 void WindowManager::appendLog(const QString &message) {
-    QFile logFile("/usr/cydra/logs/a2wm.log");
+    QFile logFile("/usr/cydra/logs/cwm.log");
     if (logFile.open(QIODevice::Append | QIODevice::Text)) {
         QTextStream out(&logFile);
         out << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz ") 
