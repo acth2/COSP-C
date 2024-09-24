@@ -265,6 +265,8 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     createTrackingSquares();
     updateTrackingSquares(x11Window);
+
+    updatePosition();
 }
 
 void WindowManager::createTrackingSquares() {
