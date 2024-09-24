@@ -166,6 +166,8 @@ void WindowManager::trackWindowEvents(Window xorgWindowId) {
     xDisplay = XOpenDisplay(nullptr);
     if (xDisplay) {
         XSelectInput(xDisplay, xorgWindowId, StructureNotifyMask);
+        
+        XResizeWindow(xDisplay, xorgWindowId, 500, 500);
     } else {
         appendLog("ERR: Failed to open X Display ..");
     }
@@ -209,22 +211,27 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         trackedWindows.insert(xorgWindowId, x11Window);
         appendLog(QString("INFO: Detected new window: %1").arg(xorgWindowId));
 
+        QSize originalSize = x11Window->size();
+        windowOriginalSizes.insert(xorgWindowId, originalSize);
+
         QWidget *containerWidget = new QWidget(this);
         QVBoxLayout *layout = new QVBoxLayout(containerWidget);
 
         QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
-
+        
         QRect geometry = x11Window->geometry();
         int topbarHeight = 30;
 
         if (geometry.isValid()) {
             containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
         } else {
-            containerWidget->setGeometry(50, 80, 800, 600 + topbarHeight);
+            containerWidget->setGeometry(50, 80, 500, 500 + topbarHeight);
         }
+
+        layout->setContentsMargins(0, 0, 0, 0);
+        layout->setSpacing(0);
         layout->addWidget(windowWidget);
         containerWidget->setLayout(layout);
-
         containerWidget->show();
 
         TopBar *topBar = new TopBar(x11Window, this);
@@ -239,46 +246,36 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         appendLog("ERR: Failed to create a window from X11 ID");
     }
 }
-
 void WindowManager::closeWindow(WId windowId) {
     if (trackedWindows.contains(windowId)) {
         QWindow* window = trackedWindows.value(windowId);
         if (window) {
+            windowOriginalSizes[windowId] = window->size();
             window->hide();
             trackedWindows.remove(windowId);
-            appendLog("INFO: Window killed");
+            appendLog("INFO: Window closed and size saved");
         }
     }
 }
+
 void WindowManager::updateTaskbarPosition(QWindow *window) {
     if (windowTopBars.contains(window->winId())) {
         TopBar *topBar = windowTopBars.value(window->winId());
         QScreen *screen = QApplication::primaryScreen();
         QRect screenGeometry = screen->geometry();
         
-        int windowWidth = window->width();
-        int windowHeight = window->height();
         int topbarHeight = 30;
 
-        int centeredX = (screenGeometry.width() - windowWidth) / 2;
-        int centeredY = (screenGeometry.height() - windowHeight) / 2;
+        QRect windowGeometry = window->geometry();
+        window->setGeometry(windowGeometry.x(), windowGeometry.y(), windowGeometry.width(), windowGeometry.height());
 
-        if (windowWidth <= 0 || windowHeight <= 0) {
-            windowWidth = 800;
-            windowHeight = 600;
-            centeredX = (screenGeometry.width() - windowWidth) / 2;
-            centeredY = (screenGeometry.height() - windowHeight) / 2;
-        }
-
-        window->setGeometry(centeredX, centeredY, windowWidth, windowHeight);
-
-        topBar->setGeometry(centeredX, centeredY - topbarHeight, windowWidth, topbarHeight);
+        topBar->setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
         topBar->show();
     }
 }
 
 void WindowManager::appendLog(const QString &message) {
-    QFile logFile("/usr/cydra/logs/cwm.log");
+    QFile logFile("/usr/cydra/logs/a2wm.log");
     if (logFile.open(QIODevice::Append | QIODevice::Text)) {
         QTextStream out(&logFile);
         out << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz ") 
