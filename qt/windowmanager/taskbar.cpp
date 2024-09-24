@@ -59,19 +59,6 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     connect(powerButton, &QPushButton::clicked, this, &TaskBar::showPowerMenu);
     connect(startButton, &QPushButton::clicked, this, &TaskBar::showPopup);
 
-    bottomSquare = new QWidget(this);
-    leftSquare = new QWidget(this);
-    rightSquare = new QWidget(this);
-
-    bottomSquare->setFixedSize(20, 20);
-    leftSquare->setFixedSize(20, 20);
-    rightSquare->setFixedSize(20, 20);
-
-    bottomSquare->setStyleSheet("background-color: red;");
-    leftSquare->setStyleSheet("background-color: green;");
-    rightSquare->setStyleSheet("background-color: blue;");
-
-    updatePosition();
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     adjustSizeToScreen();
     installEventFilter();
@@ -80,25 +67,6 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
 void TaskBar::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
     adjustSizeToScreen();
-}
-
-void TopBar::updatePosition() {
-    if (trackedWindow) {
-        QRect windowGeometry = trackedWindow->geometry();
-        int topbarHeight = 36;
-        setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
-        
-        bottomSquare->move(windowGeometry.x() + windowGeometry.width() / 2 - bottomSquare->width() / 2,
-                           windowGeometry.y() + windowGeometry.height());
-
-        leftSquare->move(windowGeometry.x() - leftSquare->width(),
-                         windowGeometry.y() + windowGeometry.height() / 2 - leftSquare->height() / 2);
-
-        rightSquare->move(windowGeometry.x() + windowGeometry.width(),
-                          windowGeometry.y() + windowGeometry.height() / 2 - rightSquare->height() / 2);
-        
-        show();
-    }
 }
 
 void TaskBar::mousePressEvent(QMouseEvent *event) {
