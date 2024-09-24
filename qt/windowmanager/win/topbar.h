@@ -30,13 +30,6 @@ public:
     void mouseMoveEvent(QMouseEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
 
-    QPoint dragStartPos;
-    bool resizing;
-    bool dragging = false;
-    QPoint dragStartPosition;
-    QSize resizeStartSize;
-    QPoint resizeStartPosition;
-
 signals:
     void closeRequested();
 
@@ -54,18 +47,26 @@ private:
     QPushButton *closeButton;
     QPushButton *maximizeButton;
     bool isDragging = false;
+    QPoint dragStartPos;
     QPoint windowStartPos;
     WindowManager *windowManager;
     QWindow *trackedWindow;
     QRect restoreGeometry;
     bool isMaximized;
-    QWidget *bottomSquare;
-    QWidget *leftSquare;
-    QWidget *rightSquare;
-
 
     bool isDarkMode;
 
+    QWidget *rightResizeHandle;
+    QWidget *leftResizeHandle;
+    QWidget *bottomResizeHandle;
+    QPoint resizeStartPos;
+    bool resizingRight = false;
+    bool resizingLeft = false;
+    bool resizingBottom = false;
+
+    void handleResizeRight(const QPoint &mousePos);
+    void handleResizeLeft(const QPoint &mousePos);
+    void handleResizeBottom(const QPoint &mousePos);
 };
 
 #endif // TOPBAR_H
