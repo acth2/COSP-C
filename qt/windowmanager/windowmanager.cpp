@@ -16,6 +16,7 @@
 #include <QWindow>
 #include <QResizeEvent>
 #include <QDateTime>
+#include <QLabel>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
@@ -204,7 +205,6 @@ void WindowManager::toggleConsole() {
     logLabel->setVisible(isConsoleVisible);
     appendLog("Welcome into the DEBUG window (Where my nightmare comes true), Press ESC to exit it");
 }
-
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
     if (x11Window) {
@@ -216,7 +216,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
         QWidget *containerWidget = new QWidget(this);
         QVBoxLayout *layout = new QVBoxLayout(containerWidget);
-        
+
         QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
         
         QRect geometry = x11Window->geometry();
@@ -237,12 +237,12 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         TopBar *topBar = new TopBar(x11Window, this);
         windowTopBars.insert(xorgWindowId, topBar);
 
-        createCubes(containerWidget, geometry);
-
         topBar->setGeometry(geometry.x(), geometry.y() - topbarHeight, geometry.width(), topbarHeight);
         topBar->updatePosition();
         topBar->show();
-        
+
+        createCubes(containerWidget, geometry);
+
         appendLog(QString("INFO: TopBar created for window: %1").arg(xorgWindowId));
     } else {
         appendLog("ERR: Failed to create a window from X11 ID");
@@ -250,31 +250,25 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 }
 
 void WindowManager::createCubes(QWidget *parentWidget, const QRect &geometry) {
-    QWidget *bottomCube = new QWidget(parentWidget);
-    bottomCube->setStyleSheet("background-color: rgba(255, 0, 0, 0.5);");
-    bottomCube->setFixedSize(30, 30);
-    bottomCube->move(geometry.x() + (geometry.width() / 2) - 15, geometry.y() + geometry.height());
-    bottomCube->show();
+    QLabel *leftCube = new QLabel(parentWidget);
+    QLabel *rightCube = new QLabel(parentWidget);
+    QLabel *bottomCube = new QLabel(parentWidget);
 
-    QWidget *rightCube = new QWidget(parentWidget);
-    rightCube->setStyleSheet("background-color: rgba(0, 255, 0, 0.5);");
-    rightCube->setFixedSize(30, 30);
-    rightCube->move(geometry.x() + geometry.width(), geometry.y() + (geometry.height() / 2) - 15);
-    rightCube->show();
+    leftCube->setFixedSize(10, 10);
+    rightCube->setFixedSize(10, 10);
+    bottomCube->setFixedSize(10, 10);
 
-    QWidget *leftCube = new QWidget(parentWidget);
-    leftCube->setStyleSheet("background-color: rgba(0, 0, 255, 0.5);");
-    leftCube->setFixedSize(30, 30);
-    leftCube->move(geometry.x() - 30, geometry.y() + (geometry.height() / 2) - 15);
+    leftCube->setStyleSheet("background-color: red;");
+    rightCube->setStyleSheet("background-color: blue;");
+    bottomCube->setStyleSheet("background-color: green;");
+
+    leftCube->move(geometry.x() - 10, geometry.y() + (geometry.height() / 2) - 5);
+    rightCube->move(geometry.x() + geometry.width(), geometry.y() + (geometry.height() / 2) - 5);
+    bottomCube->move(geometry.x() + (geometry.width() / 2) - 5, geometry.y() + geometry.height());
+
     leftCube->show();
-
-    connect(x11Window, &QWindow::geometryChanged, [this, bottomCube, rightCube, leftCube, x11Window]() {
-        QRect newGeometry = x11Window->geometry();
-
-        bottomCube->move(newGeometry.x() + (newGeometry.width() / 2) - 15, newGeometry.y() + newGeometry.height());
-        rightCube->move(newGeometry.x() + newGeometry.width(), newGeometry.y() + (newGeometry.height() / 2) - 15);
-        leftCube->move(newGeometry.x() - 30, newGeometry.y() + (newGeometry.height() / 2) - 15);
-    });
+    rightCube->show();
+    bottomCube->show();
 }
 
 void WindowManager::updateTaskbarPosition(QWindow *window) {
