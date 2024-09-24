@@ -59,6 +59,9 @@ private:
     QWindow *trackedWindow;
     QRect restoreGeometry;
     bool isMaximized;
+    QWidget bottomSquare;
+    QWidget leftSquare;
+    QWidget rightSquare;
 
 
     bool isDarkMode;
