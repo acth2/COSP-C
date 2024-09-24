@@ -395,10 +395,3 @@ void WindowManager::paintEvent(QPaintEvent *event) {
         painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
     }
 }
-
-void CubeWidget::paintEvent(QPaintEvent *) {
-    QPainter painter(this);
-
-    painter.setBrush(QBrush(Qt::green));
-    painter.drawRect(0, 0, width(), height());
-}
