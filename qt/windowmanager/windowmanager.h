@@ -58,6 +58,7 @@ private:
     QMap<WId, QSize> windowOriginalSizes;
 
     void createCubes(QWidget *parentWidget, const QRect &geometry);
+    void updateCubesPosition(QWidget *leftCube, QWidget *rightCube, QWidget *bottomCube, const QRect &geometry);
     void setupCloseButton(QWindow *window);
 };
 
