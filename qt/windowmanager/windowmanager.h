@@ -60,4 +60,54 @@ private:
     void setupCloseButton(QWindow *window);
 };
 
+class CustomContainerWidget : public QWidget {
+    Q_OBJECT
+
+public:
+    CustomContainerWidget(QWidget *parent = nullptr) : QWidget(parent) {
+        leftSquare = new QWidget(this);
+        leftSquare->setFixedSize(squareSize, squareSize);
+        leftSquare->setStyleSheet("background-color: red;");
+
+        rightSquare = new QWidget(this);
+        rightSquare->setFixedSize(squareSize, squareSize);
+        rightSquare->setStyleSheet("background-color: green;");
+
+        bottomSquare = new QWidget(this);
+        bottomSquare->setFixedSize(squareSize, squareSize);
+        bottomSquare->setStyleSheet("background-color: blue;");
+    }
+
+    void setSquareSize(int size) {
+        squareSize = size;
+        leftSquare->setFixedSize(squareSize, squareSize);
+        rightSquare->setFixedSize(squareSize, squareSize);
+        bottomSquare->setFixedSize(squareSize, squareSize);
+        updateSquaresPosition();
+    }
+
+protected:
+    void resizeEvent(QResizeEvent *event) override {
+        QWidget::resizeEvent(event);
+        updateSquaresPosition();
+    }
+
+    void moveEvent(QMoveEvent *event) override {
+        QWidget::moveEvent(event);
+        updateSquaresPosition();
+    }
+
+private:
+    void updateSquaresPosition() {
+        leftSquare->move(0, (height() - squareSize) / 2);
+        rightSquare->move(width() - squareSize, (height() - squareSize) / 2);
+        bottomSquare->move((width() - squareSize) / 2, height() - squareSize);
+    }
+
+    QWidget *leftSquare;
+    QWidget *rightSquare;
+    QWidget *bottomSquare;
+    int squareSize = 20;
+};
+
 #endif // WINDOWMANAGER_H
