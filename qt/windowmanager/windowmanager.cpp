@@ -216,7 +216,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
         QWidget *containerWidget = new QWidget(this);
         QVBoxLayout *layout = new QVBoxLayout(containerWidget);
-
+        
         QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
         
         QRect geometry = x11Window->geometry();
@@ -237,6 +237,8 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         TopBar *topBar = new TopBar(x11Window, this);
         windowTopBars.insert(xorgWindowId, topBar);
 
+        createCubes(containerWidget, geometry);
+
         topBar->setGeometry(geometry.x(), geometry.y() - topbarHeight, geometry.width(), topbarHeight);
         topBar->updatePosition();
         topBar->show();
@@ -246,16 +248,33 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         appendLog("ERR: Failed to create a window from X11 ID");
     }
 }
-void WindowManager::closeWindow(WId windowId) {
-    if (trackedWindows.contains(windowId)) {
-        QWindow* window = trackedWindows.value(windowId);
-        if (window) {
-            windowOriginalSizes[windowId] = window->size();
-            window->hide();
-            trackedWindows.remove(windowId);
-            appendLog("INFO: Window closed and size saved");
-        }
-    }
+
+void WindowManager::createCubes(QWidget *parentWidget, const QRect &geometry) {
+    QWidget *bottomCube = new QWidget(parentWidget);
+    bottomCube->setStyleSheet("background-color: rgba(255, 0, 0, 0.5);");
+    bottomCube->setFixedSize(30, 30);
+    bottomCube->move(geometry.x() + (geometry.width() / 2) - 15, geometry.y() + geometry.height());
+    bottomCube->show();
+
+    QWidget *rightCube = new QWidget(parentWidget);
+    rightCube->setStyleSheet("background-color: rgba(0, 255, 0, 0.5);");
+    rightCube->setFixedSize(30, 30);
+    rightCube->move(geometry.x() + geometry.width(), geometry.y() + (geometry.height() / 2) - 15);
+    rightCube->show();
+
+    QWidget *leftCube = new QWidget(parentWidget);
+    leftCube->setStyleSheet("background-color: rgba(0, 0, 255, 0.5);");
+    leftCube->setFixedSize(30, 30);
+    leftCube->move(geometry.x() - 30, geometry.y() + (geometry.height() / 2) - 15);
+    leftCube->show();
+
+    connect(x11Window, &QWindow::geometryChanged, [this, bottomCube, rightCube, leftCube, x11Window]() {
+        QRect newGeometry = x11Window->geometry();
+
+        bottomCube->move(newGeometry.x() + (newGeometry.width() / 2) - 15, newGeometry.y() + newGeometry.height());
+        rightCube->move(newGeometry.x() + newGeometry.width(), newGeometry.y() + (newGeometry.height() / 2) - 15);
+        leftCube->move(newGeometry.x() - 30, newGeometry.y() + (newGeometry.height() / 2) - 15);
+    });
 }
 
 void WindowManager::updateTaskbarPosition(QWindow *window) {
