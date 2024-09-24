@@ -57,10 +57,6 @@ private:
 
     QMap<WId, QSize> windowOriginalSizes;
 
-    QMap<WId, QWindow*> trackedWindows;
-    QMap<WId, QSize> windowOriginalSizes;
-    QMap<WId, TopBar*> windowTopBars;
-
     void createCubes(QWidget *parentWidget, const QRect &geometry);
     void setupCloseButton(QWindow *window);
 };
