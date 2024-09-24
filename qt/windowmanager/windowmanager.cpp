@@ -251,12 +251,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 }
 
 void WindowManager::resizeEvent(QResizeEvent *event) {
-    QWidget *parentWidget = event->widget();
-    QRect newGeometry = parentWidget->geometry();
-    
-    if (!cubes.isEmpty()) {
-        updateCubesPosition(cubes[0], cubes[1], cubes[2], newGeometry);
-    }
+    appendLog("A resized called !");
 }
 
 
