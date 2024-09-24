@@ -281,11 +281,11 @@ void WindowManager::createTrackingSquares() {
 
     rightSquare = new QLabel(this);
     rightSquare->setFixedSize(squareSize, squareSize);
-    rightSquare->setStyleSheet("background-color: blue;");
+    rightSquare->setStyleSheet("background-color: red;");
 
     bottomSquare = new QLabel(this);
     bottomSquare->setFixedSize(squareSize, squareSize);
-    bottomSquare->setStyleSheet("background-color: green;");
+    bottomSquare->setStyleSheet("background-color: red;");
 
     leftSquare->show();
     rightSquare->show();
