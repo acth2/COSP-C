@@ -115,6 +115,18 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 
     setLayout(layout);
         
+    bottomSquare = new QWidget(this);
+    leftSquare = new QWidget(this);
+    rightSquare = new QWidget(this);
+
+    bottomSquare->setFixedSize(20, 20);
+    leftSquare->setFixedSize(20, 20);
+    rightSquare->setFixedSize(20, 20);
+
+    bottomSquare->setStyleSheet("background-color: red;");
+    leftSquare->setStyleSheet("background-color: blue;");
+    rightSquare->setStyleSheet("background-color: green;");
+
     updatePosition();
 }
 
@@ -150,6 +162,16 @@ void TopBar::updatePosition() {
         QRect windowGeometry = trackedWindow->geometry();
         int topbarHeight = 36;
         setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
+        
+        bottomSquare->move(windowGeometry.x() + windowGeometry.width() / 2 - bottomSquare->width() / 2,
+                           windowGeometry.y() + windowGeometry.height());
+
+        leftSquare->move(windowGeometry.x() - leftSquare->width(),
+                         windowGeometry.y() + windowGeometry.height() / 2 - leftSquare->height() / 2);
+
+        rightSquare->move(windowGeometry.x() + windowGeometry.width(),
+                          windowGeometry.y() + windowGeometry.height() / 2 - rightSquare->height() / 2);
+        
         show();
     }
 }
