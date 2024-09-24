@@ -32,7 +32,8 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override;
+    void resizeEvent(QResizeEvent *event, QWindow* trackedWindow) override;
+    void moveEvent(QMoveEvent *event, QWindow* trackedWindow) override;
     void updateTaskbarPosition(QWindow* window);
     void trackWindowEvents(Window xorgWindowId);
     void centerWindow(QWindow *window);
