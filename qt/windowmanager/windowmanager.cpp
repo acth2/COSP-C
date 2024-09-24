@@ -250,36 +250,41 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     }
 }
 
-void WindowManager::resizeEvent(QResizeEvent *event) {
-    appendLog("A resized called !");
-}
-
-
 void WindowManager::createCubes(QWidget *parentWidget, const QRect &geometry) {
     closeCubes();
 
     CubeWidget *leftCube = new CubeWidget(parentWidget);
-    leftCube->move(geometry.left() - 10, geometry.center().y() - 5);
+    leftCube->move(geometry.left() - leftCube->width(), geometry.top() + (geometry.height() / 2) - (leftCube->height() / 2));
     leftCube->show();
     cubes.append(leftCube);
 
     CubeWidget *rightCube = new CubeWidget(parentWidget);
-    rightCube->move(geometry.right(), geometry.center().y() - 5);
+    rightCube->move(geometry.right(), geometry.top() + (geometry.height() / 2) - (rightCube->height() / 2));
     rightCube->show();
     cubes.append(rightCube);
 
     CubeWidget *bottomCube = new CubeWidget(parentWidget);
-    bottomCube->move(geometry.center().x() - 5, geometry.bottom());
+    bottomCube->move(geometry.left() + (geometry.width() / 2) - (bottomCube->width() / 2), geometry.bottom());
     bottomCube->show();
     cubes.append(bottomCube);
 }
 
 void WindowManager::updateCubesPosition(const QRect &geometry) {
     if (cubes.size() >= 3) {
-        cubes[0]->move(geometry.left() - 10, geometry.center().y() - 5);
-        cubes[1]->move(geometry.right(), geometry.center().y() - 5);
-        cubes[2]->move(geometry.center().x() - 5, geometry.bottom());
+        cubes[0]->move(geometry.left() - cubes[0]->width(), geometry.top() + (geometry.height() / 2) - (cubes[0]->height() / 2));
+        cubes[1]->move(geometry.right(), geometry.top() + (geometry.height() / 2) - (cubes[1]->height() / 2));
+        cubes[2]->move(geometry.left() + (geometry.width() / 2) - (cubes[2]->width() / 2), geometry.bottom());
     }
+}
+
+void WindowManager::resizeEvent(QResizeEvent *event) {
+    QWidget::resizeEvent(event);
+    updateCubesPosition(geometry());
+}
+
+void WindowManager::moveEvent(QMoveEvent *event) {
+    QWidget::moveEvent(event);
+    updateCubesPosition(geometry());
 }
 
 void WindowManager::closeCubes() {
@@ -389,4 +394,11 @@ void WindowManager::paintEvent(QPaintEvent *event) {
     if (!backgroundPixmap.isNull()) {
         painter.drawPixmap(0, 0, width(), height(), backgroundPixmap);
     }
+}
+
+void CubeWidget::paintEvent(QPaintEvent *) {
+    QPainter painter(this);
+
+    painter.setBrush(QBrush(Qt::green));
+    painter.drawRect(0, 0, width(), height());
 }
