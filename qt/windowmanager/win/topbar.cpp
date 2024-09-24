@@ -129,6 +129,8 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addWidget(bottomSquare);
     layout->addWidget(rightSquare);
 
+    setLayout(layout);
+
     updatePosition();
 }
 
