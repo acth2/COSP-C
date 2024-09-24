@@ -263,8 +263,8 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     windowTopBars.insert(xorgWindowId, topBar);
 
-    QTimer::singleShot(0, [this, x11Window]() {
-        createTrackingSquares(x11Window);
+    QTimer::singleShot(0, [this]() {
+        createTrackingSquares();
     });
 }
 
