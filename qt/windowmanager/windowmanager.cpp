@@ -321,10 +321,6 @@ void WindowManager::updateTrackingSquares(WId windowId) {
 
 void WindowManager::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
-
-    for (QWindow* trackedWindow : trackedWindows) {
-        updateTrackingSquares(trackedWindow);
-    }
 }
 
 void WindowManager::closeWindow(WId windowId) {
