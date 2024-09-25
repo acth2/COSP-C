@@ -150,15 +150,18 @@ void WindowManager::setSupportingWMCheck() {
         return;
     }
 
-    Window supportingWindow = XCreateSimpleWindow(xDisplay, DefaultRootWindow(xDisplay), 0, 0, 1, 1, 0, 0, 0);
-    
-    Atom netSupportingWMCheck = XInternAtom(xDisplay, "_NET_SUPPORTING_WM_CHECK", False);
-    Atom windowId = XInternAtom(xDisplay, "WM_WINDOW", False);
-    XChangeProperty(xDisplay, DefaultRootWindow(xDisplay), netSupportingWMCheck, XA_WINDOW, 32, PropModeReplace, (unsigned char *)&supportingWindow, 1);
+    Window supportingWindow = XCreateSimpleWindow(xDisplay, root, 0, 0, 1, 1, 0, 0, 0);
+    XStoreName(xDisplay, supportingWindow, "A2WM");
+
+    Atom wmCheckAtom = XInternAtom(xDisplay, "_NET_SUPPORTING_WM_CHECK", True);
+    XChangeProperty(xDisplay, root, wmCheckAtom, XA_WINDOW, 32, PropModeReplace,
+                    (unsigned char *)&supportingWindow, 1);
+
+    Atom wmWinAtom = XInternAtom(xDisplay, "_WIN_SUPPORTING_WM_CHECK", True);
+    XChangeProperty(xDisplay, root, wmWinAtom, XA_WINDOW, 32, PropModeReplace,
+                    (unsigned char *)&supportingWindow, 1);
     
     XMapWindow(xDisplay, supportingWindow);
-    XFlush(xDisplay);
-    XCloseDisplay(xDisplay);
 }
 
 void WindowManager::checkForNewWindows() {
