@@ -66,6 +66,7 @@ private:
         QLabel *bottomSquare;
     };
     QMap<WId, TrackingSquares> windowSquares;
+    QPoint lastMousePosition;
 
     void createTrackingSquares(WId windowId);
     void updateTrackingSquares(WId windowId);
