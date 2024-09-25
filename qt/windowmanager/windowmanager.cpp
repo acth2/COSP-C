@@ -345,53 +345,25 @@ bool WindowManager::eventFilter(QObject *obj, QEvent *event) {
 }
 
 void WindowManager::resizeWindow(WId windowId, int widthDelta, int heightDelta) {
-    Display *display = XOpenDisplay(nullptr);
-    if (!display) {
-        appendLog("Unable to open X11 display");
-        return;
-    }
+    if (windowId) {
+        Display *display = XOpenDisplay(nullptr);
+        if (!display) {
+            appendLog("Unable to open X11 display for resizing");
+            return;
+        }
 
-    XWindowAttributes windowAttributes;
-    if (!XGetWindowAttributes(display, windowId, &windowAttributes)) {
-        appendLog("Unable to get window attributes for WId");
+        XResizeWindow(display, windowId, widthDelta, heightDelta);
+        XFlush(display);
         XCloseDisplay(display);
-        return;
     }
-
-    int newWidth = windowAttributes.width + widthDelta;
-    int newHeight = windowAttributes.height + heightDelta;
-
-    XWindowChanges changes;
-    changes.width = newWidth;
-    changes.height = newHeight;
-
-    XConfigureWindow(display, windowId, CWWidth | CWHeight, &changes);
-    XFlush(display);
-    XCloseDisplay(display);
 }
+
 void WindowManager::updateTrackingSquares(WId windowId) {
-    if (windowSquares.contains(windowId)) {
+    if (windowId) {
         Display *display = XOpenDisplay(nullptr);
         if (!display) {
             appendLog("Unable to open X11 display");
             return;
-        }
-
-        Window root;
-        Window parent;
-        Window *children;
-        unsigned int numChildren;
-        if (XQueryTree(display, windowId, &root, &parent, &children, &numChildren)) {
-            if (numChildren == 0) {
-                auto squares = windowSquares.value(windowId);
-                squares.leftSquare->hide();
-                squares.rightSquare->hide();
-                squares.bottomSquare->hide();
-                windowSquares.remove(windowId);
-                XCloseDisplay(display);
-                return;
-            }
-            XFree(children);
         }
 
         XWindowAttributes windowAttributes;
@@ -404,13 +376,15 @@ void WindowManager::updateTrackingSquares(WId windowId) {
         QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
         int squareOffset = 0;
 
-        leftSquare->move(windowGeometry.left() - leftSquare->width() - squareOffset, windowGeometry.top());
-        rightSquare->move(windowGeometry.right() + squareOffset, windowGeometry.top());
-        bottomSquare->move(windowGeometry.center().x() - (bottomSquare->width() / 2), windowGeometry.bottom() + squareOffset);
+        leftSquare->setGeometry(windowGeometry.left() - leftSquare->width() - squareOffset, windowGeometry.top(), leftSquare->width(), leftSquare->height());
+        rightSquare->setGeometry(windowGeometry.right() + squareOffset, windowGeometry.top(), rightSquare->width(), rightSquare->height());
+        bottomSquare->setGeometry(windowGeometry.center().x() - (bottomSquare->width() / 2), windowGeometry.bottom() + squareOffset, windowGeometry.width(), bottomSquare->height());
 
         XCloseDisplay(display);
     } else {
-        appendLog("XQueryTree finished with an error in line 415!");
+        leftSquare->hide();
+        rightSquare->hide();
+        bottomSquare->hide();
     }
 }
 
@@ -446,9 +420,10 @@ void WindowManager::mousePressEvent(QMouseEvent *event) {
 }
 
 void WindowManager::mouseMoveEvent(QMouseEvent *event) {
-    if (resizing && currentWindowId) {
+    if (resizing) {
         int widthDelta = event->pos().x() - lastMousePosition.x();
         int heightDelta = event->pos().y() - lastMousePosition.y();
+
         resizeWindow(currentWindowId, widthDelta, heightDelta);
         lastMousePosition = event->pos();
     }
@@ -601,6 +576,18 @@ void WindowManager::cleanUpClosedWindows() {
             windowTopBars.remove(xorgWindowId);
         }
 
+    }
+
+    for (auto it = windowSquares.begin(); it != windowSquares.end();) {
+        WId windowId = it.key();
+        if (!trackedWindows.contains(windowId)) {
+            it.value().leftSquare->hide();
+            it.value().rightSquare->hide();
+            it.value().bottomSquare->hide();
+            it = windowSquares.erase(it);
+        } else {
+            ++it;
+        }
     }
 }
 
