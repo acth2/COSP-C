@@ -8,6 +8,7 @@
 #include <QSet>
 #include <QTimer>
 #include <QMap>
+#include <QMouseEvent>
 #include <QResizeEvent>
 #include "taskbar.h"
 #include "konami_code_handler.h"
@@ -31,6 +32,11 @@ protected:
     void closeEvent(QCloseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
+    void onRightSquarePressed(QMouseEvent *event, WId windowId) override;
+    void onRightSquareMoved(QMouseEvent *event, WId windowId) override;
+    void onBottomSquarePressed(QMouseEvent *event, WId windowId) override;
+    void onBottomSquareMoved(QMouseEvent *event, WId windowId) override;
+    void onSquareReleased(QMouseEvent *event) override;
     void updateTaskbarPosition(QWindow* window);
     void trackWindowEvents(Window xorgWindowId);
     void centerWindow(QWindow *window);
@@ -69,6 +75,10 @@ private:
 
     void setupCloseButton(QWindow *window);
     void setSupportingWMCheck();
+
+    bool resizing = false;
+    WId currentWindowId;
+    QPoint lastMousePosition;
 
     void onLoop();
     Window root;
