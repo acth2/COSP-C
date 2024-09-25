@@ -65,6 +65,8 @@ private:
     void updateTrackingSquares(QWindow*);
 
     void setupCloseButton(QWindow *window);
+
+    void onLoop();
 };
 
 #endif // WINDOWMANAGER_H
