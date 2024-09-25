@@ -359,36 +359,49 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
 }
 
 void WindowManager::mouseMoveEvent(QMouseEvent *event) {
-    if (resizeMode) {
-        QPoint currentPos = event->globalPos();
-        int dx = currentPos.x() - lastMousePosition.x();
-        int dy = currentPos.y() - lastMousePosition.y();
+    if (isResizing && trackedWindows.contains(resizingWindowId)) {
+        QPoint delta = event->globalPos() - lastMousePosition;
 
-        for (auto windowId : trackedWindows.keys()) {
-            TrackingSquares squares = windowSquares.value(windowId);
-            
-            if (squares.leftSquare->geometry().contains(event->pos())) {
-                QRect newGeometry = trackedWindows[windowId]->geometry();
-                newGeometry.setLeft(newGeometry.left() + dx);
-                trackedWindows[windowId]->setGeometry(newGeometry);
-            } else if (squares.rightSquare->geometry().contains(event->pos())) {
-                QRect newGeometry = trackedWindows[windowId]->geometry();
-                newGeometry.setRight(newGeometry.right() + dx);
-                trackedWindows[windowId]->setGeometry(newGeometry);
-            } else if (squares.bottomSquare->geometry().contains(event->pos())) {
-                QRect newGeometry = trackedWindows[windowId]->geometry();
-                newGeometry.setBottom(newGeometry.bottom() + dy);
-                trackedWindows[windowId]->setGeometry(newGeometry);
-            }
+        QWindow *window = trackedWindows[resizingWindowId];
+        QRect currentGeometry = window->geometry();
+
+        if (windowSquares[resizingWindowId].leftSquare->geometry().contains(lastMousePosition)) {
+            currentGeometry.setLeft(currentGeometry.left() + delta.x());
+        } 
+        if (windowSquares[resizingWindowId].rightSquare->geometry().contains(lastMousePosition)) {
+            currentGeometry.setRight(currentGeometry.right() + delta.x());
+        }
+        if (windowSquares[resizingWindowId].bottomSquare->geometry().contains(lastMousePosition)) {
+            currentGeometry.setBottom(currentGeometry.bottom() + delta.y());
         }
 
-        lastMousePosition = currentPos;
+        window->setGeometry(currentGeometry);
+
+        updateTrackingSquares(resizingWindowId);
+        lastMousePosition = event->globalPos();
     }
 }
 
 void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton && resizeMode) {
-        resizeMode = false;
+    if (isResizing) {
+        isResizing = false;
+        resizingWindowId = 0;
+    }
+}
+
+void WindowManager::mousePressEvent(QMouseEvent *event) {
+    for (auto it = windowSquares.begin(); it != windowSquares.end(); ++it) {
+        WId windowId = it.key();
+        TrackingSquares squares = it.value();
+        if (squares.leftSquare->geometry().contains(event->pos()) ||
+            squares.rightSquare->geometry().contains(event->pos()) ||
+            squares.bottomSquare->geometry().contains(event->pos())) {
+            
+            isResizing = true;
+            lastMousePosition = event->globalPos();
+            resizingWindowId = windowId;
+            break;
+        }
     }
 }
 
