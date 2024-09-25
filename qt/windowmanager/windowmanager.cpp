@@ -30,6 +30,8 @@ WindowManager::WindowManager(QWidget *parent)
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
+    setSupportingWMCheck();
+
     QScreen *screen = QApplication::primaryScreen();
     if (screen) {
         QRect screenGeometry = screen->geometry();
@@ -139,6 +141,24 @@ void WindowManager::listExistingWindows() {
     } else {
         appendLog("ERR: Failed to open X Display ..");
     }
+}
+
+void WindowManager::setSupportingWMCheck() {
+    xDisplay = XOpenDisplay(nullptr);
+    if (!xDisplay) {
+        appendLog("ERR: Failed to open X Display ..");
+        return;
+    }
+
+    Window supportingWindow = XCreateSimpleWindow(xDisplay, DefaultRootWindow(xDisplay), 0, 0, 1, 1, 0, 0, 0);
+    
+    Atom netSupportingWMCheck = XInternAtom(xDisplay, "_NET_SUPPORTING_WM_CHECK", False);
+    Atom windowId = XInternAtom(xDisplay, "WM_WINDOW", False);
+    XChangeProperty(xDisplay, DefaultRootWindow(xDisplay), netSupportingWMCheck, XA_WINDOW, 32, PropModeReplace, (unsigned char *)&supportingWindow, 1);
+    
+    XMapWindow(xDisplay, supportingWindow);
+    XFlush(xDisplay);
+    XCloseDisplay(xDisplay);
 }
 
 void WindowManager::checkForNewWindows() {
