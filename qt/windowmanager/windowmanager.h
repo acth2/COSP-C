@@ -13,7 +13,7 @@
 #include <QScreen>
 #include <X11/Xlib.h>
 #include <QVBoxLayout>
-#include "topbar.h"
+#include "win/topbar.h"
 
 struct TrackingSquares {
     QLabel *leftSquare;
