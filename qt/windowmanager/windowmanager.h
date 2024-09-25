@@ -36,7 +36,6 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     bool event(QEvent *qtEvent) override;
 
-    // These are the new method declarations you requested
     bool eventFilter(QObject *object, QEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
