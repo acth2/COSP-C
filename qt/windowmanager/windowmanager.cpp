@@ -218,7 +218,6 @@ void WindowManager::createTrackingSquares(WId windowId) {
     }
 
     QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
-    
     int leftSquareWidth = 20;
     int leftSquareHeight = windowGeometry.height();
     
@@ -249,54 +248,6 @@ void WindowManager::createTrackingSquares(WId windowId) {
 
     XCloseDisplay(display);
 }
-
-
-void WindowManager::createTrackingSquares(WId windowId) {
-    Display *display = XOpenDisplay(nullptr);
-    if (!display) {
-        appendLog("Unable to open X11 display");
-        return;
-    }
-
-    XWindowAttributes windowAttributes;
-    if (!XGetWindowAttributes(display, windowId, &windowAttributes)) {
-        appendLog("Unable to get window attributes for windowId: " + QString::number(windowId));
-        XCloseDisplay(display);
-        return;
-    }
-
-    QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
-    int leftSquareWidth = 20;
-    int leftSquareHeight = windowGeometry.height;
-    
-    int rightSquareHeight = windowGeometry.height;
-    int bottomSquareWidth = windowGeometry.width;
-    int bottomSquareHeight = 20;
-
-    QLabel *leftSquare = new QLabel(this);
-    leftSquare->setFixedSize(leftSquareWidth, leftSquareHeight);
-    leftSquare->setStyleSheet("background-color: red;");
-
-    QLabel *rightSquare = new QLabel(this);
-    rightSquare->setFixedSize(leftSquareWidth, rightSquareHeight);
-    rightSquare->setStyleSheet("background-color: red;");
-
-    QLabel *bottomSquare = new QLabel(this);
-    bottomSquare->setFixedSize(bottomSquareWidth, bottomSquareHeight);
-    bottomSquare->setStyleSheet("background-color: red;");
-
-    leftSquare->show();
-    rightSquare->show();
-    bottomSquare->show();
-
-    TrackingSquares squares = { leftSquare, rightSquare, bottomSquare };
-    windowSquares.insert(windowId, squares);
-
-    appendLog(QString("INFO: Created tracking squares for window ID: %1").arg(windowId));
-
-    XCloseDisplay(display);
-}
-
 
 void WindowManager::updateTrackingSquares(WId windowId) {
     if (!windowSquares.contains(windowId)) {
