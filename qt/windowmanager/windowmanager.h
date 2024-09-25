@@ -32,10 +32,10 @@ protected:
     void closeEvent(QCloseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
-    void onRightSquarePressed(QMouseEvent *event, WId windowId) override;
-    void onRightSquareMoved(QMouseEvent *event, WId windowId) override;
-    void onBottomSquarePressed(QMouseEvent *event, WId windowId) override;
-    void onBottomSquareMoved(QMouseEvent *event, WId windowId) override;
+    void onRightSquarePressed(QMouseEvent *event, WId windowId);
+    void onRightSquareMoved(QMouseEvent *event, WId windowId);
+    void onBottomSquarePressed(QMouseEvent *event, WId windowId);
+    void onBottomSquareMoved(QMouseEvent *event, WId windowId);
     void onSquareReleased(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
