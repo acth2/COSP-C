@@ -461,29 +461,6 @@ void WindowManager::onSquareReleased(QMouseEvent *event) {
     }
 }
 
-/*
-void WindowManager::resizeWindow(WId windowId, int widthDelta, int heightDelta) {
-    Display *display = XOpenDisplay(nullptr);
-    if (!display) {
-        appendLog("Unable to open X11 display");
-        return;
-    }
-
-    XWindowAttributes windowAttributes;
-    if (!XGetWindowAttributes(display, windowId, &windowAttributes)) {
-        appendLog("Unable to get window attributes for WId.");
-        XCloseDisplay(display);
-        return;
-    }
-
-    int newWidth = windowAttributes.width + widthDelta;
-    int newHeight = windowAttributes.height + heightDelta;
-
-    XResizeWindow(display, windowId, newWidth, newHeight);
-    XFlush(display);
-    XCloseDisplay(display);
-}*/
-
 void WindowManager::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
 }
