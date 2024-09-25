@@ -266,7 +266,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     createTrackingSquares();
 
     resizeWindowCubesTimer = new QTimer(this);
-    connect(resizeWindowCubesTimer, &QTimer::timeout, this, [this, window = x11Window]() { updateTrackingSquares(window); });
+    connect(resizeWindowCubesTimer, &QTimer::timeout, this, [this, window = xorgWindowId]() { updateTrackingSquares(xorgWindowId); });
     resizeWindowCubesTimer->start(1500);
 
     topBar->updatePosition();
@@ -292,14 +292,31 @@ void WindowManager::createTrackingSquares() {
     bottomSquare->show();
 }
 
-void WindowManager::updateTrackingSquares(QWindow* trackedWindow) {
-    if (trackedWindow) {
-        QRect windowGeometry = trackedWindow->geometry();
+
+Display *xDisplay;
+void WindowManager::updateTrackingSquares(WId windowId) {
+    if (windowId) {
+        Display *display = XOpenDisplay(nullptr);
+        if (!display) {
+            appendLog("Unable to open X11 display");
+            return;
+        }
+
+        XWindowAttributes windowAttributes;
+        if (!XGetWindowAttributes(display, windowId, &windowAttributes)) {
+            appendLog("Unable to get window attributes for WId:");
+            XCloseDisplay(display);
+            return;
+        }
+
+        QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
         int squareOffset = 0;
 
         leftSquare->move(windowGeometry.left() - leftSquare->width() - squareOffset, windowGeometry.top());
         rightSquare->move(windowGeometry.right() + squareOffset, windowGeometry.top());
         bottomSquare->move(windowGeometry.center().x() - (bottomSquare->width() / 2), windowGeometry.bottom() + squareOffset);
+
+        XCloseDisplay(display);
     }
 }
 
