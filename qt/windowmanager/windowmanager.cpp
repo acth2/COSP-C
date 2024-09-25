@@ -302,27 +302,19 @@ void WindowManager::createTrackingSquares(WId windowId) {
     leftSquare = new QLabel(this);
     leftSquare->setFixedSize(squareSize, squareSize);
     leftSquare->setStyleSheet("background-color: red;");
-    leftSquare->setMouseTracking(true);
-    leftSquare->installEventFilter(this);
-    leftSquare->setProperty("windowId", QVariant::fromValue(windowId));
+    leftSquare->show();
 
     rightSquare = new QLabel(this);
     rightSquare->setFixedSize(squareSize, squareSize);
     rightSquare->setStyleSheet("background-color: red;");
-    rightSquare->setMouseTracking(true);
-    rightSquare->installEventFilter(this);
-    rightSquare->setProperty("windowId", QVariant::fromValue(windowId));
+    rightSquare->show();
 
     bottomSquare = new QLabel(this);
     bottomSquare->setFixedSize(squareSize, squareSize);
     bottomSquare->setStyleSheet("background-color: red;");
-    bottomSquare->setMouseTracking(true);
-    bottomSquare->installEventFilter(this);
-    bottomSquare->setProperty("windowId", QVariant::fromValue(windowId));
-
-    leftSquare->show();
-    rightSquare->show();
     bottomSquare->show();
+    
+    updateTrackingSquares(windowId);
 }
 
 bool WindowManager::eventFilter(QObject *obj, QEvent *event) {
@@ -379,48 +371,33 @@ void WindowManager::resizeWindow(WId windowId, int widthDelta, int heightDelta) 
 }
 
 void WindowManager::updateTrackingSquares(WId windowId) {
-    if (!windowSquares.contains(windowId)) {
-        appendLog("ERR: No tracking squares found for windowId: " + QString::number(windowId));
-        return;
-    }
+    if (windowId) {
+        Display *display = XOpenDisplay(nullptr);
+        if (!display) {
+            appendLog("Unable to open X11 display");
+            return;
+        }
 
-    TrackingSquares squares = windowSquares.value(windowId);
+        XWindowAttributes windowAttributes;
+        if (!XGetWindowAttributes(display, windowId, &windowAttributes)) {
+            appendLog("Unable to get window attributes for WId:");
+            XCloseDisplay(display);
+            return;
+        }
 
-    Display *display = XOpenDisplay(nullptr);
-    if (!display) {
-        appendLog("Unable to open X11 display");
-        return;
-    }
+        QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
+        int squareOffset = 0;
 
-    XWindowAttributes windowAttributes;
-    int result = XGetWindowAttributes(display, windowId, &windowAttributes);
+        leftSquare->move(windowGeometry.left() - leftSquare->width() - squareOffset, windowGeometry.top());
+        rightSquare->move(windowGeometry.right() + squareOffset, windowGeometry.top());
+        bottomSquare->move(windowGeometry.center().x() - (bottomSquare->width() / 2), windowGeometry.bottom() + squareOffset);
 
-    if (result == 0) {
-        appendLog("INFO: Window with ID: " + QString::number(windowId) + " is closed or invalid.");
-
-        squares.leftSquare->hide();
-        squares.rightSquare->hide();
-        squares.bottomSquare->hide();
-
-        delete squares.leftSquare;
-        delete squares.rightSquare;
-        delete squares.bottomSquare;
-
-        windowSquares.remove(windowId);
+        leftSquare->show();
+        rightSquare->show();
+        bottomSquare->show();
 
         XCloseDisplay(display);
-        return;
     }
-
-    QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
-    
-    squares.leftSquare->move(windowGeometry.left() - squares.leftSquare->width(), windowGeometry.top());
-    squares.rightSquare->move(windowGeometry.right(), windowGeometry.top());
-    squares.bottomSquare->move(windowGeometry.center().x() - (squares.bottomSquare->width() / 2), windowGeometry.bottom());
-
-    appendLog(QString("INFO: Updated tracking squares for window ID: %1").arg(windowId));
-
-    XCloseDisplay(display);
 }
 
 void WindowManager::onRightSquarePressed(QMouseEvent *event, WId windowId) {
