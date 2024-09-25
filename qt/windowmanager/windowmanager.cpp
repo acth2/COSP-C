@@ -203,6 +203,76 @@ void WindowManager::toggleConsole() {
     appendLog("Welcome into the DEBUG window (Where my nightmare comes true), Press ESC to exit it");
 }
 
+
+void WindowManager::createAndTrackWindow(WId xorgWindowId) {
+    appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
+    
+    QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
+    
+    if (!x11Window) {
+        appendLog("ERR: Failed to create QWindow from X11 ID.");
+        return;
+    }
+
+    trackedWindows.insert(xorgWindowId, x11Window);
+    appendLog(QString("INFO: Detected new window: %1").arg(xorgWindowId));
+
+    QWidget *containerWidget = new QWidget(this);
+    if (!containerWidget) {
+        appendLog("ERR: Failed to create container widget.");
+        return;
+    }
+
+    QRect geometry = x11Window->geometry();
+    int topbarHeight = 30;
+
+    appendLog(QString("INFO: Geometry for window %1: (%2, %3, %4, %5)")
+               .arg(xorgWindowId)
+               .arg(geometry.x())
+               .arg(geometry.y())
+               .arg(geometry.width())
+               .arg(geometry.height()));
+
+    if (geometry.isValid()) {
+        containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
+    } else {
+        containerWidget->setGeometry(50, 80, 400, 400 + topbarHeight);
+    }
+
+    QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
+    if (!windowWidget) {
+        appendLog("ERR: Failed to create window container.");
+        return;
+    }
+
+    QVBoxLayout *layout = new QVBoxLayout(containerWidget);
+    layout->addWidget(windowWidget);
+
+    TopBar *topBar = new TopBar(x11Window, this);
+    if (!topBar) {
+        appendLog("ERR: Failed to create TopBar.");
+        return;
+    }
+
+    topBar->setGeometry(containerWidget->geometry().x(), containerWidget->geometry().y() - topbarHeight, 
+                        containerWidget->geometry().width(), topbarHeight);
+    
+    topBar->show();
+    containerWidget->show();
+
+    appendLog(QString("INFO: Successfully created container and TopBar for window: %1").arg(xorgWindowId));
+
+    windowTopBars.insert(xorgWindowId, topBar);
+
+    createTrackingSquares(xorgWindowId);
+
+    resizeWindowCubesTimer = new QTimer(this);
+    connect(resizeWindowCubesTimer, &QTimer::timeout, this, [this, xorgWindowId]() { updateTrackingSquares(xorgWindowId); });
+    resizeWindowCubesTimer->start(1500);
+
+    topBar->updatePosition();
+}
+
 void WindowManager::createTrackingSquares(WId windowId) {
     Display *display = XOpenDisplay(nullptr);
     if (!display) {
