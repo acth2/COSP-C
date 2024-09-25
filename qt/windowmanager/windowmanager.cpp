@@ -383,8 +383,8 @@ void WindowManager::mousePressEvent(QMouseEvent *event) {
 }
 
 void WindowManager::mouseMoveEvent(QMouseEvent *event) {
-    if (isResizing && targetWindowId != 0) {
-        QRect windowGeometry = windowSquares[targetWindowId].window->geometry();
+    if (resizing && targetWindowId != 0) {
+        QRect windowGeometry = getWindowGeometry(targetWindowId);
 
         QPoint mouseDelta = event->globalPos() - lastMousePosition;
 
@@ -399,14 +399,20 @@ void WindowManager::mouseMoveEvent(QMouseEvent *event) {
         else if (squares.bottomSquare->geometry().contains(mapFromGlobal(event->globalPos()))) {
             windowGeometry.setBottom(windowGeometry.bottom() + mouseDelta.y());
         }
-
-        windowSquares[targetWindowId].window->setGeometry(windowGeometry);
+        setWindowGeometry(targetWindowId, windowGeometry);
 
         lastMousePosition = event->globalPos();
 
+        QString geometryStr = QString("x: %1, y: %2, width: %3, height: %4")
+                                .arg(windowGeometry.x())
+                                .arg(windowGeometry.y())
+                                .arg(windowGeometry.width())
+                                .arg(windowGeometry.height());
+
         appendLog("DEBUG: Resizing window " + QString::number(targetWindowId) + 
-                  " to new geometry: " + windowGeometry.toString());
+                  " to new geometry: " + geometryStr);
     }
+
     QWidget::mouseMoveEvent(event);
 }
 
