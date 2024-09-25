@@ -36,7 +36,7 @@ protected:
     void onRightSquareMoved(QMouseEvent *event, WId windowId);
     void onBottomSquarePressed(QMouseEvent *event, WId windowId);
     void onBottomSquareMoved(QMouseEvent *event, WId windowId);
-    void onSquareReleased(QMouseEvent *event) override;
+    void onSquareReleased(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
