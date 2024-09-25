@@ -313,8 +313,21 @@ void WindowManager::updateTrackingSquares(WId windowId) {
     }
 
     XWindowAttributes windowAttributes;
-    if (!XGetWindowAttributes(display, windowId, &windowAttributes)) {
-        appendLog("Unable to get window attributes for windowId: " + QString::number(windowId));
+    int result = XGetWindowAttributes(display, windowId, &windowAttributes);
+
+    if (result == 0) {
+        appendLog("INFO: Window with ID: " + QString::number(windowId) + " is closed or invalid.");
+
+        squares.leftSquare->hide();
+        squares.rightSquare->hide();
+        squares.bottomSquare->hide();
+
+        delete squares.leftSquare;
+        delete squares.rightSquare;
+        delete squares.bottomSquare;
+
+        windowSquares.remove(windowId);
+
         XCloseDisplay(display);
         return;
     }
