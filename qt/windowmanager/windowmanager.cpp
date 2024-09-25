@@ -263,7 +263,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     windowTopBars.insert(xorgWindowId, topBar);
 
-    createTrackingSquares();
+    createTrackingSquares(xorgWindowId);
 
     resizeWindowCubesTimer = new QTimer(this);
     connect(resizeWindowCubesTimer, &QTimer::timeout, this, [this, xorgWindowId]() { updateTrackingSquares(xorgWindowId); });
@@ -272,29 +272,38 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     topBar->updatePosition();
 }
 
-void WindowManager::createTrackingSquares() {
+void WindowManager::createTrackingSquares(WId windowId) {
     int squareSize = 20;
 
-    leftSquare = new QLabel(this);
+    QLabel *leftSquare = new QLabel(this);
     leftSquare->setFixedSize(squareSize, squareSize);
     leftSquare->setStyleSheet("background-color: red;");
 
-    rightSquare = new QLabel(this);
+    QLabel *rightSquare = new QLabel(this);
     rightSquare->setFixedSize(squareSize, squareSize);
     rightSquare->setStyleSheet("background-color: red;");
 
-    bottomSquare = new QLabel(this);
+    QLabel *bottomSquare = new QLabel(this);
     bottomSquare->setFixedSize(squareSize, squareSize);
     bottomSquare->setStyleSheet("background-color: red;");
 
     leftSquare->show();
     rightSquare->show();
     bottomSquare->show();
+
+    windowSquares.insert(windowId, {leftSquare, rightSquare, bottomSquare});
 }
 
 
 void WindowManager::updateTrackingSquares(WId windowId) {
     if (windowId) {
+        if (!windowSquares.contains(windowId)) {
+            appendLog("ERR: No tracking squares found for windowId: " + QString::number(windowId));
+            return;
+        }
+
+        TrackingSquares squares = windowSquares.value(windowId);
+
         Display *display = XOpenDisplay(nullptr);
         if (!display) {
             appendLog("Unable to open X11 display");
@@ -303,7 +312,7 @@ void WindowManager::updateTrackingSquares(WId windowId) {
 
         XWindowAttributes windowAttributes;
         if (!XGetWindowAttributes(display, windowId, &windowAttributes)) {
-            appendLog("Unable to get window attributes for WId:");
+            appendLog("Unable to get window attributes for WId:" + QString::number(windowId));
             XCloseDisplay(display);
             return;
         }
@@ -311,9 +320,9 @@ void WindowManager::updateTrackingSquares(WId windowId) {
         QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
         int squareOffset = 0;
 
-        leftSquare->move(windowGeometry.left() - leftSquare->width() - squareOffset, windowGeometry.top());
-        rightSquare->move(windowGeometry.right() + squareOffset, windowGeometry.top());
-        bottomSquare->move(windowGeometry.center().x() - (bottomSquare->width() / 2), windowGeometry.bottom() + squareOffset);
+        squares.leftSquare->move(windowGeometry.left() - squares.leftSquare->width() - squareOffset, windowGeometry.top());
+        squares.rightSquare->move(windowGeometry.right() + squareOffset, windowGeometry.top());
+        squares.bottomSquare->move(windowGeometry.center().x() - (squares.bottomSquare->width() / 2), windowGeometry.bottom() + squareOffset);
 
         XCloseDisplay(display);
     }
