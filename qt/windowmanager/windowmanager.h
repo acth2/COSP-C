@@ -68,6 +68,7 @@ private:
     void updateTrackingSquares(WId windowId);
 
     void setupCloseButton(QWindow *window);
+    void setSupportingWMCheck();
 
     void onLoop();
 };
