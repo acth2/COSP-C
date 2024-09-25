@@ -80,6 +80,7 @@ private:
 
     void createTrackingSquares(WId windowId);
     void updateTrackingSquares(WId windowId);
+    WId getCurrentWindowId();
 
     void setupCloseButton(QWindow *window);
     void setSupportingWMCheck();
