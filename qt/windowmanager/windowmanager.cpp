@@ -291,7 +291,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     createTrackingSquares(xorgWindowId);
 
     resizeWindowCubesTimer = new QTimer(this);
-    connect(resizeWindowCubesTimer, &QTimer::timeout, this, [this, xorgWindowId, topBar]() { updateTrackingSquares(xorgWindowId); topBar->updatePosition(); });
+    connect(resizeWindowCubesTimer, &QTimer::timeout, this, [this, xorgWindowId]() { updateTrackingSquares(xorgWindowId); topBar->updatePosition(); });
     resizeWindowCubesTimer->start(1500);
 
     topBar->updatePosition();
@@ -359,64 +359,48 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
 }
 
 void WindowManager::mouseMoveEvent(QMouseEvent *event) {
-    if (resizing && targetWindowId != 0) {
-        TrackingSquares squares = windowSquares[targetWindowId];
-
+    if (isResizing && trackedWindows.contains(resizingWindowId)) {
         QPoint delta = event->globalPos() - lastMousePosition;
+
+        QWindow *window = trackedWindows[resizingWindowId];
+        QRect currentGeometry = window->geometry();
+
+        if (windowSquares[resizingWindowId].leftSquare->geometry().contains(lastMousePosition)) {
+            currentGeometry.setLeft(currentGeometry.left() + delta.x());
+        } 
+        if (windowSquares[resizingWindowId].rightSquare->geometry().contains(lastMousePosition)) {
+            currentGeometry.setRight(currentGeometry.right() + delta.x());
+        }
+        if (windowSquares[resizingWindowId].bottomSquare->geometry().contains(lastMousePosition)) {
+            currentGeometry.setBottom(currentGeometry.bottom() + delta.y());
+        }
+
+        window->setGeometry(currentGeometry);
+
+        updateTrackingSquares(resizingWindowId);
         lastMousePosition = event->globalPos();
-
-        Display *display = XOpenDisplay(nullptr);
-        if (!display) {
-            appendLog("Unable to open X11 display during resize");
-            return;
-        }
-
-        XWindowAttributes windowAttributes;
-        if (!XGetWindowAttributes(display, targetWindowId, &windowAttributes)) {
-            appendLog("Unable to get window attributes for resizing");
-            XCloseDisplay(display);
-            return;
-        }
-
-        QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
-        if (squares.leftSquare->geometry().contains(event->pos())) {
-            windowGeometry.setLeft(windowGeometry.left() + delta.x());
-        } else if (squares.rightSquare->geometry().contains(event->pos())) {
-            windowGeometry.setRight(windowGeometry.right() + delta.x());
-        } else if (squares.bottomSquare->geometry().contains(event->pos())) {
-            windowGeometry.setBottom(windowGeometry.bottom() + delta.y());
-        }
-
-        XMoveResizeWindow(display, targetWindowId, windowGeometry.x(), windowGeometry.y(),
-                          windowGeometry.width(), windowGeometry.height());
-
-        updateTrackingSquares(targetWindowId);
-
-        XCloseDisplay(display);
     }
 }
 
 void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
-    if (resizing) {
-        resizing = false;
-        appendLog("INFO: Exiting resize mode");
+    if (isResizing) {
+        isResizing = false;
+        resizingWindowId = 0;
     }
 }
 
 void WindowManager::mousePressEvent(QMouseEvent *event) {
-    for (auto windowId : windowSquares.keys()) {
-        TrackingSquares squares = windowSquares[windowId];
-
+    for (auto it = windowSquares.begin(); it != windowSquares.end(); ++it) {
+        WId windowId = it.key();
+        TrackingSquares squares = it.value();
         if (squares.leftSquare->geometry().contains(event->pos()) ||
             squares.rightSquare->geometry().contains(event->pos()) ||
             squares.bottomSquare->geometry().contains(event->pos())) {
-
+            
             isResizing = true;
             lastMousePosition = event->globalPos();
-            targetWindowId = windowId;
-
-            appendLog("INFO: Entering resize mode");
-            return;
+            resizingWindowId = windowId;
+            break;
         }
     }
 }
