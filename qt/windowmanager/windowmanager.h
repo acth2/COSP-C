@@ -36,6 +36,10 @@ protected:
     void centerWindow(QWindow *window);
     void removeCloseButton(WId windowId);
 
+    bool eventFilter(QObject *object, QEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+
 private slots:
     void checkForNewWindows();
     void toggleConsole();
