@@ -39,7 +39,6 @@ protected:
     bool eventFilter(QObject *object, QEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
 
 private slots:
     void checkForNewWindows();
@@ -78,7 +77,6 @@ private:
     bool resizeMode;
     QPoint lastMousePosition;
     WId resizingWindowId;
-    bool isResizing;
 
     void onLoop();
     Window root;
