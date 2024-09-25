@@ -67,6 +67,7 @@ private:
     };
     QMap<WId, TrackingSquares> windowSquares;
     QPoint lastMousePosition;
+    bool resizeMode;
 
     void createTrackingSquares(WId windowId);
     void updateTrackingSquares(WId windowId);
