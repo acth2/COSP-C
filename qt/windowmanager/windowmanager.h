@@ -1,19 +1,19 @@
 #ifndef WINDOWMANAGER_H
 #define WINDOWMANAGER_H
 
-#include <QWidget>
-#include <QMap>
-#include <QLabel>
-#include <QTimer>
-#include <QDateTime>
-#include <QKeyEvent>
-#include <QMouseEvent>
-#include <QCloseEvent>
-#include <QResizeEvent>
-#include <QScreen>
-#include <X11/Xlib.h>
-#include <QVBoxLayout>
+#include <QtCore/qtextstream.h>
 #include "win/topbar.h"
+#include <QWidget>
+#include <QLabel>
+#include <QSet>
+#include <QTimer>
+#include <QMap>
+#include <QMouseEvent>
+#include <QResizeEvent>
+#include "taskbar.h"
+#include "konami_code_handler.h"
+#include "userinteractright.h"
+#include <X11/Xlib.h>
 
 struct TrackingSquares {
     QLabel *leftSquare;
