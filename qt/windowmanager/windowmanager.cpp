@@ -295,34 +295,87 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     topBar->updatePosition();
 }
+
 void WindowManager::createTrackingSquares(WId windowId) {
     int squareSize = 20;
 
     leftSquare = new QLabel(this);
     leftSquare->setFixedSize(squareSize, squareSize);
     leftSquare->setStyleSheet("background-color: red;");
-    leftSquare->setAttribute(Qt::WA_Hover);
-    leftSquare->show();
+    leftSquare->setMouseTracking(true);
+    leftSquare->installEventFilter(this);
+    leftSquare->setProperty("windowId", QVariant::fromValue(windowId));
 
     rightSquare = new QLabel(this);
     rightSquare->setFixedSize(squareSize, squareSize);
     rightSquare->setStyleSheet("background-color: red;");
-    rightSquare->setAttribute(Qt::WA_Hover);
-    rightSquare->show();
+    rightSquare->setMouseTracking(true);
+    rightSquare->installEventFilter(this);
+    rightSquare->setProperty("windowId", QVariant::fromValue(windowId));
 
     bottomSquare = new QLabel(this);
     bottomSquare->setFixedSize(squareSize, squareSize);
     bottomSquare->setStyleSheet("background-color: red;");
-    bottomSquare->setAttribute(Qt::WA_Hover);
+    bottomSquare->setMouseTracking(true);
+    bottomSquare->installEventFilter(this);
+    bottomSquare->setProperty("windowId", QVariant::fromValue(windowId));
+
+    leftSquare->show();
+    rightSquare->show();
     bottomSquare->show();
+}
 
-    connect(rightSquare, &QLabel::mousePressEvent, [this, windowId](QMouseEvent *event) { onRightSquarePressed(event, windowId); });
-    connect(rightSquare, &QLabel::mouseMoveEvent, [this, windowId](QMouseEvent *event) { onRightSquareMoved(event, windowId); });
-    connect(rightSquare, &QLabel::mouseReleaseEvent, this, &WindowManager::onSquareReleased);
+bool WindowManager::eventFilter(QObject *obj, QEvent *event) {
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        
+        if (obj == leftSquare || obj == rightSquare || obj == bottomSquare) {
+            resizing = true;
+            currentWindowId = obj->property("windowId").value<WId>();
+            lastMousePosition = mouseEvent->pos();
+            return true;
+        }
+    } else if (event->type() == QEvent::MouseMove) {
+        if (resizing) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+            int widthDelta = mouseEvent->pos().x() - lastMousePosition.x();
+            int heightDelta = mouseEvent->pos().y() - lastMousePosition.y();
+            resizeWindow(currentWindowId, widthDelta, heightDelta);
+            lastMousePosition = mouseEvent->pos();
+            return true;
+        }
+    } else if (event->type() == QEvent::MouseButtonRelease) {
+        resizing = false;
+        return true;
+    }
 
-    connect(bottomSquare, &QLabel::mousePressEvent, [this, windowId](QMouseEvent *event) { onBottomSquarePressed(event, windowId); });
-    connect(bottomSquare, &QLabel::mouseMoveEvent, [this, windowId](QMouseEvent *event) { onBottomSquareMoved(event, windowId); });
-    connect(bottomSquare, &QLabel::mouseReleaseEvent, this, &WindowManager::onSquareReleased);
+    return QWidget::eventFilter(obj, event);
+}
+
+void WindowManager::resizeWindow(WId windowId, int widthDelta, int heightDelta) {
+    Display *display = XOpenDisplay(nullptr);
+    if (!display) {
+        appendLog("Unable to open X11 display");
+        return;
+    }
+
+    XWindowAttributes windowAttributes;
+    if (!XGetWindowAttributes(display, windowId, &windowAttributes)) {
+        appendLog("Unable to get window attributes for WId");
+        XCloseDisplay(display);
+        return;
+    }
+
+    int newWidth = windowAttributes.width + widthDelta;
+    int newHeight = windowAttributes.height + heightDelta;
+
+    XWindowChanges changes;
+    changes.width = newWidth;
+    changes.height = newHeight;
+
+    XConfigureWindow(display, windowId, CWWidth | CWHeight, &changes);
+    XFlush(display);
+    XCloseDisplay(display);
 }
 
 void WindowManager::updateTrackingSquares(WId windowId) {
