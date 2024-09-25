@@ -80,6 +80,8 @@ private:
     WId resizingWindowId;
     bool isResizing;
 
+    WId targetWindowId;
+
     void onLoop();
     Window root;
 };
