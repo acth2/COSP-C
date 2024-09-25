@@ -66,6 +66,8 @@ private:
     QSet<QString> loggedMessages;
     QWidget *userInteractRightWidget;
     bool isConsoleVisible;
+    bool resizeMode;
+    QPoint lastMousePosition;
 
     QTimer *resizeWindowCubesTimer;
 
