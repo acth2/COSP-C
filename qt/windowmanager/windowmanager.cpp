@@ -461,6 +461,7 @@ void WindowManager::onSquareReleased(QMouseEvent *event) {
     }
 }
 
+/*
 void WindowManager::resizeWindow(WId windowId, int widthDelta, int heightDelta) {
     Display *display = XOpenDisplay(nullptr);
     if (!display) {
@@ -481,7 +482,7 @@ void WindowManager::resizeWindow(WId windowId, int widthDelta, int heightDelta) 
     XResizeWindow(display, windowId, newWidth, newHeight);
     XFlush(display);
     XCloseDisplay(display);
-}
+}*/
 
 void WindowManager::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
