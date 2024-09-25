@@ -71,6 +71,10 @@ private:
         QLabel *rightSquare;
         QLabel *bottomSquare;
     };
+
+    QLabel *leftSquare;
+    QLabel *rightSquare;
+    QLabel *bottomSquare;
     QMap<WId, TrackingSquares> windowSquares;
 
     void createTrackingSquares(WId windowId);
