@@ -8,74 +8,68 @@
 #include <QSet>
 #include <QTimer>
 #include <QMap>
-#include <QMouseEvent>
 #include <QResizeEvent>
 #include "taskbar.h"
 #include "konami_code_handler.h"
 #include "userinteractright.h"
 #include <X11/Xlib.h>
 
-struct TrackingSquares {
-    QLabel *leftSquare;
-    QLabel *rightSquare;
-    QLabel *bottomSquare;
-};
-
-class KonamiCodeHandler;
+class TopBar;
 
 class WindowManager : public QWidget {
     Q_OBJECT
 
 public:
     explicit WindowManager(QWidget *parent = nullptr);
+    void appendLog(const QString &message);
+    QMap<WId, TopBar*> windowTopBars;
+    void closeWindow(WId xorgWindowId);
 
 protected:
-    void resizeEvent(QResizeEvent *event) override;
+    bool event(QEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    bool event(QEvent *qtEvent) override;
-
-    bool eventFilter(QObject *object, QEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
-
-private:
-    void setSupportingWMCheck();
-    void listExistingWindows();
-    void checkForNewWindows();
+    void resizeEvent(QResizeEvent *event) override;
+    void updateTaskbarPosition(QWindow* window);
     void trackWindowEvents(Window xorgWindowId);
-    void processX11Events();
-    void createAndTrackWindow(WId xorgWindowId);
-    void createTrackingSquares(WId windowId);
-    void updateTrackingSquares(WId windowId);
-    void updateTaskbarPosition(QWindow *window);
-    void cleanUpClosedWindows();
-    void appendLog(const QString &message);
-    void toggleConsole();
-    void closeWindow(WId windowId);
-
-    Display *xDisplay;
-    QMap<WId, QWindow *> trackedWindows;
-    QMap<WId, TopBar *> windowTopBars;
-    QMap<WId, TrackingSquares> windowSquares;
-    QLabel *logLabel;
-    QString backgroundImagePath;
-    KonamiCodeHandler *konamiCodeHandler;
-    QTimer *windowCheckTimer;
-    QSet<QString> loggedMessages;
-    QWidget *userInteractRightWidget;
-    bool isConsoleVisible;
-    bool resizeMode;
-    QPoint lastMousePosition;
-
-    QTimer *resizeWindowCubesTimer;
-
-signals:
-    void cubePressed(WId windowId);
+    void centerWindow(QWindow *window);
+    void removeCloseButton(WId windowId);
 
 private slots:
-    void enableResizeMode(WId windowId);
+    void checkForNewWindows();
+    void toggleConsole();
+    void processX11Events();
+    void cleanUpClosedWindows();
+
+private:
+
+    QString backgroundImagePath;
+    QLabel *logLabel;
+    QSet<QString> loggedMessages;
+    KonamiCodeHandler *konamiCodeHandler;
+    bool isConsoleVisible;
+    UserInteractRight *userInteractRightWidget;
+
+    void createAndTrackWindow(WId xorgWindowId);
+    void listExistingWindows();
+    QMap<WId, QWindow*> trackedWindows;
+    QMap<QWindow*, TaskBar*> windowTaskbars;
+    QTimer *windowCheckTimer;
+    QTimer *resizeWindowCubesTimer;
+    struct TrackingSquares {
+        QLabel *leftSquare;
+        QLabel *rightSquare;
+        QLabel *bottomSquare;
+    };
+    QMap<WId, TrackingSquares> windowSquares;
+
+    void createTrackingSquares(WId windowId);
+    void updateTrackingSquares(WId windowId);
+
+    void setupCloseButton(QWindow *window);
+
+    void onLoop();
 };
 
 #endif // WINDOWMANAGER_H
