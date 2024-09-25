@@ -41,9 +41,6 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
 
-    QRect getWindowGeometry(int windowId);
-    void setWindowGeometry(int windowId, const QRect &geometry);
-
 private slots:
     void checkForNewWindows();
     void toggleConsole();
@@ -82,8 +79,6 @@ private:
     QPoint lastMousePosition;
     WId resizingWindowId;
     bool isResizing;
-
-    WId targetWindowId;
 
     void onLoop();
     Window root;
