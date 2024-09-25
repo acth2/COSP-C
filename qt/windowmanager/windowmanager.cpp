@@ -273,18 +273,37 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 }
 
 void WindowManager::createTrackingSquares(WId windowId) {
-    int squareSize = 20;
+    Display *display = XOpenDisplay(nullptr);
+    if (!display) {
+        appendLog("Unable to open X11 display");
+        return;
+    }
+
+    XWindowAttributes windowAttributes;
+    if (!XGetWindowAttributes(display, windowId, &windowAttributes)) {
+        appendLog("Unable to get window attributes for windowId: " + QString::number(windowId));
+        XCloseDisplay(display);
+        return;
+    }
+
+    QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
+    int leftSquareWidth = 20;
+    int leftSquareHeight = windowGeometry.height;
+    
+    int rightSquareHeight = windowGeometry.height;
+    int bottomSquareWidth = windowGeometry.width;
+    int bottomSquareHeight = 20;
 
     QLabel *leftSquare = new QLabel(this);
-    leftSquare->setFixedSize(squareSize, squareSize);
+    leftSquare->setFixedSize(leftSquareWidth, leftSquareHeight);
     leftSquare->setStyleSheet("background-color: red;");
 
     QLabel *rightSquare = new QLabel(this);
-    rightSquare->setFixedSize(squareSize, squareSize);
+    rightSquare->setFixedSize(leftSquareWidth, rightSquareHeight);
     rightSquare->setStyleSheet("background-color: red;");
 
     QLabel *bottomSquare = new QLabel(this);
-    bottomSquare->setFixedSize(squareSize, squareSize);
+    bottomSquare->setFixedSize(bottomSquareWidth, bottomSquareHeight);
     bottomSquare->setStyleSheet("background-color: red;");
 
     leftSquare->show();
@@ -295,6 +314,8 @@ void WindowManager::createTrackingSquares(WId windowId) {
     windowSquares.insert(windowId, squares);
 
     appendLog(QString("INFO: Created tracking squares for window ID: %1").arg(windowId));
+
+    XCloseDisplay(display);
 }
 
 
