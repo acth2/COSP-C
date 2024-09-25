@@ -382,8 +382,18 @@ void WindowManager::mousePressEvent(QMouseEvent *event) {
     }
 }
 
+QRect WindowManager::getWindowGeometry(int windowId) {
+    return windowSquares[windowId].windowGeometry;
+}
+
+void WindowManager::setWindowGeometry(int windowId, const QRect &geometry) {
+    windowSquares[windowId].windowGeometry = geometry;
+
+    XMoveResizeWindow(display, windowId, geometry.x(), geometry.y(), geometry.width(), geometry.height());
+}
+
 void WindowManager::mouseMoveEvent(QMouseEvent *event) {
-    if (resizing && targetWindowId != 0) {
+    if (isResizing && targetWindowId != 0) {
         QRect windowGeometry = getWindowGeometry(targetWindowId);
 
         QPoint mouseDelta = event->globalPos() - lastMousePosition;
