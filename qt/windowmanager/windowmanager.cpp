@@ -203,74 +203,53 @@ void WindowManager::toggleConsole() {
     appendLog("Welcome into the DEBUG window (Where my nightmare comes true), Press ESC to exit it");
 }
 
-void WindowManager::createAndTrackWindow(WId xorgWindowId) {
-    appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
+void WindowManager::createTrackingSquares(WId windowId) {
+    Display *display = XOpenDisplay(nullptr);
+    if (!display) {
+        appendLog("Unable to open X11 display");
+        return;
+    }
+
+    XWindowAttributes windowAttributes;
+    if (!XGetWindowAttributes(display, windowId, &windowAttributes)) {
+        appendLog("Unable to get window attributes for windowId: " + QString::number(windowId));
+        XCloseDisplay(display);
+        return;
+    }
+
+    QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
     
-    QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
+    int leftSquareWidth = 20;
+    int leftSquareHeight = windowGeometry.height();
     
-    if (!x11Window) {
-        appendLog("ERR: Failed to create QWindow from X11 ID.");
-        return;
-    }
+    int rightSquareHeight = windowGeometry.height();
+    int bottomSquareWidth = windowGeometry.width();
+    int bottomSquareHeight = 20;
 
-    trackedWindows.insert(xorgWindowId, x11Window);
-    appendLog(QString("INFO: Detected new window: %1").arg(xorgWindowId));
+    QLabel *leftSquare = new QLabel(this);
+    leftSquare->setFixedSize(leftSquareWidth, leftSquareHeight);
+    leftSquare->setStyleSheet("background-color: red;");
 
-    QWidget *containerWidget = new QWidget(this);
-    if (!containerWidget) {
-        appendLog("ERR: Failed to create container widget.");
-        return;
-    }
+    QLabel *rightSquare = new QLabel(this);
+    rightSquare->setFixedSize(leftSquareWidth, rightSquareHeight);
+    rightSquare->setStyleSheet("background-color: red;");
 
-    QRect geometry = x11Window->geometry();
-    int topbarHeight = 30;
+    QLabel *bottomSquare = new QLabel(this);
+    bottomSquare->setFixedSize(bottomSquareWidth, bottomSquareHeight);
+    bottomSquare->setStyleSheet("background-color: red;");
 
-    appendLog(QString("INFO: Geometry for window %1: (%2, %3, %4, %5)")
-               .arg(xorgWindowId)
-               .arg(geometry.x())
-               .arg(geometry.y())
-               .arg(geometry.width())
-               .arg(geometry.height()));
+    leftSquare->show();
+    rightSquare->show();
+    bottomSquare->show();
 
-    if (geometry.isValid()) {
-        containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
-    } else {
-        containerWidget->setGeometry(50, 80, 400, 400 + topbarHeight);
-    }
+    TrackingSquares squares = { leftSquare, rightSquare, bottomSquare };
+    windowSquares.insert(windowId, squares);
 
-    QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
-    if (!windowWidget) {
-        appendLog("ERR: Failed to create window container.");
-        return;
-    }
+    appendLog(QString("INFO: Created tracking squares for window ID: %1").arg(windowId));
 
-    QVBoxLayout *layout = new QVBoxLayout(containerWidget);
-    layout->addWidget(windowWidget);
-
-    TopBar *topBar = new TopBar(x11Window, this);
-    if (!topBar) {
-        appendLog("ERR: Failed to create TopBar.");
-        return;
-    }
-
-    topBar->setGeometry(containerWidget->geometry().x(), containerWidget->geometry().y() - topbarHeight, 
-                        containerWidget->geometry().width(), topbarHeight);
-    
-    topBar->show();
-    containerWidget->show();
-
-    appendLog(QString("INFO: Successfully created container and TopBar for window: %1").arg(xorgWindowId));
-
-    windowTopBars.insert(xorgWindowId, topBar);
-
-    createTrackingSquares(xorgWindowId);
-
-    resizeWindowCubesTimer = new QTimer(this);
-    connect(resizeWindowCubesTimer, &QTimer::timeout, this, [this, xorgWindowId]() { updateTrackingSquares(xorgWindowId); });
-    resizeWindowCubesTimer->start(1500);
-
-    topBar->updatePosition();
+    XCloseDisplay(display);
 }
+
 
 void WindowManager::createTrackingSquares(WId windowId) {
     Display *display = XOpenDisplay(nullptr);
