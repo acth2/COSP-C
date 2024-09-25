@@ -411,7 +411,7 @@ void WindowManager::mousePressEvent(QMouseEvent *event) {
             squares.rightSquare->geometry().contains(event->pos()) ||
             squares.bottomSquare->geometry().contains(event->pos())) {
 
-            resizing = true;
+            isResizing = true;
             lastMousePosition = event->globalPos();
             targetWindowId = windowId;
 
