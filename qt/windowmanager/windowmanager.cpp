@@ -295,51 +295,34 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     topBar->updatePosition();
 }
-
 void WindowManager::createTrackingSquares(WId windowId) {
-    Display *display = XOpenDisplay(nullptr);
-    if (!display) {
-        appendLog("Unable to open X11 display");
-        return;
-    }
+    int squareSize = 20;
 
-    XWindowAttributes windowAttributes;
-    if (!XGetWindowAttributes(display, windowId, &windowAttributes)) {
-        appendLog("Unable to get window attributes for windowId: " + QString::number(windowId));
-        XCloseDisplay(display);
-        return;
-    }
-
-    QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
-    int leftSquareWidth = 5;
-    int leftSquareHeight = windowGeometry.height();
-    
-    int rightSquareHeight = windowGeometry.height();
-    int bottomSquareWidth = windowGeometry.width();
-    int bottomSquareHeight = 5;
-
-    QLabel *leftSquare = new QLabel(this);
-    leftSquare->setFixedSize(leftSquareWidth, leftSquareHeight);
+    leftSquare = new QLabel(this);
+    leftSquare->setFixedSize(squareSize, squareSize);
     leftSquare->setStyleSheet("background-color: red;");
-
-    QLabel *rightSquare = new QLabel(this);
-    rightSquare->setFixedSize(leftSquareWidth, rightSquareHeight);
-    rightSquare->setStyleSheet("background-color: red;");
-
-    QLabel *bottomSquare = new QLabel(this);
-    bottomSquare->setFixedSize(bottomSquareWidth, bottomSquareHeight);
-    bottomSquare->setStyleSheet("background-color: red;");
-
+    leftSquare->setAttribute(Qt::WA_Hover);
     leftSquare->show();
+
+    rightSquare = new QLabel(this);
+    rightSquare->setFixedSize(squareSize, squareSize);
+    rightSquare->setStyleSheet("background-color: red;");
+    rightSquare->setAttribute(Qt::WA_Hover);
     rightSquare->show();
+
+    bottomSquare = new QLabel(this);
+    bottomSquare->setFixedSize(squareSize, squareSize);
+    bottomSquare->setStyleSheet("background-color: red;");
+    bottomSquare->setAttribute(Qt::WA_Hover);
     bottomSquare->show();
 
-    TrackingSquares squares = { leftSquare, rightSquare, bottomSquare };
-    windowSquares.insert(windowId, squares);
+    connect(rightSquare, &QLabel::mousePressEvent, [this, windowId](QMouseEvent *event) { onRightSquarePressed(event, windowId); });
+    connect(rightSquare, &QLabel::mouseMoveEvent, [this, windowId](QMouseEvent *event) { onRightSquareMoved(event, windowId); });
+    connect(rightSquare, &QLabel::mouseReleaseEvent, this, &WindowManager::onSquareReleased);
 
-    appendLog(QString("INFO: Created tracking squares for window ID: %1").arg(windowId));
-
-    XCloseDisplay(display);
+    connect(bottomSquare, &QLabel::mousePressEvent, [this, windowId](QMouseEvent *event) { onBottomSquarePressed(event, windowId); });
+    connect(bottomSquare, &QLabel::mouseMoveEvent, [this, windowId](QMouseEvent *event) { onBottomSquareMoved(event, windowId); });
+    connect(bottomSquare, &QLabel::mouseReleaseEvent, this, &WindowManager::onSquareReleased);
 }
 
 void WindowManager::updateTrackingSquares(WId windowId) {
@@ -385,6 +368,44 @@ void WindowManager::updateTrackingSquares(WId windowId) {
     appendLog(QString("INFO: Updated tracking squares for window ID: %1").arg(windowId));
 
     XCloseDisplay(display);
+}
+
+void WindowManager::onRightSquarePressed(QMouseEvent *event, WId windowId) {
+    if (event->button() == Qt::LeftButton) {
+        resizing = true;
+        currentWindowId = windowId;
+        lastMousePosition = event->pos();
+    }
+}
+
+void WindowManager::onRightSquareMoved(QMouseEvent *event, WId windowId) {
+    if (resizing) {
+        int deltaX = event->pos().x() - lastMousePosition.x();
+        resizeWindow(currentWindowId, deltaX, 0);
+        lastMousePosition = event->pos();
+    }
+}
+
+void WindowManager::onBottomSquarePressed(QMouseEvent *event, WId windowId) {
+    if (event->button() == Qt::LeftButton) {
+        resizing = true;
+        currentWindowId = windowId;
+        lastMousePosition = event->pos();
+    }
+}
+
+void WindowManager::onBottomSquareMoved(QMouseEvent *event, WId windowId) {
+    if (resizing) {
+        int deltaY = event->pos().y() - lastMousePosition.y();
+        resizeWindow(currentWindowId, 0, deltaY);
+        lastMousePosition = event->pos();
+    }
+}
+
+void WindowManager::onSquareReleased(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        resizing = false;
+    }
 }
 
 void WindowManager::resizeEvent(QResizeEvent *event) {
