@@ -369,13 +369,29 @@ void WindowManager::resizeWindow(WId windowId, int widthDelta, int heightDelta) 
     XFlush(display);
     XCloseDisplay(display);
 }
-
 void WindowManager::updateTrackingSquares(WId windowId) {
-    if (windowId) {
+    if (windowSquares.contains(windowId)) {
         Display *display = XOpenDisplay(nullptr);
         if (!display) {
             appendLog("Unable to open X11 display");
             return;
+        }
+
+        Window root;
+        Window parent;
+        Window *children;
+        unsigned int numChildren;
+        if (XQueryTree(display, windowId, &root, &parent, &children, &numChildren)) {
+            if (numChildren == 0) {
+                auto squares = windowSquares.value(windowId);
+                squares.leftSquare->hide();
+                squares.rightSquare->hide();
+                squares.bottomSquare->hide();
+                windowSquares.remove(windowId);
+                XCloseDisplay(display);
+                return;
+            }
+            XFree(children);
         }
 
         XWindowAttributes windowAttributes;
@@ -392,11 +408,9 @@ void WindowManager::updateTrackingSquares(WId windowId) {
         rightSquare->move(windowGeometry.right() + squareOffset, windowGeometry.top());
         bottomSquare->move(windowGeometry.center().x() - (bottomSquare->width() / 2), windowGeometry.bottom() + squareOffset);
 
-        leftSquare->show();
-        rightSquare->show();
-        bottomSquare->show();
-
         XCloseDisplay(display);
+    } else {
+        appendLog("XQueryTree finished with an error in line 415!");
     }
 }
 
