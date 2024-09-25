@@ -293,7 +293,6 @@ void WindowManager::createTrackingSquares() {
 }
 
 
-Display *xDisplay;
 void WindowManager::updateTrackingSquares(WId windowId) {
     if (windowId) {
         Display *display = XOpenDisplay(nullptr);
