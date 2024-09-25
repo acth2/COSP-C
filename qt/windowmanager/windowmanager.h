@@ -70,6 +70,9 @@ private:
     void setupCloseButton(QWindow *window);
     void setSupportingWMCheck();
 
+    bool resizeMode;
+    QPoint lastMousePosition;
+
     void onLoop();
     Window root;
 };
