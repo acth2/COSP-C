@@ -154,7 +154,7 @@ void UserInteractRight::button1Clicked() {
     });
 
     connect(xtermProcess, &QProcess::started, []() {
-        qDebug() << "xterm started successfully";
+        qDebug() << "qterminal started successfully";
     });
     close();
 }
