@@ -33,6 +33,9 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
     void onRightSquarePressed(QMouseEvent *event, WId windowId);
     void onRightSquareMoved(QMouseEvent *event, WId windowId);
     void onBottomSquarePressed(QMouseEvent *event, WId windowId);
