@@ -38,9 +38,6 @@ protected:
     void onBottomSquarePressed(QMouseEvent *event, WId windowId);
     void onBottomSquareMoved(QMouseEvent *event, WId windowId);
     void onSquareReleased(QMouseEvent *event);
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
     void updateTaskbarPosition(QWindow* window);
     void trackWindowEvents(Window xorgWindowId);
     void centerWindow(QWindow *window);
