@@ -344,66 +344,27 @@ void WindowManager::createTrackingSquares(WId windowId) {
 
 bool WindowManager::eventFilter(QObject *object, QEvent *event) {
     if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        if (mouseEvent->button() == Qt::LeftButton) {
-            for (const auto &squares : windowSquares) {
-                if (object == squares.leftSquare || object == squares.rightSquare || object == squares.bottomSquare) {
-                    resizeMode = true;
-                    lastMousePosition = mouseEvent->globalPos();
-                    return true;
-                }
-            }
-        }
+        auto *mouseEvent = static_cast<QMouseEvent *>(event);
+        mousePressEvent(mouseEvent);
+        return true;
     }
-    return QWidget::eventFilter(object, event);
-}
-
-void WindowManager::mouseMoveEvent(QMouseEvent *event) {
-    if (isResizing && targetWindowId != 0) {
-        TrackingSquares squares = windowSquares[targetWindowId];
-
-        QPoint delta = event->globalPos() - lastMousePosition;
-        lastMousePosition = event->globalPos();
-
-        Display *display = XOpenDisplay(nullptr);
-        if (!display) {
-            appendLog("Unable to open X11 display during resize");
-            return;
-        }
-
-        XWindowAttributes windowAttributes;
-        if (!XGetWindowAttributes(display, targetWindowId, &windowAttributes)) {
-            appendLog("Unable to get window attributes for resizing");
-            XCloseDisplay(display);
-            return;
-        }
-
-        QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
-        if (squares.leftSquare->geometry().contains(event->pos())) {
-            windowGeometry.setLeft(windowGeometry.left() + delta.x());
-        } else if (squares.rightSquare->geometry().contains(event->pos())) {
-            windowGeometry.setRight(windowGeometry.right() + delta.x());
-        } else if (squares.bottomSquare->geometry().contains(event->pos())) {
-            windowGeometry.setBottom(windowGeometry.bottom() + delta.y());
-        }
-
-        XMoveResizeWindow(display, targetWindowId, windowGeometry.x(), windowGeometry.y(),
-                          windowGeometry.width(), windowGeometry.height());
-
-        updateTrackingSquares(targetWindowId);
-
-        XCloseDisplay(display);
+    if (event->type() == QEvent::MouseMove) {
+        auto *mouseEvent = static_cast<QMouseEvent *>(event);
+        mouseMoveEvent(mouseEvent);
+        return true;
     }
-}
-
-void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
-    if (isResizing) {
-        isResizing = false;
-        appendLog("INFO: Exiting resize mode");
+    if (event->type() == QEvent::MouseButtonRelease) {
+        auto *mouseEvent = static_cast<QMouseEvent *>(event);
+        mouseReleaseEvent(mouseEvent);
+        return true;
     }
+
+    return QObject::eventFilter(object, event);
 }
 
 void WindowManager::mousePressEvent(QMouseEvent *event) {
+    appendLog("DEBUG: Mouse Press Detected at " + QString::number(event->pos().x()) + "," + QString::number(event->pos().y()));
+
     for (auto windowId : windowSquares.keys()) {
         TrackingSquares squares = windowSquares[windowId];
 
@@ -418,6 +379,43 @@ void WindowManager::mousePressEvent(QMouseEvent *event) {
             appendLog("INFO: Entering resize mode");
             return;
         }
+    }
+}
+
+void WindowManager::mouseMoveEvent(QMouseEvent *event) {
+    if (isResizing && targetWindowId != 0) {
+        QRect windowGeometry = windowSquares[targetWindowId].window->geometry();
+
+        QPoint mouseDelta = event->globalPos() - lastMousePosition;
+
+        TrackingSquares squares = windowSquares[targetWindowId];
+
+        if (squares.leftSquare->geometry().contains(mapFromGlobal(event->globalPos()))) {
+            windowGeometry.setLeft(windowGeometry.left() + mouseDelta.x());
+        } 
+        else if (squares.rightSquare->geometry().contains(mapFromGlobal(event->globalPos()))) {
+            windowGeometry.setRight(windowGeometry.right() + mouseDelta.x());
+        } 
+        else if (squares.bottomSquare->geometry().contains(mapFromGlobal(event->globalPos()))) {
+            windowGeometry.setBottom(windowGeometry.bottom() + mouseDelta.y());
+        }
+
+        windowSquares[targetWindowId].window->setGeometry(windowGeometry);
+
+        lastMousePosition = event->globalPos();
+
+        appendLog("DEBUG: Resizing window " + QString::number(targetWindowId) + 
+                  " to new geometry: " + windowGeometry.toString());
+    }
+    QWidget::mouseMoveEvent(event);
+}
+
+void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
+    appendLog("DEBUG: Mouse Release Detected at " + QString::number(event->pos().x()) + "," + QString::number(event->pos().y()));
+
+    if (isResizing) {
+        isResizing = false;
+        appendLog("INFO: Exiting resize mode");
     }
 }
 
