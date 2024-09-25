@@ -359,7 +359,7 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
 }
 
 void WindowManager::mouseMoveEvent(QMouseEvent *event) {
-    if (resizing && targetWindowId != 0) {
+    if (isResizing && targetWindowId != 0) {
         TrackingSquares squares = windowSquares[targetWindowId];
 
         QPoint delta = event->globalPos() - lastMousePosition;
@@ -397,8 +397,8 @@ void WindowManager::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
-    if (resizing) {
-        resizing = false;
+    if (isResizing) {
+        isResizing = false;
         appendLog("INFO: Exiting resize mode");
     }
 }
