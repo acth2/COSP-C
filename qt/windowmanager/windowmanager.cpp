@@ -352,8 +352,15 @@ void WindowManager::resizeWindow(WId windowId, int widthDelta, int heightDelta) 
             return;
         }
 
-        XResizeWindow(display, windowId, widthDelta, heightDelta);
-        XFlush(display);
+        XWindowAttributes windowAttributes;
+        if (XGetWindowAttributes(display, windowId, &windowAttributes)) {
+            int newWidth = windowAttributes.width + widthDelta;
+            int newHeight = windowAttributes.height + heightDelta;
+
+            XResizeWindow(display, windowId, newWidth, newHeight);
+            XFlush(display);
+        }
+
         XCloseDisplay(display);
     }
 }
@@ -405,22 +412,14 @@ void WindowManager::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         if (rightSquare->geometry().contains(event->pos())) {
             resizing = true;
-            currentWindowId = getCurrentWindowId();
             lastMousePosition = event->pos();
-        } else if (leftSquare->geometry().contains(event->pos())) {
-            resizing = true;
             currentWindowId = getCurrentWindowId();
-            lastMousePosition = event->pos();
-        } else if (bottomSquare->geometry().contains(event->pos())) {
-            resizing = true;
-            currentWindowId = getCurrentWindowId();
-            lastMousePosition = event->pos();
         }
     }
 }
 
 void WindowManager::mouseMoveEvent(QMouseEvent *event) {
-    if (resizing) {
+    if (resizing && currentWindowId) {
         int widthDelta = event->pos().x() - lastMousePosition.x();
         int heightDelta = event->pos().y() - lastMousePosition.y();
 
