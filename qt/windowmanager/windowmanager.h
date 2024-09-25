@@ -76,6 +76,7 @@ private:
 
     bool resizeMode;
     QPoint lastMousePosition;
+    WId resizingWindowId;
 
     void onLoop();
     Window root;
