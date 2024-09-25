@@ -414,6 +414,53 @@ void WindowManager::updateTrackingSquares(WId windowId) {
     }
 }
 
+WId WindowManager::getCurrentWindowId() {
+    QPoint pos = mapFromGlobal(QCursor::pos());
+    for (auto it = windowSquares.begin(); it != windowSquares.end(); ++it) {
+        auto squares = it.value();
+        if (squares.leftSquare->geometry().contains(pos) ||
+            squares.rightSquare->geometry().contains(pos) ||
+            squares.bottomSquare->geometry().contains(pos)) {
+            return it.key();
+        }
+    }
+    return 0;
+}
+
+void WindowManager::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        if (rightSquare->geometry().contains(event->pos())) {
+            resizing = true;
+            currentWindowId = getCurrentWindowId();
+            lastMousePosition = event->pos();
+        } else if (leftSquare->geometry().contains(event->pos())) {
+            resizing = true;
+            currentWindowId = getCurrentWindowId();
+            lastMousePosition = event->pos();
+        } else if (bottomSquare->geometry().contains(event->pos())) {
+            resizing = true;
+            currentWindowId = getCurrentWindowId();
+            lastMousePosition = event->pos();
+        }
+    }
+}
+
+void WindowManager::mouseMoveEvent(QMouseEvent *event) {
+    if (resizing && currentWindowId) {
+        int widthDelta = event->pos().x() - lastMousePosition.x();
+        int heightDelta = event->pos().y() - lastMousePosition.y();
+        resizeWindow(currentWindowId, widthDelta, heightDelta);
+        lastMousePosition = event->pos();
+    }
+}
+
+void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        resizing = false;
+        currentWindowId = 0;
+    }
+}
+
 void WindowManager::onRightSquarePressed(QMouseEvent *event, WId windowId) {
     if (event->button() == Qt::LeftButton) {
         resizing = true;
