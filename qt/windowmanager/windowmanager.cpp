@@ -153,10 +153,14 @@ void WindowManager::setSupportingWMCheck() {
     Window supportingWindow = XCreateSimpleWindow(xDisplay, root, 0, 0, 1, 1, 0, 0, 0);
     XStoreName(xDisplay, supportingWindow, "A2WM");
 
-    Atom wmCheckAtom = XInternAtom(xDisplay, "_NET_SUPPORTING_WM_CHECK", False);
+    Atom wmCheckAtom = XInternAtom(xDisplay, "_NET_SUPPORTING_WM_CHECK", True);
     XChangeProperty(xDisplay, root, wmCheckAtom, XA_WINDOW, 32, PropModeReplace,
                     (unsigned char *)&supportingWindow, 1);
 
+    Atom wmWinAtom = XInternAtom(xDisplay, "_WIN_SUPPORTING_WM_CHECK", True);
+    XChangeProperty(xDisplay, root, wmWinAtom, XA_WINDOW, 32, PropModeReplace,
+                    (unsigned char *)&supportingWindow, 1);
+    
     XMapWindow(xDisplay, supportingWindow);
 }
 
