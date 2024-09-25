@@ -354,11 +354,10 @@ void WindowManager::updateTrackingSquares(WId windowId) {
     }
 
     QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
-    int squareOffset = 10;
-
-    squares.leftSquare->move(windowGeometry.left() - squares.leftSquare->width() - squareOffset, windowGeometry.top());
-    squares.rightSquare->move(windowGeometry.right() + squareOffset, windowGeometry.top());
-    squares.bottomSquare->move(windowGeometry.center().x() - (squares.bottomSquare->width() / 2), windowGeometry.bottom() + squareOffset);
+    
+    squares.leftSquare->move(windowGeometry.left() - squares.leftSquare->width(), windowGeometry.top());
+    squares.rightSquare->move(windowGeometry.right(), windowGeometry.top());
+    squares.bottomSquare->move(windowGeometry.center().x() - (squares.bottomSquare->width() / 2), windowGeometry.bottom());
 
     appendLog(QString("INFO: Updated tracking squares for window ID: %1").arg(windowId));
 
