@@ -323,7 +323,7 @@ void WindowManager::createTrackingSquares(WId windowId) {
     rightSquare->installEventFilter(this);
 
     QLabel *bottomSquare = new QLabel(this);
-    bottomSquare->setFixedSize(windowGeometry.width(), 5);
+    bottomSquare->setFixedSize(windowGeometry.width(), 15);
     bottomSquare->setStyleSheet("background-color: red;");
     bottomSquare->installEventFilter(this);
 
