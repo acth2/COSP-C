@@ -290,7 +290,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     resizeWindowCubesTimer = new QTimer(this);
     connect(resizeWindowCubesTimer, &QTimer::timeout, this, [this, xorgWindowId, topBar]() { updateTrackingSquares(xorgWindowId); topBar->updatePosition(); });
-    resizeWindowCubesTimer->start(250);
+    resizeWindowCubesTimer->start(1);
 
     topBar->updatePosition();
 }
