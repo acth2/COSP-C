@@ -387,6 +387,14 @@ void WindowManager::updateTrackingSquares(WId windowId) {
 void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton && resizeMode) {
         resizeMode = false;
+        for (const auto &squares : windowSquares) {
+            if (object == squares.leftSquare || object == squares.rightSquare || object == squares.bottomSquare) {
+                squares.leftSquare->setFixedWidth(15);
+                squares.rightSquare->setFixedWidth(15);
+                squares.bottomSquare->setFixedHeight(15);
+                return true;
+                }
+            }
     }
 }
 
