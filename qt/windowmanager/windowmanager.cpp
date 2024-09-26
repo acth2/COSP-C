@@ -387,15 +387,8 @@ void WindowManager::updateTrackingSquares(WId windowId) {
 void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton && resizeMode) {
         resizeMode = false;
-        for (const auto &squares : windowSquares) {
-            if (object == squares.leftSquare || object == squares.rightSquare || object == squares.bottomSquare) {
-                squares.leftSquare->setFixedWidth(15);
-                squares.rightSquare->setFixedWidth(15);
-                squares.bottomSquare->setFixedHeight(15);
-                return true;
-                }
-            }
     }
+    return QWidget::mouseReleaseEvent(event);
 }
 
 bool WindowManager::eventFilter(QObject *object, QEvent *event) {
@@ -418,6 +411,20 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
                     return true;
                 }
             }
+        } else {
+            for (const auto &squares : windowSquares) {
+                if (object == squares.leftSquare || object == squares.rightSquare || object == squares.bottomSquare) {
+                    resizeMode = true;
+                    lastMousePosition = mouseEvent->globalPos();
+                    int leftY = squares.leftSquare->y();
+                    int rightY = squares.rightSquare->y();
+
+                    squares.leftSquare->setFixedWidth(15);
+                    squares.rightSquare->setFixedWidth(15);
+                    squares.bottomSquare->setFixedHeight(15);
+                    return true;
+                }
+            } 
         }
     }
     return QWidget::eventFilter(object, event);
