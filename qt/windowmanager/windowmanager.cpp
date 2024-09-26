@@ -402,8 +402,8 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
                     int leftY = squares.leftSquare->y();
                     int rightY = squares.rightSquare->y();
 
-                    squares.leftSquare->move(squares.leftSquare->x() - 100, leftY);
-                    squares.rightSquare->move(squares.rightSquare->x() - 100, rightY);
+                    squares.leftSquare->move(squares.leftSquare->x() - 1000, leftY);
+                    squares.rightSquare->move(squares.rightSquare->x() - 1000, rightY);
 
                     squares.leftSquare->setFixedWidth(2500);
                     squares.rightSquare->setFixedWidth(2500);
