@@ -397,6 +397,9 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
                 if (object == squares.leftSquare || object == squares.rightSquare || object == squares.bottomSquare) {
                     resizeMode = true;
                     lastMousePosition = mouseEvent->globalPos();
+                    squares.leftSquare->setFixedWidth(200);
+                    squares.rightSquare->setFixedWidth(200);
+                    squares.bottomSquare->setFixedHeight(200);
                     return true;
                 }
             }
