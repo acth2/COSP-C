@@ -75,6 +75,8 @@ private:
     void setupCloseButton(QWindow *window);
     void setSupportingWMCheck();
 
+    QRect windowGeometry;
+
     void onLoop();
 };
 
