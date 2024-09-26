@@ -367,8 +367,6 @@ void WindowManager::updateTrackingSquares(WId windowId) {
         delete squares.rightSquare;
         delete squares.bottomSquare;
 
-        windowSquares.remove(windowId);
-
         XCloseDisplay(display);
         return;
     }
@@ -401,9 +399,6 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
                     lastMousePosition = mouseEvent->globalPos();
                     int leftY = squares.leftSquare->y();
                     int rightY = squares.rightSquare->y();
-                    squares.leftSquare->setParent(nullptr);
-                    squares.rightSquare->setParent(nullptr);
-                    squares.bottomSquare->setParent(nullptr);
 
                     squares.leftSquare->move(squares.leftSquare->x() - 1000, leftY);
                     squares.rightSquare->move(squares.rightSquare->x() - 1000, rightY);
