@@ -401,6 +401,9 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
                     lastMousePosition = mouseEvent->globalPos();
                     int leftY = squares.leftSquare->y();
                     int rightY = squares.rightSquare->y();
+                    squares.leftSquare->setParent(nullptr);
+                    squares.rightSquare->setParent(nullptr);
+                    squares.bottomSquare->setParent(nullptr);
 
                     squares.leftSquare->move(squares.leftSquare->x() - 1000, leftY);
                     squares.rightSquare->move(squares.rightSquare->x() - 1000, rightY);
@@ -415,15 +418,6 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
                     squares.bottomSquare->setFixedHeight(2500);
                     return true;
                 }
-            }
-        }
-        for (const auto &squares : windowSquares) {
-            if (object == squares.leftSquare || object == squares.rightSquare || object == squares.bottomSquare) {
-                lastMousePosition = mouseEvent->globalPos();
-                squares.leftSquare->setFixedWidth(15);
-                squares.rightSquare->setFixedWidth(15);
-                squares.bottomSquare->setFixedHeight(15);
-                return true;
             }
         }
     }
