@@ -407,6 +407,11 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
 
                     squares.leftSquare->setFixedWidth(2500);
                     squares.rightSquare->setFixedWidth(2500);
+                    
+                    squares.leftSquare->setFixedHeight(windowGeometry.height();
+                    squares.rightSquare->setFixedHeight(windowGeometry.height();
+                    squares.bottomSquare->setFixedWidth(windowGeometry.width();
+                    
                     squares.bottomSquare->setFixedHeight(2500);
                     return true;
                 }
