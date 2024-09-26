@@ -309,7 +309,7 @@ void WindowManager::createTrackingSquares(WId windowId) {
     }
 
     QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
-    int leftSquareWidth = 5;
+    int leftSquareWidth = 15;
     int leftSquareHeight = windowGeometry.height();
 
     QLabel *leftSquare = new QLabel(this);
