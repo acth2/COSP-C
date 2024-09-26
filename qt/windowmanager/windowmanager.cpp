@@ -399,18 +399,13 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
                     lastMousePosition = mouseEvent->globalPos();
                     int leftY = squares.leftSquare->y();
                     int rightY = squares.rightSquare->y();
+                    int newWidth = 2500;
+                    int newHeight = windowGeometry->height();
 
-                    squares.leftSquare->move(squares.leftSquare->x() - 1000, leftY);
-                    squares.rightSquare->move(squares.rightSquare->x() - 1000, rightY);
+                    squares.leftSquare->setGeometry(squares.leftSquare->x() - 1000, leftY, newWidth, newHeight);
+                    squares.rightSquare->setGeometry(squares.rightSquare->x() - 1000, rightY, newWidth, newHeight);
 
-                    squares.leftSquare->setFixedWidth(2500);
-                    squares.rightSquare->setFixedWidth(2500);
-                    
-                    squares.leftSquare->setFixedHeight(windowGeometry->height());
-                    squares.rightSquare->setFixedHeight(windowGeometry->height());
-                    squares.bottomSquare->setFixedWidth(windowGeometry->width());
-                    
-                    squares.bottomSquare->setFixedHeight(2500);
+                    squares.bottomSquare->setGeometry(squares.bottomSquare->x(), squares.bottomSquare->y(), windowGeometry->width(), 2500);
                     return true;
                 }
             }
