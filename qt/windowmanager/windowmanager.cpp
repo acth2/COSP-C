@@ -309,7 +309,7 @@ void WindowManager::createTrackingSquares(WId windowId) {
         return;
     }
 
-    QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
+    windowGeometry = new QRect(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
     int leftSquareWidth = 15;
     int leftSquareHeight = windowGeometry.height();
 
