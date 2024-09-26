@@ -311,7 +311,7 @@ void WindowManager::createTrackingSquares(WId windowId) {
 
     windowGeometry = new QRect(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
     int leftSquareWidth = 15;
-    int leftSquareHeight = windowGeometry.height();
+    int leftSquareHeight = windowGeometry->height();
 
     QLabel *leftSquare = new QLabel(this);
     leftSquare->setFixedSize(leftSquareWidth, leftSquareHeight);
@@ -324,7 +324,7 @@ void WindowManager::createTrackingSquares(WId windowId) {
     rightSquare->installEventFilter(this);
 
     QLabel *bottomSquare = new QLabel(this);
-    bottomSquare->setFixedSize(windowGeometry.width(), 15);
+    bottomSquare->setFixedSize(windowGeometry->width(), 15);
     bottomSquare->setStyleSheet("background-color: red;");
     bottomSquare->installEventFilter(this);
 
@@ -408,9 +408,9 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
                     squares.leftSquare->setFixedWidth(2500);
                     squares.rightSquare->setFixedWidth(2500);
                     
-                    squares.leftSquare->setFixedHeight(windowGeometry.height();
-                    squares.rightSquare->setFixedHeight(windowGeometry.height();
-                    squares.bottomSquare->setFixedWidth(windowGeometry.width();
+                    squares.leftSquare->setFixedHeight(windowGeometry->height());
+                    squares.rightSquare->setFixedHeight(windowGeometry->height());
+                    squares.bottomSquare->setFixedWidth(windowGeometry->width());
                     
                     squares.bottomSquare->setFixedHeight(2500);
                     return true;
