@@ -16,6 +16,7 @@
 #include <QWindow>
 #include <QResizeEvent>
 #include <QDateTime>
+#include <QTransform>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
@@ -397,9 +398,15 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
                 if (object == squares.leftSquare || object == squares.rightSquare || object == squares.bottomSquare) {
                     resizeMode = true;
                     lastMousePosition = mouseEvent->globalPos();
-                    squares.leftSquare->setFixedWidth(200);
-                    squares.rightSquare->setFixedWidth(200);
-                    squares.bottomSquare->setFixedHeight(200);
+                    int leftY = squares.leftSquare->y();
+                    int rightY = squares.rightSquare->y();
+
+                    squares.leftSquare->move(squares.leftSquare->x() - 100, leftY);
+                    squares.rightSquare->move(squares.rightSquare->x() - 100, rightY);
+
+                    squares.leftSquare->setFixedWidth(2500);
+                    squares.rightSquare->setFixedWidth(2500);
+                    squares.bottomSquare->setFixedHeight(2500);
                     return true;
                 }
             }
