@@ -1,5 +1,6 @@
 #include "windowmanager.h"
 #include "win/topbar.h"
+#include "win/utils/resizecubes.h"
 #include "userinteractright.h"
 #include "taskbar.h"
 #include <QApplication>
@@ -323,7 +324,13 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
     if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
         if (mouseEvent->button() == Qt::LeftButton) {
-            for (const auto &squares : windowSquares) {
+            for (auto windowId : trackedWindows.keys()) {
+                QRect *windowGeometry = resizeCubes->getWindowGeometry(windowId);
+                if (!windowGeometry) {
+                    continue;
+                }
+
+                ResizeCubes::TrackingSquares squares = resizeCubes->getTrackingSquares(windowId);
                 if (object == squares.leftSquare || object == squares.rightSquare || object == squares.bottomSquare) {
                     resizeMode = true;
                     lastMousePosition = mouseEvent->globalPos();
@@ -351,18 +358,23 @@ void WindowManager::mouseMoveEvent(QMouseEvent *event) {
         int dy = currentPos.y() - lastMousePosition.y();
 
         for (auto windowId : trackedWindows.keys()) {
-            TrackingSquares squares = windowSquares.value(windowId);
-            
+            QRect *windowGeometry = resizeCubes->getWindowGeometry(windowId);
+            if (!windowGeometry) {
+                continue;
+            }
+
+            ResizeCubes::TrackingSquares squares = resizeCubes->getTrackingSquares(windowId);
+
             if (squares.leftSquare->geometry().contains(event->pos())) {
-                QRect newGeometry = trackedWindows[windowId]->geometry();
+                QRect newGeometry = *windowGeometry;
                 newGeometry.setLeft(newGeometry.left() + dx);
                 trackedWindows[windowId]->setGeometry(newGeometry);
             } else if (squares.rightSquare->geometry().contains(event->pos())) {
-                QRect newGeometry = trackedWindows[windowId]->geometry();
+                QRect newGeometry = *windowGeometry;
                 newGeometry.setRight(newGeometry.right() + dx);
                 trackedWindows[windowId]->setGeometry(newGeometry);
             } else if (squares.bottomSquare->geometry().contains(event->pos())) {
-                QRect newGeometry = trackedWindows[windowId]->geometry();
+                QRect newGeometry = *windowGeometry;
                 newGeometry.setBottom(newGeometry.bottom() + dy);
                 trackedWindows[windowId]->setGeometry(newGeometry);
             }
