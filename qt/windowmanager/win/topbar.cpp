@@ -218,6 +218,15 @@ void TopBar::closeTrackedWindow() {
         if (ok && pid > 0) {
             QProcess::execute("kill -9 " + QString::number(pid));
         }
+        
+        squares.leftSquare->hide();
+        squares.rightSquare->hide();
+        squares.bottomSquare->hide();
+
+        delete squares.leftSquare;
+        delete squares.rightSquare;
+        delete squares.bottomSquare;
+        
         this->close();
     }
 }
