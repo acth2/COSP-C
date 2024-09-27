@@ -208,6 +208,7 @@ void TopBar::closeTrackedWindow() {
     if (trackedWindow) {
         WId windowId = trackedWindow->winId();
 
+        windowManager->killTrackingCubes();
         QProcess process;
         process.start("xdotool getwindowpid " + QString::number(windowId));
         process.waitForFinished();
