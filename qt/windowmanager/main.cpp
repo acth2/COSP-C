@@ -1,5 +1,7 @@
 #include "windowmanager.h"
 #include "taskbar.h"
+#include <signal.h>
+#include <iostream>
 #include <QApplication>
 #include <QScreen>
 #include <QFile>
@@ -15,9 +17,20 @@ void customLogOutput(QtMsgType type, const QMessageLogContext &context, const QS
         << msg << endl;
 }
 
+void signal_handler(int signal) {
+    if (signal == SIGTERM || signal == SIGINT) {
+        std::cout << "INFO: SIGTERM / SIGINT SIGNAL DETECTED" << std::endl;
+    } else if (signal == SIGSEGV) {
+        std::cerr << "CRITICAL ERROR : Segmentation Fault" << std::endl;
+    }
+}
+
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
+    signal(SIGTERM, signal_handler);
+    signal(SIGINT, signal_handler);
+    signal(SIGSEGV, signal_handler);
 
     logFile.setFileName("/usr/cydra/logs/a2wm.log");
     logFile.open(QIODevice::Append | QIODevice::Text);
