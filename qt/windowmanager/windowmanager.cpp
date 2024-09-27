@@ -338,8 +338,6 @@ void WindowManager::updateTrackingSquares(WId windowId) {
         return;
     }
 
-    TrackingSquares squares = windowSquares.value(windowId);
-
     Display *display = XOpenDisplay(nullptr);
     if (!display) {
         appendLog("Unable to open X11 display");
@@ -348,6 +346,22 @@ void WindowManager::updateTrackingSquares(WId windowId) {
 
     XWindowAttributes windowAttributes;
     int result = XGetWindowAttributes(display, windowId, &windowAttributes);
+
+    if (result == 0) {
+        appendLog("INFO: Window with ID: " + QString::number(windowId) + " is closed or invalid.");
+
+        squares.leftSquare->hide();
+        squares.rightSquare->hide();
+        squares.bottomSquare->hide();
+
+        delete squares.leftSquare;
+        delete squares.rightSquare;
+        delete squares.bottomSquare;
+
+        XCloseDisplay(display);
+        return;
+    }
+    TrackingSquares squares = windowSquares.value(windowId);
 
     QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
     
