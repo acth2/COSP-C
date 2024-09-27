@@ -216,7 +216,9 @@ void TopBar::closeTrackedWindow() {
         qint64 pid = pidString.toLongLong(&ok);
 
         if (ok && pid > 0) {
-            QProcess::execute("kill -9 " + QString::number(pid));
+            if (QProcess::execute("kill -15 " + QString::number(pid)) != 0) {
+                QProcess::execute("kill -9 " + QString::number(pid));
+            }
         }
         this->close();
     }
