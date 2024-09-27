@@ -339,6 +339,7 @@ void WindowManager::createTrackingSquares(WId windowId) {
 
     XCloseDisplay(display);
 }
+
 void WindowManager::updateTrackingSquares(WId windowId) {
     if (!windowSquares.contains(windowId)) {
         appendLog("ERR: No tracking squares found for windowId: " + QString::number(windowId));
@@ -381,6 +382,27 @@ void WindowManager::updateTrackingSquares(WId windowId) {
     XCloseDisplay(display);
 }
 
+void WindowManager::killTrackingCubes() {
+    for (auto it = windowSquares.begin(); it != windowSquares.end(); ++it) {
+        TrackingSquares& squares = it.value();
+        if (squares.leftSquare) {
+            squares.leftSquare->deleteLater();
+            squares.leftSquare = nullptr;
+        }
+        
+        if (squares.rightSquare) {
+            squares.rightSquare->deleteLater();
+            squares.rightSquare = nullptr;
+        }
+        
+        if (squares.bottomSquare) {
+            squares.bottomSquare->deleteLater();
+            squares.bottomSquare = nullptr;
+        }
+    }
+    windowSquares.clear();
+}
+
 void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton && resizeMode) {
         resizeMode = false;
@@ -412,6 +434,7 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
     }
     return QWidget::eventFilter(object, event);
 }
+
 void WindowManager::mouseMoveEvent(QMouseEvent *event) {
     if (resizeMode) {
         QPoint currentPos = event->globalPos();
@@ -454,6 +477,7 @@ void WindowManager::closeWindow(WId windowId) {
         }
     }
 }
+
 void WindowManager::updateTaskbarPosition(QWindow *window) {
     if (windowTopBars.contains(window->winId())) {
         TopBar *topBar = windowTopBars.value(window->winId());
