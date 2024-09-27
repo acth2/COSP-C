@@ -383,24 +383,24 @@ void WindowManager::updateTrackingSquares(WId windowId) {
 }
 
 void WindowManager::killTrackingCubes() {
-    for (auto it = windowSquares.begin(); it != windowSquares.end(); ++it) {
-        TrackingSquares& squares = it.value();
+    for (auto it = windowSquares.begin(); it != windowSquares.end(); ) {
+        TrackingSquares squares = it.value();
+        appendLog("Cleaning up squares for window ID:");
+
+        it = windowSquares.erase(it);
+
         if (squares.leftSquare) {
             squares.leftSquare->deleteLater();
-            squares.leftSquare = nullptr;
         }
-        
         if (squares.rightSquare) {
             squares.rightSquare->deleteLater();
-            squares.rightSquare = nullptr;
         }
-        
         if (squares.bottomSquare) {
             squares.bottomSquare->deleteLater();
-            squares.bottomSquare = nullptr;
         }
     }
-    windowSquares.clear();
+
+    appendLog("Tracking cubes cleaned up. Remaining entries:");
 }
 
 void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
