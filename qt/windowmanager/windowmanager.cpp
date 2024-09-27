@@ -355,6 +355,12 @@ void WindowManager::updateTrackingSquares(WId windowId) {
         squares.leftSquare->hide();
         squares.rightSquare->hide();
         squares.bottomSquare->hide();
+
+        delete squares.leftSquare;
+        delete squares.rightSquare;
+        delete squares.bottomSquare;
+
+        XCloseDisplay(display);
         return;
     }
 
