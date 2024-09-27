@@ -297,111 +297,19 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 }
 
 void WindowManager::createTrackingSquares(WId windowId) {
-    Display *display = XOpenDisplay(nullptr);
-    if (!display) {
-        appendLog("Unable to open X11 display");
-        return;
-    }
-
-    XWindowAttributes windowAttributes;
-    if (!XGetWindowAttributes(display, windowId, &windowAttributes)) {
-        appendLog("Unable to get window attributes for windowId: " + QString::number(windowId));
-        XCloseDisplay(display);
-        return;
-    }
-
-    windowGeometry = new QRect(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
-    int leftSquareWidth = 15;
-    int leftSquareHeight = windowGeometry->height();
-
-    QLabel *leftSquare = new QLabel(this);
-    leftSquare->setFixedSize(leftSquareWidth, leftSquareHeight);
-    leftSquare->setStyleSheet("background-color: red;");
-    leftSquare->installEventFilter(this);
-
-    QLabel *rightSquare = new QLabel(this);
-    rightSquare->setFixedSize(leftSquareWidth, leftSquareHeight);
-    rightSquare->setStyleSheet("background-color: red;");
-    rightSquare->installEventFilter(this);
-
-    QLabel *bottomSquare = new QLabel(this);
-    bottomSquare->setFixedSize(windowGeometry->width(), 15);
-    bottomSquare->setStyleSheet("background-color: red;");
-    bottomSquare->installEventFilter(this);
-
-    leftSquare->show();
-    rightSquare->show();
-    bottomSquare->show();
-
-    TrackingSquares squares = {leftSquare, rightSquare, bottomSquare};
-    windowSquares.insert(windowId, squares);
-
-    appendLog(QString("INFO: Created tracking squares for window ID: %1").arg(windowId));
-
-    XCloseDisplay(display);
+    QWindow *window = QWindow::fromWinId(windowId);
+    QRect geometry = window->geometry();
+    resizeCubes->createTrackingSquares(windowId, geometry);
 }
 
 void WindowManager::updateTrackingSquares(WId windowId) {
-    if (!windowSquares.contains(windowId)) {
-        appendLog("ERR: No tracking squares found for windowId: " + QString::number(windowId));
-        return;
-    }
-
-    Display *display = XOpenDisplay(nullptr);
-    if (!display) {
-        appendLog("Unable to open X11 display");
-        return;
-    }
-
-    XWindowAttributes windowAttributes;
-    int result = XGetWindowAttributes(display, windowId, &windowAttributes);
-    TrackingSquares squares = windowSquares.value(windowId);
-
-    if (result == 0) {
-        appendLog("INFO: Window with ID: " + QString::number(windowId) + " is closed or invalid.");
-
-        squares.leftSquare->hide();
-        squares.rightSquare->hide();
-        squares.bottomSquare->hide();
-
-        delete squares.leftSquare;
-        delete squares.rightSquare;
-        delete squares.bottomSquare;
-
-        XCloseDisplay(display);
-        return;
-    }
-
-    QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
-    
-    squares.leftSquare->move(windowGeometry.left() - squares.leftSquare->width(), windowGeometry.top());
-    squares.rightSquare->move(windowGeometry.right(), windowGeometry.top());
-    squares.bottomSquare->move(windowGeometry.center().x() - (squares.bottomSquare->width() / 2), windowGeometry.bottom());
-
-    appendLog(QString("INFO: Updated tracking squares for window ID: %1").arg(windowId));
-
-    XCloseDisplay(display);
+    QWindow *window = QWindow::fromWinId(windowId);
+    QRect geometry = window->geometry();
+    resizeCubes->updateTrackingSquares(windowId, geometry);
 }
 
 void WindowManager::killTrackingCubes() {
-    for (auto it = windowSquares.begin(); it != windowSquares.end(); ) {
-        TrackingSquares squares = it.value();
-        appendLog("Cleaning up squares for window ID:");
-
-        it = windowSquares.erase(it);
-
-        if (squares.leftSquare) {
-            squares.leftSquare->deleteLater();
-        }
-        if (squares.rightSquare) {
-            squares.rightSquare->deleteLater();
-        }
-        if (squares.bottomSquare) {
-            squares.bottomSquare->deleteLater();
-        }
-    }
-
-    appendLog("Tracking cubes cleaned up. Remaining entries:");
+    resizeCubes->killTrackingCubes();
 }
 
 void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
