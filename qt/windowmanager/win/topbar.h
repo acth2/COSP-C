@@ -1,6 +1,7 @@
 #ifndef TOPBAR_H
 #define TOPBAR_H
 
+#include "../windowmanager.h"
 #include <QWidget>
 #include <QWindow>
 #include <QLabel>
@@ -53,6 +54,7 @@ private:
     QWindow *trackedWindow;
     QRect restoreGeometry;
     bool isMaximized;
+    TrackingSquares squares;
 
     bool isDarkMode;
 };
