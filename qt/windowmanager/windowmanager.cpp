@@ -346,6 +346,7 @@ void WindowManager::updateTrackingSquares(WId windowId) {
 
     XWindowAttributes windowAttributes;
     int result = XGetWindowAttributes(display, windowId, &windowAttributes);
+    TrackingSquares squares = windowSquares.value(windowId);
 
     if (result == 0) {
         appendLog("INFO: Window with ID: " + QString::number(windowId) + " is closed or invalid.");
@@ -361,7 +362,6 @@ void WindowManager::updateTrackingSquares(WId windowId) {
         XCloseDisplay(display);
         return;
     }
-    TrackingSquares squares = windowSquares.value(windowId);
 
     QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
     
