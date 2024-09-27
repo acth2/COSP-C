@@ -13,14 +13,16 @@ SOURCES += main.cpp \
            konami_code_handler.cpp \
            userinteractright.cpp \
            taskbar.cpp \
-           win/topbar.cpp
+           win/topbar.cpp \
+           win/utils/resizecubes.cpp \
            
 HEADERS += windowmanager.h \
            konami_code_handler.h \
            userinteractright.h \
            taskbar.h \
-           win/topbar.h
-
+           win/topbar.h \
+           win/utils/resizecubes.cpp
+           
 DESTDIR = src
 
 INSTALLS += target
