@@ -282,7 +282,14 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     createTrackingSquares(xorgWindowId);
 
     resizeWindowCubesTimer = new QTimer(this);
-    connect(resizeWindowCubesTimer, &QTimer::timeout, this, [this, xorgWindowId, topBar]() { updateTrackingSquares(xorgWindowId); topBar->updatePosition(); });
+    connect(resizeWindowCubesTimer, &QTimer::timeout, this, [this, xorgWindowId, topBar, x11Window]() { 
+    if (x11Window) {
+        updateTrackingSquares(xorgWindowId);
+    } else {
+        return;
+    }
+        topBar->updatePosition();
+    });
     resizeWindowCubesTimer->start(1);
 
     topBar->updatePosition();
