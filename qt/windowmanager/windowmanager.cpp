@@ -248,13 +248,6 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     QRect geometry = x11Window->geometry();
     int topbarHeight = 30;
 
-    appendLog(QString("INFO: Geometry for window %1: (%2, %3, %4, %5)")
-               .arg(xorgWindowId)
-               .arg(geometry.x())
-               .arg(geometry.y())
-               .arg(geometry.width())
-               .arg(geometry.height()));
-
     if (geometry.isValid()) {
         containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
     } else {
