@@ -26,6 +26,7 @@
 WindowManager::WindowManager(QWidget *parent)
     : QWidget(parent),
       isConsoleVisible(false),
+      resizeCubes(new ResizeCubes(this)),
       userInteractRightWidget(nullptr),
       resizeMode(false),
       backgroundImagePath("/usr/cydra/backgrounds/current.png") {
@@ -280,20 +281,17 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     windowTopBars.insert(xorgWindowId, topBar);
 
-    createTrackingSquares(xorgWindowId);
+    QRect geometry = x11Window->geometry();
+    resizeCubes->createTrackingSquares(xorgWindowId, geometry);
 
     resizeWindowCubesTimer = new QTimer(this);
-    connect(resizeWindowCubesTimer, &QTimer::timeout, this, [this, xorgWindowId, topBar, x11Window]() { 
-    if (x11Window) {
-        updateTrackingSquares(xorgWindowId);
-    } else {
-        return;
-    }
-        topBar->updatePosition();
+    connect(resizeWindowCubesTimer, &QTimer::timeout, this, [this, xorgWindowId]() {
+        QWindow *x11Window = trackedWindows.value(xorgWindowId);
+        QRect geometry = x11Window->geometry();
+        resizeCubes->updateTrackingSquares(xorgWindowId, geometry);
     });
     resizeWindowCubesTimer->start(1);
-
-    topBar->updatePosition();
+    
     topBar->updatePosition();
 }
 
