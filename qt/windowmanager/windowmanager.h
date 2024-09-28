@@ -3,7 +3,6 @@
 
 #include <QtCore/qtextstream.h>
 #include "win/topbar.h"
-#include "win/utils/resizecubes.h"
 #include <QWidget>
 #include <QLabel>
 #include <QSet>
@@ -25,10 +24,6 @@ public:
     void appendLog(const QString &message);
     QMap<WId, TopBar*> windowTopBars;
     void closeWindow(WId xorgWindowId);
-
-    void createTrackingSquares(WId windowId);
-    void updateTrackingSquares(WId windowId);
-    void killTrackingCubes();
 
 protected:
     bool event(QEvent *event) override;
@@ -65,10 +60,17 @@ private:
     QMap<QWindow*, TaskBar*> windowTaskbars;
     QTimer *windowCheckTimer;
     QTimer *resizeWindowCubesTimer;
-
-    ResizeCubes *resizeCubes;
+    struct TrackingSquares {
+        QLabel *leftSquare;
+        QLabel *rightSquare;
+        QLabel *bottomSquare;
+    };
+    QMap<WId, TrackingSquares> windowSquares;
     bool resizeMode;
     QPoint lastMousePosition;
+
+    void createTrackingSquares(WId windowId);
+    void updateTrackingSquares(WId windowId);
 
     void setupCloseButton(QWindow *window);
     void setSupportingWMCheck();
