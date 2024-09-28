@@ -71,6 +71,7 @@ private:
 
     void createTrackingSquares(WId windowId);
     void updateTrackingSquares(WId windowId);
+    void killTrackingCubes();
 
     void setupCloseButton(QWindow *window);
     void setSupportingWMCheck();
