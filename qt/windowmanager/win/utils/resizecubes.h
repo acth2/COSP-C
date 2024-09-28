@@ -3,6 +3,7 @@
 
 #include <QMap>
 #include <QLabel>
+#include <QRect>
 #include <X11/Xlib.h>
 #include <QWidget>
 
@@ -12,6 +13,8 @@ public:
     void createTrackingSquares(WId windowId, const QRect &geometry);
     void updateTrackingSquares(WId windowId, const QRect &geometry);
     void killTrackingCubes();
+    TrackingSquares getTrackingSquares(WId windowId) const;
+    QRect getWindowGeometry(WId windowId) const;
 
     struct TrackingSquares {
         QLabel *leftSquare;
@@ -22,6 +25,7 @@ public:
 private:
     QMap<WId, TrackingSquares> windowSquares;
     QWidget *parentWidget;
+    WindowManager* windowManager;
 };
 
 #endif // RESIZECUBES_H
