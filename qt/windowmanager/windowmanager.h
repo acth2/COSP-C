@@ -25,7 +25,6 @@ public:
     void appendLog(const QString &message);
     QMap<WId, TopBar*> windowTopBars;
     void closeWindow(WId xorgWindowId);
-    void killTrackingCubes();
 
     void createTrackingSquares(WId windowId);
     void updateTrackingSquares(WId windowId);
