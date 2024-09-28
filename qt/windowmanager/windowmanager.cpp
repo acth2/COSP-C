@@ -1,6 +1,5 @@
 #include "windowmanager.h"
 #include "win/topbar.h"
-#include "win/utils/resizecubes.h"
 #include "userinteractright.h"
 #include "taskbar.h"
 #include <QApplication>
@@ -26,7 +25,6 @@
 WindowManager::WindowManager(QWidget *parent)
     : QWidget(parent),
       isConsoleVisible(false),
-      resizeCubes(new ResizeCubes(this)),
       userInteractRightWidget(nullptr),
       resizeMode(false),
       backgroundImagePath("/usr/cydra/backgrounds/current.png") {
@@ -281,34 +279,128 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     windowTopBars.insert(xorgWindowId, topBar);
 
-    QRect geometry = x11Window->geometry();
-    resizeCubes->createTrackingSquares(xorgWindowId, geometry);
+    createTrackingSquares(xorgWindowId);
 
     resizeWindowCubesTimer = new QTimer(this);
-    connect(resizeWindowCubesTimer, &QTimer::timeout, this, [this, xorgWindowId]() {
-        QWindow *x11Window = trackedWindows.value(xorgWindowId);
-        QRect geometry = x11Window->geometry();
-        resizeCubes->updateTrackingSquares(xorgWindowId, geometry);
+    connect(resizeWindowCubesTimer, &QTimer::timeout, this, [this, xorgWindowId, topBar, x11Window]() { 
+    if (x11Window) {
+        updateTrackingSquares(xorgWindowId);
+    } else {
+        return;
+    }
+        topBar->updatePosition();
     });
     resizeWindowCubesTimer->start(1);
-    
+
     topBar->updatePosition();
 }
 
 void WindowManager::createTrackingSquares(WId windowId) {
-    QWindow *window = QWindow::fromWinId(windowId);
-    QRect geometry = window->geometry();
-    resizeCubes->createTrackingSquares(windowId, geometry);
+    Display *display = XOpenDisplay(nullptr);
+    if (!display) {
+        appendLog("Unable to open X11 display");
+        return;
+    }
+
+    XWindowAttributes windowAttributes;
+    if (!XGetWindowAttributes(display, windowId, &windowAttributes)) {
+        appendLog("Unable to get window attributes for windowId: " + QString::number(windowId));
+        XCloseDisplay(display);
+        return;
+    }
+
+    windowGeometry = new QRect(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
+    int leftSquareWidth = 15;
+    int leftSquareHeight = windowGeometry->height();
+
+    QLabel *leftSquare = new QLabel(this);
+    leftSquare->setFixedSize(leftSquareWidth, leftSquareHeight);
+    leftSquare->setStyleSheet("background-color: red;");
+    leftSquare->installEventFilter(this);
+
+    QLabel *rightSquare = new QLabel(this);
+    rightSquare->setFixedSize(leftSquareWidth, leftSquareHeight);
+    rightSquare->setStyleSheet("background-color: red;");
+    rightSquare->installEventFilter(this);
+
+    QLabel *bottomSquare = new QLabel(this);
+    bottomSquare->setFixedSize(windowGeometry->width(), 15);
+    bottomSquare->setStyleSheet("background-color: red;");
+    bottomSquare->installEventFilter(this);
+
+    leftSquare->show();
+    rightSquare->show();
+    bottomSquare->show();
+
+    TrackingSquares squares = {leftSquare, rightSquare, bottomSquare};
+    windowSquares.insert(windowId, squares);
+
+    appendLog(QString("INFO: Created tracking squares for window ID: %1").arg(windowId));
+
+    XCloseDisplay(display);
 }
 
 void WindowManager::updateTrackingSquares(WId windowId) {
-    QWindow *window = QWindow::fromWinId(windowId);
-    QRect geometry = window->geometry();
-    resizeCubes->updateTrackingSquares(windowId, geometry);
+    if (!windowSquares.contains(windowId)) {
+        appendLog("ERR: No tracking squares found for windowId: " + QString::number(windowId));
+        return;
+    }
+
+    Display *display = XOpenDisplay(nullptr);
+    if (!display) {
+        appendLog("Unable to open X11 display");
+        return;
+    }
+
+    XWindowAttributes windowAttributes;
+    int result = XGetWindowAttributes(display, windowId, &windowAttributes);
+    TrackingSquares squares = windowSquares.value(windowId);
+
+    if (result == 0) {
+        appendLog("INFO: Window with ID: " + QString::number(windowId) + " is closed or invalid.");
+
+        squares.leftSquare->hide();
+        squares.rightSquare->hide();
+        squares.bottomSquare->hide();
+
+        delete squares.leftSquare;
+        delete squares.rightSquare;
+        delete squares.bottomSquare;
+
+        XCloseDisplay(display);
+        return;
+    }
+
+    QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
+    
+    squares.leftSquare->move(windowGeometry.left() - squares.leftSquare->width(), windowGeometry.top());
+    squares.rightSquare->move(windowGeometry.right(), windowGeometry.top());
+    squares.bottomSquare->move(windowGeometry.center().x() - (squares.bottomSquare->width() / 2), windowGeometry.bottom());
+
+    appendLog(QString("INFO: Updated tracking squares for window ID: %1").arg(windowId));
+
+    XCloseDisplay(display);
 }
 
 void WindowManager::killTrackingCubes() {
-    resizeCubes->killTrackingCubes();
+    for (auto it = windowSquares.begin(); it != windowSquares.end(); ++it) {
+        TrackingSquares& squares = it.value();
+        if (squares.leftSquare) {
+            squares.leftSquare->deleteLater();
+            squares.leftSquare = nullptr;
+        }
+        
+        if (squares.rightSquare) {
+            squares.rightSquare->deleteLater();
+            squares.rightSquare = nullptr;
+        }
+        
+        if (squares.bottomSquare) {
+            squares.bottomSquare->deleteLater();
+            squares.bottomSquare = nullptr;
+        }
+    }
+    windowSquares.clear();
 }
 
 void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
@@ -322,16 +414,19 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
     if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
         if (mouseEvent->button() == Qt::LeftButton) {
-            for (const auto &windowId : resizeCubes->getTrackedWindows()) {
-                TrackingSquares squares = resizeCubes->getTrackingSquares(windowId);
+            for (const auto &squares : windowSquares) {
                 if (object == squares.leftSquare || object == squares.rightSquare || object == squares.bottomSquare) {
                     resizeMode = true;
                     lastMousePosition = mouseEvent->globalPos();
-                    QRect windowGeometry = resizeCubes->getWindowGeometry(windowId);
+                    int leftY = squares.leftSquare->y();
+                    int rightY = squares.rightSquare->y();
+                    int newWidth = 2500;
+                    int newHeight = windowGeometry->height();
 
-                    squares.leftSquare->setGeometry(squares.leftSquare->x() - 1000, squares.leftSquare->y(), 2500, windowGeometry.height());
-                    squares.rightSquare->setGeometry(squares.rightSquare->x() - 1000, squares.rightSquare->y(), 2500, windowGeometry.height());
-                    squares.bottomSquare->setGeometry(squares.bottomSquare->x(), squares.bottomSquare->y(), windowGeometry.width(), 2500);
+                    squares.leftSquare->setGeometry(squares.leftSquare->x() - 1000, leftY, newWidth, newHeight);
+                    squares.rightSquare->setGeometry(squares.rightSquare->x() - 1000, rightY, newWidth, newHeight);
+
+                    squares.bottomSquare->setGeometry(squares.bottomSquare->x(), squares.bottomSquare->y(), windowGeometry->width(), 2500);
                     return true;
                 }
             }
@@ -347,23 +442,18 @@ void WindowManager::mouseMoveEvent(QMouseEvent *event) {
         int dy = currentPos.y() - lastMousePosition.y();
 
         for (auto windowId : trackedWindows.keys()) {
-            QRect *windowGeometry = resizeCubes->getWindowGeometry(windowId);
-            if (!windowGeometry) {
-                continue;
-            }
-
-            ResizeCubes::TrackingSquares squares = resizeCubes->getTrackingSquares(windowId);
-
+            TrackingSquares squares = windowSquares.value(windowId);
+            
             if (squares.leftSquare->geometry().contains(event->pos())) {
-                QRect newGeometry = *windowGeometry;
+                QRect newGeometry = trackedWindows[windowId]->geometry();
                 newGeometry.setLeft(newGeometry.left() + dx);
                 trackedWindows[windowId]->setGeometry(newGeometry);
             } else if (squares.rightSquare->geometry().contains(event->pos())) {
-                QRect newGeometry = *windowGeometry;
+                QRect newGeometry = trackedWindows[windowId]->geometry();
                 newGeometry.setRight(newGeometry.right() + dx);
                 trackedWindows[windowId]->setGeometry(newGeometry);
             } else if (squares.bottomSquare->geometry().contains(event->pos())) {
-                QRect newGeometry = *windowGeometry;
+                QRect newGeometry = trackedWindows[windowId]->geometry();
                 newGeometry.setBottom(newGeometry.bottom() + dy);
                 trackedWindows[windowId]->setGeometry(newGeometry);
             }
