@@ -303,11 +303,6 @@ void WindowManager::createTrackingSquares(WId windowId) {
     }
 
     XWindowAttributes windowAttributes;
-    if (!XGetWindowAttributes(display, windowId, &windowAttributes)) {
-        appendLog("Unable to get window attributes for windowId: " + QString::number(windowId));
-        XCloseDisplay(display);
-        return;
-    }
 
     windowGeometry = new QRect(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
     int leftSquareWidth = 15;
@@ -335,14 +330,11 @@ void WindowManager::createTrackingSquares(WId windowId) {
     TrackingSquares squares = {leftSquare, rightSquare, bottomSquare};
     windowSquares.insert(windowId, squares);
 
-    appendLog(QString("INFO: Created tracking squares for window ID: %1").arg(windowId));
-
     XCloseDisplay(display);
 }
 
 void WindowManager::updateTrackingSquares(WId windowId) {
     if (!windowSquares.contains(windowId)) {
-        appendLog("ERR: No tracking squares found for windowId: " + QString::number(windowId));
         return;
     }
 
@@ -357,8 +349,6 @@ void WindowManager::updateTrackingSquares(WId windowId) {
     TrackingSquares squares = windowSquares.value(windowId);
 
     if (result == 0) {
-        appendLog("INFO: Window with ID: " + QString::number(windowId) + " is closed or invalid.");
-
         squares.leftSquare->hide();
         squares.rightSquare->hide();
         squares.bottomSquare->hide();
@@ -367,19 +357,15 @@ void WindowManager::updateTrackingSquares(WId windowId) {
         delete squares.rightSquare;
         delete squares.bottomSquare;
 
-        XCloseDisplay(display);
         return;
+    } else {
+        QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
+    
+        squares.leftSquare->move(windowGeometry.left() - squares.leftSquare->width(), windowGeometry.top());
+        squares.rightSquare->move(windowGeometry.right(), windowGeometry.top());
+        squares.bottomSquare->move(windowGeometry.center().x() - (squares.bottomSquare->width() / 2), windowGeometry.bottom());
     }
 
-    QRect windowGeometry(windowAttributes.x, windowAttributes.y, windowAttributes.width, windowAttributes.height);
-    
-    squares.leftSquare->move(windowGeometry.left() - squares.leftSquare->width(), windowGeometry.top());
-    squares.rightSquare->move(windowGeometry.right(), windowGeometry.top());
-    squares.bottomSquare->move(windowGeometry.center().x() - (squares.bottomSquare->width() / 2), windowGeometry.bottom());
-
-    appendLog(QString("INFO: Updated tracking squares for window ID: %1").arg(windowId));
-
-    XCloseDisplay(display);
 }
 
 void WindowManager::killTrackingCubes() {
