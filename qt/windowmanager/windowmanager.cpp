@@ -324,25 +324,16 @@ bool WindowManager::eventFilter(QObject *object, QEvent *event) {
     if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
         if (mouseEvent->button() == Qt::LeftButton) {
-            for (auto windowId : trackedWindows.keys()) {
-                QRect *windowGeometry = resizeCubes->getWindowGeometry(windowId);
-                if (!windowGeometry) {
-                    continue;
-                }
-
-                ResizeCubes::TrackingSquares squares = resizeCubes->getTrackingSquares(windowId);
+            for (const auto &windowId : resizeCubes->getTrackedWindows()) {
+                TrackingSquares squares = resizeCubes->getTrackingSquares(windowId);
                 if (object == squares.leftSquare || object == squares.rightSquare || object == squares.bottomSquare) {
                     resizeMode = true;
                     lastMousePosition = mouseEvent->globalPos();
-                    int leftY = squares.leftSquare->y();
-                    int rightY = squares.rightSquare->y();
-                    int newWidth = 2500;
-                    int newHeight = windowGeometry->height();
+                    QRect windowGeometry = resizeCubes->getWindowGeometry(windowId);
 
-                    squares.leftSquare->setGeometry(squares.leftSquare->x() - 1000, leftY, newWidth, newHeight);
-                    squares.rightSquare->setGeometry(squares.rightSquare->x() - 1000, rightY, newWidth, newHeight);
-
-                    squares.bottomSquare->setGeometry(squares.bottomSquare->x(), squares.bottomSquare->y(), windowGeometry->width(), 2500);
+                    squares.leftSquare->setGeometry(squares.leftSquare->x() - 1000, squares.leftSquare->y(), 2500, windowGeometry.height());
+                    squares.rightSquare->setGeometry(squares.rightSquare->x() - 1000, squares.rightSquare->y(), 2500, windowGeometry.height());
+                    squares.bottomSquare->setGeometry(squares.bottomSquare->x(), squares.bottomSquare->y(), windowGeometry.width(), 2500);
                     return true;
                 }
             }
