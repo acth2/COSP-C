@@ -13,13 +13,13 @@ public:
     void updateTrackingSquares(WId windowId, const QRect &geometry);
     void killTrackingCubes();
 
-private:
     struct TrackingSquares {
         QLabel *leftSquare;
         QLabel *rightSquare;
         QLabel *bottomSquare;
     };
 
+private:
     QMap<WId, TrackingSquares> windowSquares;
     QWidget *parentWidget;
 };
