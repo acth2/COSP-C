@@ -54,3 +54,11 @@ QRect ResizeCubes::getWindowGeometry(WId windowId) const {
 
     return QRect();
 }
+
+TrackingSquares ResizeCubes::getTrackingSquares(WId windowId) const {
+    if (windowSquares.contains(windowId)) {
+        return windowSquares.value(windowId);
+    }
+
+    return TrackingSquares();
+}
