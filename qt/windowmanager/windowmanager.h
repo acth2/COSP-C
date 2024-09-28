@@ -24,7 +24,6 @@ public:
     void appendLog(const QString &message);
     QMap<WId, TopBar*> windowTopBars;
     void closeWindow(WId xorgWindowId);
-    void killTrackingCubes();
 
 protected:
     bool event(QEvent *event) override;
@@ -69,9 +68,6 @@ private:
     QMap<WId, TrackingSquares> windowSquares;
     bool resizeMode;
     QPoint lastMousePosition;
-
-    void createTrackingSquares(WId windowId);
-    void updateTrackingSquares(WId windowId);
 
     void setupCloseButton(QWindow *window);
     void setSupportingWMCheck();
