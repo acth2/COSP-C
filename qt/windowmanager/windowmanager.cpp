@@ -291,54 +291,12 @@ void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
 bool WindowManager::eventFilter(QObject *object, QEvent *event) {
     if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        if (mouseEvent->button() == Qt::LeftButton) {
-            for (const auto &squares : windowSquares) {
-                if (object == squares.leftSquare || object == squares.rightSquare || object == squares.bottomSquare) {
-                    resizeMode = true;
-                    lastMousePosition = mouseEvent->globalPos();
-                    int leftY = squares.leftSquare->y();
-                    int rightY = squares.rightSquare->y();
-                    int newWidth = 2500;
-                    int newHeight = windowGeometry->height();
-
-                    squares.leftSquare->setGeometry(squares.leftSquare->x() - 1000, leftY, newWidth, newHeight);
-                    squares.rightSquare->setGeometry(squares.rightSquare->x() - 1000, rightY, newWidth, newHeight);
-
-                    squares.bottomSquare->setGeometry(squares.bottomSquare->x(), squares.bottomSquare->y(), windowGeometry->width(), 2500);
-                    return true;
-                }
-            }
-        }
     }
     return QWidget::eventFilter(object, event);
 }
 
 void WindowManager::mouseMoveEvent(QMouseEvent *event) {
-    if (resizeMode) {
-        QPoint currentPos = event->globalPos();
-        int dx = currentPos.x() - lastMousePosition.x();
-        int dy = currentPos.y() - lastMousePosition.y();
-
-        for (auto windowId : trackedWindows.keys()) {
-            TrackingSquares squares = windowSquares.value(windowId);
-            
-            if (squares.leftSquare->geometry().contains(event->pos())) {
-                QRect newGeometry = trackedWindows[windowId]->geometry();
-                newGeometry.setLeft(newGeometry.left() + dx);
-                trackedWindows[windowId]->setGeometry(newGeometry);
-            } else if (squares.rightSquare->geometry().contains(event->pos())) {
-                QRect newGeometry = trackedWindows[windowId]->geometry();
-                newGeometry.setRight(newGeometry.right() + dx);
-                trackedWindows[windowId]->setGeometry(newGeometry);
-            } else if (squares.bottomSquare->geometry().contains(event->pos())) {
-                QRect newGeometry = trackedWindows[windowId]->geometry();
-                newGeometry.setBottom(newGeometry.bottom() + dy);
-                trackedWindows[windowId]->setGeometry(newGeometry);
-            }
-        }
-
-        lastMousePosition = currentPos;
-    }
+    QWidget::mouseMoveEvent(event);
 }
 
 void WindowManager::resizeEvent(QResizeEvent *event) {
