@@ -206,6 +206,7 @@ void TopBar::closePopup() {
 
 void TopBar::closeTrackedWindow() {
     if (trackedWindow) {
+        windowManager->killTrackingCubes();
         WId windowId = trackedWindow->winId();
 
         QProcess process;
