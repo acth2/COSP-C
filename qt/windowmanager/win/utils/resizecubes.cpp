@@ -1,4 +1,5 @@
 #include "resizecubes.h"
+#include <QRect>
 
 ResizeCubes::ResizeCubes(QWidget *parent)
     : parentWidget(parent) {
@@ -24,6 +25,7 @@ void ResizeCubes::createTrackingSquares(WId windowId, const QRect &geometry) {
     squares.bottomSquare->show();
 
     windowSquares[windowId] = squares;
+    windowSquares.insert(windowId, {leftSquare, rightSquare, bottomSquare});
 }
 
 void ResizeCubes::updateTrackingSquares(WId windowId, const QRect &geometry) {
@@ -43,4 +45,12 @@ void ResizeCubes::killTrackingCubes() {
         delete squares.bottomSquare;
     }
     windowSquares.clear();
+}
+
+QRect ResizeCubes::getWindowGeometry(WId windowId) const {
+    if (windowManager && windowManager->trackedWindows.contains(windowId)) {
+        return windowManager->trackedWindows.value(windowId)->geometry();
+    }
+
+    return QRect();
 }
