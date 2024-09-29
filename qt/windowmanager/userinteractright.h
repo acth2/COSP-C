@@ -38,6 +38,8 @@ private:
     bool isDarkMode;
     bool resizeMode;
     QPoint initialClickPos;
+    bool waitingForClick = false;
+
 };
 
 #endif // USERINTERACTRIGHT_H
