@@ -20,6 +20,10 @@ protected:
 
 private slots:
     void button1Clicked();
+    void button2Clicked();
+    void onWindowClicked(QWindow *window);
+    void onMouseMove(QMouseEvent *event);
+    void onMouseRelease(QMouseEvent *event);
 
 private:
     QPushButton *button1;
@@ -32,6 +36,9 @@ private:
     void setupUI();
     void applyStyles();
     void closeIfClickedOutside(QMouseEvent *event);
+
+    bool resizeMode;
+    QPoint initialClickPos;
 };
 
 #endif // USERINTERACTRIGHT_H
