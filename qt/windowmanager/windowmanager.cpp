@@ -288,15 +288,6 @@ void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 bool WindowManager::eventFilter(QObject *object, QEvent *event) {
-    if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        if (trackedWindows.contains(qobject_cast<QWidget *>(object)->winId())) {
-            QWindow *trackedWindow = trackedWindows.value(qobject_cast<QWidget *>(object)->winId());
-            if (isEdgeClick(trackedWindow->geometry(), mouseEvent->pos())) {
-                appendLog(QString("INFO: Edge click detected on window: %1").arg(trackedWindow->winId()));
-            }
-        }
-    }
     return QWidget::eventFilter(object, event);
 }
 
