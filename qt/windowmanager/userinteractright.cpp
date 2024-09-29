@@ -185,18 +185,18 @@ void UserInteractRight::onWindowClick(QWindow *window) {
             qDebug() << "Ignored window with title: A2WM";
             return;
         }
-        
-        if (QWidget *container = QWidget::find(window->winId())) {
-            currentResizingWindow = QWindow::fromWinId(container->winId());
-        } else {
+
+        QWidget *container = QWidget::find(window->winId());
+        if (container) {
             currentResizingWindow = window;
+            initialClickPos = QCursor::pos();
+            qDebug() << "Window clicked for resizing:" << currentResizingWindow->title();
+            
+            resizeMode = true;
+            waitingForClick = false;
+        } else {
+            qDebug() << "Clicked window is not a container!";
         }
-        
-        initialClickPos = QCursor::pos();
-        qDebug() << "Window clicked for resizing:" << currentResizingWindow->title();
-        
-        resizeMode = true;
-        waitingForClick = false;
     }
 }
 
@@ -236,7 +236,8 @@ bool UserInteractRight::eventFilter(QObject *obj, QEvent *event) {
             if (mouseEvent->button() == Qt::LeftButton) {
                 QPoint cursorPos = mouseEvent->globalPos();
                 QWindow *clickedWindow = QGuiApplication::topLevelAt(cursorPos);
-                if (clickedWindow && clickedWindow->title() != "A2WM") {
+                if (clickedWindow) {
+                    qDebug() << "Detected click on window:" << clickedWindow->title();
                     onWindowClick(clickedWindow);
                     return true;
                 }
@@ -248,8 +249,7 @@ bool UserInteractRight::eventFilter(QObject *obj, QEvent *event) {
             QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
             onMouseMove(mouseEvent);
             return true;
-        } 
-        else if (event->type() == QEvent::MouseButtonRelease) {
+        } else if (event->type() == QEvent::MouseButtonRelease) {
             QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
             onMouseRelease(mouseEvent);
             return true;
