@@ -221,7 +221,7 @@ void UserInteractRight::onMouseMove(QMouseEvent *event) {
 void UserInteractRight::onMouseRelease(QMouseEvent *event) {
     if (resizeMode) {
         resizeMode = false;
-        QApplication::setCursor(Qt::ArrowCursor);
+        setCursor(Qt::ArrowCursor);
         qDebug() << "Resize mode disabled";
 
         currentResizingWindow = nullptr;
