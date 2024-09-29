@@ -172,6 +172,38 @@ void UserInteractRight::button2Clicked() {
     qDebug() << "Resize mode enabled. Click on a window to resize it.";
 }
 
+void UserInteractRight::onWindowClick(QWindow *window) {
+    if (resizeMode && window) {
+        initialClickPos = QCursor::pos();
+        qDebug() << "Window clicked for resizing:" << window->title();
+    }
+}
+
+void UserInteractRight::onMouseMove(QMouseEvent *event) {
+    if (resizeMode) {
+        QPoint currentPos = QCursor::pos();
+        int deltaX = currentPos.x() - initialClickPos.x();
+        int deltaY = currentPos.y() - initialClickPos.y();
+
+        if (QWindow *window = QApplication::focusWindow()) {
+            QRect newGeometry = window->geometry();
+            newGeometry.setWidth(newGeometry.width() + deltaX);
+            newGeometry.setHeight(newGeometry.height() + deltaY);
+            window->setGeometry(newGeometry);
+        }
+
+        initialClickPos = currentPos;
+    }
+}
+
+void UserInteractRight::onMouseRelease(QMouseEvent *event) {
+    if (resizeMode) {
+        resizeMode = false;
+        QApplication::restoreOverrideCursor();
+        qDebug() << "Resize mode disabled";
+    }
+}
+
 bool UserInteractRight::eventFilter(QObject *obj, QEvent *event) {
     if (resizeMode) {
         if (event->type() == QEvent::MouseButtonPress) {
@@ -179,34 +211,18 @@ bool UserInteractRight::eventFilter(QObject *obj, QEvent *event) {
             if (mouseEvent->button() == Qt::LeftButton) {
                 QWindow *window = QGuiApplication::focusWindow();
                 if (window) {
-                    initialClickPos = mouseEvent->globalPos();
-                    qDebug() << "Window clicked for resizing:" << window->title();
+                    onWindowClick(window);
                     return true;
                 }
             }
         } else if (event->type() == QEvent::MouseMove) {
             QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-            if (resizeMode && QApplication::focusWindow()) {
-                QPoint currentPos = mouseEvent->globalPos();
-                int deltaX = currentPos.x() - initialClickPos.x();
-                int deltaY = currentPos.y() - initialClickPos.y();
-
-                if (QWindow *window = QApplication::focusWindow()) {
-                    QRect newGeometry = window->geometry();
-                    newGeometry.setWidth(newGeometry.width() + deltaX);
-                    newGeometry.setHeight(newGeometry.height() + deltaY);
-                    window->setGeometry(newGeometry);
-                }
-                initialClickPos = currentPos;
-                return true;
-            }
+            onMouseMove(mouseEvent);
+            return true;
         } else if (event->type() == QEvent::MouseButtonRelease) {
-            if (resizeMode) {
-                resizeMode = false;
-                QApplication::restoreOverrideCursor();
-                qDebug() << "Resize mode disabled";
-                return true;
-            }
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+            onMouseRelease(mouseEvent);
+            return true;
         }
     }
 
