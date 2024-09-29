@@ -6,6 +6,10 @@
 #include <QFile>
 #include <QProcess>
 #include <QDebug>
+#include <QCursor>
+#include <QMouseEvent>
+#include <QWindow>
+#include <QScreen>
 
 UserInteractRight::UserInteractRight(QWidget *parent) 
     : QWidget(parent), isDarkMode(false) {
