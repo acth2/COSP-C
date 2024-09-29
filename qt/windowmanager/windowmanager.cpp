@@ -225,20 +225,6 @@ void WindowManager::toggleConsole() {
     appendLog("Welcome into the DEBUG window (Where my nightmare comes true), Press ESC to exit it");
 }
 
-bool WindowManager::isEdgeClick(const QRect &windowGeometry, const QPoint &clickPosition, int edgeThreshold = 10) {
-    int leftEdge = windowGeometry.left();
-    int rightEdge = windowGeometry.right();
-    int topEdge = windowGeometry.top();
-    int bottomEdge = windowGeometry.bottom();
-
-    bool isLeft = clickPosition.x() >= leftEdge && clickPosition.x() <= (leftEdge + edgeThreshold);
-    bool isRight = clickPosition.x() <= rightEdge && clickPosition.x() >= (rightEdge - edgeThreshold);
-    bool isTop = clickPosition.y() >= topEdge && clickPosition.y() <= (topEdge + edgeThreshold);
-    bool isBottom = clickPosition.y() <= bottomEdge && clickPosition.y() >= (bottomEdge - edgeThreshold);
-
-    return isLeft || isRight || isTop || isBottom;
-}
-
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
     
@@ -291,12 +277,6 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     appendLog(QString("INFO: Successfully created container and TopBar for window: %1").arg(xorgWindowId));
 
     windowTopBars.insert(xorgWindowId, topBar);
-
-    connect(windowWidget, &QWidget::mousePressEvent, this, [=](QMouseEvent *event) {
-        if (isEdgeClick(x11Window->geometry(), event->pos())) {
-            appendLog(QString("INFO: Edge click detected on window: %1").arg(xorgWindowId));
-        }
-    });
     topBar->updatePosition();
 }
 
