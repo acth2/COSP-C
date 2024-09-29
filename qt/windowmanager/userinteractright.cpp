@@ -178,11 +178,10 @@ void UserInteractRight::onWindowClick(QWindow *window) {
         initialClickPos = QCursor::pos();
         qDebug() << "Window clicked for resizing:" << window->title();
         
-        resizeMode = true;  
-        waitingForClick = false;  
+        resizeMode = true;
+        waitingForClick = false;
     }
 }
-
 
 void UserInteractRight::onMouseMove(QMouseEvent *event) {
     if (resizeMode && currentResizingWindow) {
@@ -215,9 +214,10 @@ bool UserInteractRight::eventFilter(QObject *obj, QEvent *event) {
         if (event->type() == QEvent::MouseButtonPress) {
             QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
             if (mouseEvent->button() == Qt::LeftButton) {
-                QWindow *window = QGuiApplication::focusWindow();
-                if (window) {
-                    onWindowClick(window);
+                QPoint cursorPos = mouseEvent->globalPos();
+                QWindow *clickedWindow = QGuiApplication::topLevelAt(cursorPos);
+                if (clickedWindow) {
+                    onWindowClick(clickedWindow);
                     return true;
                 }
             }
