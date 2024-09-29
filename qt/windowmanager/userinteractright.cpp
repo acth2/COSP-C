@@ -174,6 +174,10 @@ void UserInteractRight::button2Clicked() {
 
 void UserInteractRight::onWindowClick(QWindow *window) {
     if (waitingForClick && window) {
+        if (window->title() == "A2WM") {
+            qDebug() << "Ignored window with title: A2WM";
+            return;
+        }
         currentResizingWindow = window;
         initialClickPos = QCursor::pos();
         qDebug() << "Window clicked for resizing:" << window->title();
