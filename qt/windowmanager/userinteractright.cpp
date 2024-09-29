@@ -168,15 +168,15 @@ void UserInteractRight::button2Clicked() {
     resizeMode = true;
     QApplication::setOverrideCursor(Qt::SizeAllCursor);
 
-    connect(qApp, &QApplication::focusWindowChanged, this, &UserInteractRight::onWindowClicked);
+    connect(qApp, &UserInteractRight::focusWindowChanged, this, &UserInteractRight::onWindowClicked);
 }
 
 void UserInteractRight::onWindowClicked(QWindow *window) {
     if (resizeMode && window) {
         initialClickPos = QCursor::pos();
 
-        connect(qApp, &QApplication::mouseMoveEvent, this, &UserInteractRight::onMouseMove);
-        connect(qApp, &QApplication::mouseReleaseEvent, this, &UserInteractRight::onMouseRelease);
+        connect(qApp, &UserInteractRight::mouseMoveEvent, this, &UserInteractRight::onMouseMove);
+        connect(qApp, &UserInteractRight::mouseReleaseEvent, this, &UserInteractRight::onMouseRelease);
 
         qDebug() << "Resize mode enabled, clicked on window:" << window->title();
     }
@@ -204,8 +204,8 @@ void UserInteractRight::onMouseRelease(QMouseEvent *event) {
         resizeMode = false;
         QApplication::restoreOverrideCursor();
 
-        disconnect(qApp, &QApplication::mouseMoveEvent, this, &UserInteractRight::onMouseMove);
-        disconnect(qApp, &QApplication::mouseReleaseEvent, this, &UserInteractRight::onMouseRelease);
+        disconnect(qApp, &UserInteractRight::mouseMoveEvent, this, &UserInteractRight::onMouseMove);
+        disconnect(qApp, &UserInteractRight::mouseReleaseEvent, this, &UserInteractRight::onMouseRelease);
 
         qDebug() << "Resize mode disabled";
     }
