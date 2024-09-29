@@ -122,7 +122,14 @@ void UserInteractRight::mousePressEvent(QMouseEvent *event) {
         QPoint cursorPos = event->globalPos();
         move(cursorPos.x() - width() / 2, cursorPos.y() - height() / 2);
         show();
+    } else if (event->button() == Qt::LeftButton) {
+        QPoint cursorPos = event->globalPos();
+        QWindow *clickedWindow = QGuiApplication::topLevelAt(cursorPos);
+        if (clickedWindow && clickedWindow->title() != "A2WM") {
+            onWindowClick(clickedWindow);
+        }
     }
+    
     QWidget::mousePressEvent(event);
 }
 
@@ -220,18 +227,20 @@ bool UserInteractRight::eventFilter(QObject *obj, QEvent *event) {
             if (mouseEvent->button() == Qt::LeftButton) {
                 QPoint cursorPos = mouseEvent->globalPos();
                 QWindow *clickedWindow = QGuiApplication::topLevelAt(cursorPos);
-                if (clickedWindow) {
+                if (clickedWindow && clickedWindow->title() != "A2WM") {
                     onWindowClick(clickedWindow);
                     return true;
                 }
             }
         }
-    } else if (resizeMode) {
+    } 
+    else if (resizeMode) {
         if (event->type() == QEvent::MouseMove) {
             QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
             onMouseMove(mouseEvent);
             return true;
-        } else if (event->type() == QEvent::MouseButtonRelease) {
+        } 
+        else if (event->type() == QEvent::MouseButtonRelease) {
             QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
             onMouseRelease(mouseEvent);
             return true;
