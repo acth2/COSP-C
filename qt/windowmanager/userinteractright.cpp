@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QCursor>
 #include <QScreen>
+#include <QWindow>
 
 UserInteractRight::UserInteractRight(QWidget *parent) 
     : QWidget(parent), isDarkMode(false), resizeMode(false) {
