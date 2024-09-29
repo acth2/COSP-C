@@ -174,36 +174,39 @@ void UserInteractRight::button2Clicked() {
 
 void UserInteractRight::onWindowClick(QWindow *window) {
     if (waitingForClick && window) {
+        currentResizingWindow = window;
         initialClickPos = QCursor::pos();
         qDebug() << "Window clicked for resizing:" << window->title();
         
-        resizeMode = true;
-        waitingForClick = false;
+        resizeMode = true;  
+        waitingForClick = false;  
     }
 }
 
+
 void UserInteractRight::onMouseMove(QMouseEvent *event) {
-    if (resizeMode) {
+    if (resizeMode && currentResizingWindow) {
         QPoint currentPos = QCursor::pos();
         int deltaX = currentPos.x() - initialClickPos.x();
         int deltaY = currentPos.y() - initialClickPos.y();
 
-        if (QWindow *window = QApplication::focusWindow()) {
-            QRect newGeometry = window->geometry();
-            newGeometry.setWidth(newGeometry.width() + deltaX);
-            newGeometry.setHeight(newGeometry.height() + deltaY);
-            window->setGeometry(newGeometry);
-        }
+        QRect newGeometry = currentResizingWindow->geometry();
+        newGeometry.setWidth(newGeometry.width() + deltaX);
+        newGeometry.setHeight(newGeometry.height() + deltaY);
+        currentResizingWindow->setGeometry(newGeometry);
 
         initialClickPos = currentPos;
     }
 }
+
 
 void UserInteractRight::onMouseRelease(QMouseEvent *event) {
     if (resizeMode) {
         resizeMode = false;
         QApplication::restoreOverrideCursor();
         qDebug() << "Resize mode disabled";
+
+        currentResizingWindow = nullptr;
     }
 }
 
@@ -220,16 +223,7 @@ bool UserInteractRight::eventFilter(QObject *obj, QEvent *event) {
             }
         }
     } else if (resizeMode) {
-        if (event->type() == QEvent::MouseButtonPress) {
-            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-            if (mouseEvent->button() == Qt::LeftButton) {
-                QWindow *window = QGuiApplication::focusWindow();
-                if (window) {
-                    onWindowClick(window);
-                    return true;
-                }
-            }
-        } else if (event->type() == QEvent::MouseMove) {
+        if (event->type() == QEvent::MouseMove) {
             QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
             onMouseMove(mouseEvent);
             return true;
