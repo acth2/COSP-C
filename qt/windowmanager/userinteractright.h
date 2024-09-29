@@ -5,6 +5,8 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QMouseEvent>
+#include <QObject>
+#include <QEvent>
 #include <QPaintEvent>
 
 class UserInteractRight : public QWidget {
@@ -17,6 +19,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
+    bool eventFilter(QObject *object, QEvent *event) override;
 
 private slots:
     void button1Clicked();
