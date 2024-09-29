@@ -28,7 +28,7 @@ UserInteractRight::UserInteractRight(QWidget *parent)
 
 void UserInteractRight::setupUI() {
     button1 = new QPushButton("Terminal", this);
-    button2 = new QPushButton("Object 2", this);
+    button2 = new QPushButton("Resize Mode", this);
     button3 = new QPushButton("Thing 3 bruh", this);
     textLabel = new QLabel("Control panel", this);
 
@@ -44,6 +44,7 @@ void UserInteractRight::setupUI() {
     setLayout(layout);
 
     connect(button1, &QPushButton::clicked, this, &UserInteractRight::button1Clicked);
+    connect(button2, &QPushButton::clicked, this, &UserInteractRight::button2Clicked);
 }
 
 void UserInteractRight::applyStyles() {
@@ -157,6 +158,53 @@ void UserInteractRight::button1Clicked() {
         qDebug() << "qterminal started successfully";
     });
     close();
+}
+
+void UserInteractRight::button2Clicked() {
+    resizeMode = true;
+    QApplication::setOverrideCursor(Qt::SizeAllCursor);
+
+    connect(qApp, &QApplication::focusWindowChanged, this, &UserInteractRight::onWindowClicked);
+}
+
+void UserInteractRight::onWindowClicked(QWindow *window) {
+    if (resizeMode && window) {
+        initialClickPos = QCursor::pos();
+
+        connect(qApp, &QApplication::mouseMoveEvent, this, &UserInteractRight::onMouseMove);
+        connect(qApp, &QApplication::mouseReleaseEvent, this, &UserInteractRight::onMouseRelease);
+
+        qDebug() << "Resize mode enabled, clicked on window:" << window->title();
+    }
+}
+
+void UserInteractRight::onMouseMove(QMouseEvent *event) {
+    if (resizeMode) {
+        QPoint currentPos = QCursor::pos();
+        int deltaX = currentPos.x() - initialClickPos.x();
+        int deltaY = currentPos.y() - initialClickPos.y();
+
+        if (QWindow *window = QApplication::focusWindow()) {
+            QRect newGeometry = window->geometry();
+            newGeometry.setWidth(newGeometry.width() + deltaX);
+            newGeometry.setHeight(newGeometry.height() + deltaY);
+            window->setGeometry(newGeometry);
+        }
+
+        initialClickPos = currentPos;
+    }
+}
+
+void UserInteractRight::onMouseRelease(QMouseEvent *event) {
+    if (resizeMode) {
+        resizeMode = false;
+        QApplication::restoreOverrideCursor();
+
+        disconnect(qApp, &QApplication::mouseMoveEvent, this, &UserInteractRight::onMouseMove);
+        disconnect(qApp, &QApplication::mouseReleaseEvent, this, &UserInteractRight::onMouseRelease);
+
+        qDebug() << "Resize mode disabled";
+    }
 }
 
 void UserInteractRight::closeIfClickedOutside(QMouseEvent *event) {
