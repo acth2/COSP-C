@@ -166,16 +166,19 @@ void UserInteractRight::button1Clicked() {
 }
 
 void UserInteractRight::button2Clicked() {
-    resizeMode = true;
+    waitingForClick = true;
     QApplication::setOverrideCursor(Qt::SizeAllCursor);
 
     qDebug() << "Resize mode enabled. Click on a window to resize it.";
 }
 
 void UserInteractRight::onWindowClick(QWindow *window) {
-    if (resizeMode && window) {
+    if (waitingForClick && window) {
         initialClickPos = QCursor::pos();
         qDebug() << "Window clicked for resizing:" << window->title();
+        
+        resizeMode = true;
+        waitingForClick = false;
     }
 }
 
@@ -205,7 +208,18 @@ void UserInteractRight::onMouseRelease(QMouseEvent *event) {
 }
 
 bool UserInteractRight::eventFilter(QObject *obj, QEvent *event) {
-    if (resizeMode) {
+    if (waitingForClick) {
+        if (event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+            if (mouseEvent->button() == Qt::LeftButton) {
+                QWindow *window = QGuiApplication::focusWindow();
+                if (window) {
+                    onWindowClick(window);
+                    return true;
+                }
+            }
+        }
+    } else if (resizeMode) {
         if (event->type() == QEvent::MouseButtonPress) {
             QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
             if (mouseEvent->button() == Qt::LeftButton) {
