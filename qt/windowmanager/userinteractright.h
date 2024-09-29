@@ -4,10 +4,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QLabel>
-#include <QMouseEvent>
-#include <QObject>
-#include <QEvent>
-#include <QPaintEvent>
+#include <QPoint>
 
 class UserInteractRight : public QWidget {
     Q_OBJECT
@@ -19,27 +16,26 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    bool eventFilter(QObject *object, QEvent *event) override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private slots:
     void button1Clicked();
     void button2Clicked();
-    void onWindowClicked(QWindow *window);
-    void onMouseMove(QMouseEvent *event);
-    void onMouseRelease(QMouseEvent *event);
 
 private:
-    QPushButton *button1;
-    QPushButton *button2;
-    QPushButton *button3;
-    QLabel *textLabel;
-    bool isMousePressed = false;
-    bool isDarkMode;
-
     void setupUI();
     void applyStyles();
     void closeIfClickedOutside(QMouseEvent *event);
 
+    void onWindowClick(QWindow *window);
+    void onMouseMove(QMouseEvent *event);
+    void onMouseRelease(QMouseEvent *event);
+
+    QPushButton *button1;
+    QPushButton *button2;
+    QPushButton *button3;
+    QLabel *textLabel;
+    bool isDarkMode;
     bool resizeMode;
     QPoint initialClickPos;
 };
