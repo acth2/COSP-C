@@ -38,7 +38,6 @@ protected:
     void trackWindowEvents(Window xorgWindowId);
     void centerWindow(QWindow *window);
     void removeCloseButton(WId windowId);
-    void isEdgeClick(QRect &windowGeometry, QPoint &clickPosition, int edgeThreshold)
 
 private slots:
     void checkForNewWindows();
