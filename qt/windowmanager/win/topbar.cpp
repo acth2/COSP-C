@@ -126,22 +126,22 @@ QLabel* TopBar::getPopup() const {
     return popup;
 }
 
-bool TopBar::eventFilter(QObject *obj, QEvent *event) {
-    if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-
-        if (getTrackedWindow()) {
-            getTrackedWindow()->requestActivate();
-            getTrackedWindow()->raise();
-            this->raise();
-        }
-
-        if (getPopup()->isVisible() && !getPopup()->geometry().contains(mouseEvent->globalPos())) {
-            closePopup();
-            return true;
+bool UserInteractRight::eventFilter(QObject *obj, QEvent *event) {
+    if (waitingForClick) {
+        if (event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+            if (mouseEvent->button() == Qt::LeftButton) {
+                QPoint cursorPos = mouseEvent->globalPos();
+                QWindow *clickedWindow = QGuiApplication::topLevelAt(cursorPos);
+                
+                if (clickedWindow && clickedWindow->title() != "A2WM") {
+                    onWindowClick(clickedWindow);
+                    return true;
+                }
+            }
         }
     }
-    return QWidget::eventFilter(obj, event);
+    return QObject::eventFilter(obj, event);
 }
 
 void TopBar::updatePosition() {
@@ -170,12 +170,13 @@ void TopBar::paintEvent(QPaintEvent *event) {
     painter.drawRect(rect());
 }
 
-void TopBar::mousePressEvent(QMouseEvent *event) {
-    isDragging = true;
-    dragStartPos = event->globalPos();
-    windowStartPos = trackedWindow->position();
-    setCursor(Qt::ClosedHandCursor);
-    updatePosition();
+void CustomTopBar::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        QWindow *windowUnderMouse = QGuiApplication::topLevelAt(event->globalPos());
+        if (windowUnderMouse && windowUnderMouse->title() != "A2WM") {
+            userInteractRight->onWindowClick(windowUnderMouse);
+        }
+    }
     QWidget::mousePressEvent(event);
 }
 
