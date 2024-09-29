@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QPoint>
+#include <QWindow>
 
 class UserInteractRight : public QWidget {
     Q_OBJECT
@@ -39,6 +40,7 @@ private:
     bool resizeMode;
     QPoint initialClickPos;
     bool waitingForClick = false;
+    QWindow *currentResizingWindow = nullptr;
 
 };
 
