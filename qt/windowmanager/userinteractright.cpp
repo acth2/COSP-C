@@ -185,9 +185,15 @@ void UserInteractRight::onWindowClick(QWindow *window) {
             qDebug() << "Ignored window with title: A2WM";
             return;
         }
-        currentResizingWindow = window;
+        
+        if (QWidget *container = QWidget::find(window->winId())) {
+            currentResizingWindow = QWindow::fromWinId(container->winId());
+        } else {
+            currentResizingWindow = window;
+        }
+        
         initialClickPos = QCursor::pos();
-        qDebug() << "Window clicked for resizing:" << window->title();
+        qDebug() << "Window clicked for resizing:" << currentResizingWindow->title();
         
         resizeMode = true;
         waitingForClick = false;
@@ -200,10 +206,13 @@ void UserInteractRight::onMouseMove(QMouseEvent *event) {
         int deltaX = currentPos.x() - initialClickPos.x();
         int deltaY = currentPos.y() - initialClickPos.y();
 
-        QRect newGeometry = currentResizingWindow->geometry();
-        newGeometry.setWidth(newGeometry.width() + deltaX);
-        newGeometry.setHeight(newGeometry.height() + deltaY);
-        currentResizingWindow->setGeometry(newGeometry);
+        if (QWidget *container = QWidget::find(currentResizingWindow->winId())) {
+            QRect newGeometry = container->geometry();
+            newGeometry.setWidth(newGeometry.width() + deltaX);
+            newGeometry.setHeight(newGeometry.height() + deltaY);
+            container->setGeometry(newGeometry);
+            currentResizingWindow->setGeometry(newGeometry);
+        }
 
         initialClickPos = currentPos;
     }
