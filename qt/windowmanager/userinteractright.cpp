@@ -7,12 +7,10 @@
 #include <QProcess>
 #include <QDebug>
 #include <QCursor>
-#include <QMouseEvent>
-#include <QWindow>
 #include <QScreen>
 
 UserInteractRight::UserInteractRight(QWidget *parent) 
-    : QWidget(parent), isDarkMode(false) {
+    : QWidget(parent), isDarkMode(false), resizeMode(false) {
 
     setWindowFlags(Qt::Popup | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -22,12 +20,14 @@ UserInteractRight::UserInteractRight(QWidget *parent)
     setFixedSize(200, 250);
 
     setWindowTitle("A2WM");
-        
+
     if (QFile::exists("/usr/cydra/settings/darkmode")) {
         isDarkMode = true;
     }
     
     applyStyles();
+
+    qApp->installEventFilter(this);
 }
 
 void UserInteractRight::setupUI() {
@@ -168,47 +168,48 @@ void UserInteractRight::button2Clicked() {
     resizeMode = true;
     QApplication::setOverrideCursor(Qt::SizeAllCursor);
 
-    connect(qApp, &UserInteractRight::focusWindowChanged, this, &UserInteractRight::onWindowClicked);
+    qDebug() << "Resize mode enabled. Click on a window to resize it.";
 }
 
-void UserInteractRight::onWindowClicked(QWindow *window) {
-    if (resizeMode && window) {
-        initialClickPos = QCursor::pos();
-
-        connect(qApp, &UserInteractRight::mouseMoveEvent, this, &UserInteractRight::onMouseMove);
-        connect(qApp, &UserInteractRight::mouseReleaseEvent, this, &UserInteractRight::onMouseRelease);
-
-        qDebug() << "Resize mode enabled, clicked on window:" << window->title();
-    }
-}
-
-void UserInteractRight::onMouseMove(QMouseEvent *event) {
+bool UserInteractRight::eventFilter(QObject *obj, QEvent *event) {
     if (resizeMode) {
-        QPoint currentPos = QCursor::pos();
-        int deltaX = currentPos.x() - initialClickPos.x();
-        int deltaY = currentPos.y() - initialClickPos.y();
+        if (event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+            if (mouseEvent->button() == Qt::LeftButton) {
+                QWindow *window = QGuiApplication::focusWindow();
+                if (window) {
+                    initialClickPos = mouseEvent->globalPos();
+                    qDebug() << "Window clicked for resizing:" << window->title();
+                    return true;
+                }
+            }
+        } else if (event->type() == QEvent::MouseMove) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+            if (resizeMode && QApplication::focusWindow()) {
+                QPoint currentPos = mouseEvent->globalPos();
+                int deltaX = currentPos.x() - initialClickPos.x();
+                int deltaY = currentPos.y() - initialClickPos.y();
 
-        if (QWindow *window = QApplication::focusWindow()) {
-            QRect newGeometry = window->geometry();
-            newGeometry.setWidth(newGeometry.width() + deltaX);
-            newGeometry.setHeight(newGeometry.height() + deltaY);
-            window->setGeometry(newGeometry);
+                if (QWindow *window = QApplication::focusWindow()) {
+                    QRect newGeometry = window->geometry();
+                    newGeometry.setWidth(newGeometry.width() + deltaX);
+                    newGeometry.setHeight(newGeometry.height() + deltaY);
+                    window->setGeometry(newGeometry);
+                }
+                initialClickPos = currentPos;
+                return true;
+            }
+        } else if (event->type() == QEvent::MouseButtonRelease) {
+            if (resizeMode) {
+                resizeMode = false;
+                QApplication::restoreOverrideCursor();
+                qDebug() << "Resize mode disabled";
+                return true;
+            }
         }
-
-        initialClickPos = currentPos;
     }
-}
 
-void UserInteractRight::onMouseRelease(QMouseEvent *event) {
-    if (resizeMode) {
-        resizeMode = false;
-        QApplication::restoreOverrideCursor();
-
-        disconnect(qApp, &UserInteractRight::mouseMoveEvent, this, &UserInteractRight::onMouseMove);
-        disconnect(qApp, &UserInteractRight::mouseReleaseEvent, this, &UserInteractRight::onMouseRelease);
-
-        qDebug() << "Resize mode disabled";
-    }
+    return QObject::eventFilter(obj, event);
 }
 
 void UserInteractRight::closeIfClickedOutside(QMouseEvent *event) {
