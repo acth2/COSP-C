@@ -174,8 +174,8 @@ void UserInteractRight::button1Clicked() {
 
 void UserInteractRight::button2Clicked() {
     waitingForClick = true;
+    resizeMode = true;
     QApplication::setOverrideCursor(Qt::SizeAllCursor);
-
     qDebug() << "Resize mode enabled. Click on a window to resize it.";
 }
 
@@ -191,12 +191,11 @@ void UserInteractRight::onWindowClick(QWindow *window) {
         currentResizingWindow = window;
         initialClickPos = QCursor::pos();
         
-        qDebug() << "Ready to resize window:" << currentResizingWindow->title();
-        
         resizeMode = true;
         waitingForClick = false;
     }
 }
+
 
 void UserInteractRight::onMouseMove(QMouseEvent *event) {
     if (resizeMode && currentResizingWindow) {
@@ -205,9 +204,8 @@ void UserInteractRight::onMouseMove(QMouseEvent *event) {
         int deltaY = currentPos.y() - initialClickPos.y();
 
         QRect newGeometry = currentResizingWindow->geometry();
-
-        newGeometry.setWidth(qMax(newGeometry.width() + deltaX, 50));
-        newGeometry.setHeight(qMax(newGeometry.height() + deltaY, 50));
+        newGeometry.setWidth(newGeometry.width() + deltaX);
+        newGeometry.setHeight(newGeometry.height() + deltaY);
 
         currentResizingWindow->setGeometry(newGeometry);
 
