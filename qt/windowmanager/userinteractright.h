@@ -41,6 +41,7 @@ private:
     QPoint initialClickPos;
     bool waitingForClick = false;
     QWindow *currentResizingWindow = nullptr;
+    QWidget *currentResizingWidget;
 
 };
 
