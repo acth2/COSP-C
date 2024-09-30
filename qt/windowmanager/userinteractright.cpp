@@ -181,18 +181,20 @@ void UserInteractRight::button2Clicked() {
 
 void UserInteractRight::onWindowClick(QWindow *window) {
     if (waitingForClick && window) {
-        QWidget *containerWidget = window->findChild<QWidget*>();
-        if (!containerWidget) {
-            qDebug() << "Failed to find container widget for window:" << window->title();
-            return;
+        WId windowId = window->winId();
+
+        if (windowTopBars.contains(windowId)) {
+            qDebug() << "Window clicked for resizing: " << window->title() << " Type: " << window->type();
+
+            currentResizingWindow = window;
+            currentResizingWidget = trackedContainers.value(windowId);
+            initialClickPos = QCursor::pos();
+
+            qDebug() << "Ready to resize container widget.";
+
+            resizeMode = true;
+            waitingForClick = false;
         }
-
-        qDebug() << "Container widget clicked for resizing.";
-        currentResizingWidget = containerWidget;
-        initialClickPos = QCursor::pos();
-
-        resizeMode = true;
-        waitingForClick = false;
     }
 }
 
