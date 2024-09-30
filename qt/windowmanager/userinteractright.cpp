@@ -174,40 +174,39 @@ void UserInteractRight::button1Clicked() {
 
 void UserInteractRight::button2Clicked() {
     waitingForClick = true;
-    resizeMode = true;
     QApplication::setOverrideCursor(Qt::SizeAllCursor);
+
     qDebug() << "Resize mode enabled. Click on a window to resize it.";
 }
 
 void UserInteractRight::onWindowClick(QWindow *window) {
     if (waitingForClick && window) {
-        if (window->title() == "A2WM") {
-            qDebug() << "Ignored window with title: A2WM";
+        QWidget *containerWidget = window->findChild<QWidget*>();
+        if (!containerWidget) {
+            qDebug() << "Failed to find container widget for window:" << window->title();
             return;
         }
 
-        qDebug() << "Window clicked for resizing: " << window->title() << " Type: " << window->type();
-        
-        currentResizingWindow = window;
+        qDebug() << "Container widget clicked for resizing.";
+        currentResizingWidget = containerWidget;
         initialClickPos = QCursor::pos();
-        
+
         resizeMode = true;
         waitingForClick = false;
     }
 }
 
-
 void UserInteractRight::onMouseMove(QMouseEvent *event) {
-    if (resizeMode && currentResizingWindow) {
+    if (resizeMode && currentResizingWidget) {
         QPoint currentPos = QCursor::pos();
         int deltaX = currentPos.x() - initialClickPos.x();
         int deltaY = currentPos.y() - initialClickPos.y();
 
-        QRect newGeometry = currentResizingWindow->geometry();
+        QRect newGeometry = currentResizingWidget->geometry();
         newGeometry.setWidth(newGeometry.width() + deltaX);
         newGeometry.setHeight(newGeometry.height() + deltaY);
 
-        currentResizingWindow->setGeometry(newGeometry);
+        currentResizingWidget->setGeometry(newGeometry);
 
         initialClickPos = currentPos;
     }
@@ -217,8 +216,8 @@ void UserInteractRight::onMouseRelease(QMouseEvent *event) {
     if (resizeMode) {
         resizeMode = false;
         QApplication::restoreOverrideCursor();
+        currentResizingWidget = nullptr;
         qDebug() << "Resize mode disabled";
-        currentResizingWindow = nullptr;
     }
 }
 
