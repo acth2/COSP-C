@@ -73,6 +73,7 @@ private:
     void setSupportingWMCheck();
 
     QRect *windowGeometry;
+    QMap<WId, QWidget*> trackedContainers;
 
     void onLoop();
 };
