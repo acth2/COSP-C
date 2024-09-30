@@ -205,8 +205,9 @@ void UserInteractRight::onMouseMove(QMouseEvent *event) {
         int deltaY = currentPos.y() - initialClickPos.y();
 
         QRect newGeometry = currentResizingWindow->geometry();
-        newGeometry.setWidth(newGeometry.width() + deltaX);
-        newGeometry.setHeight(newGeometry.height() + deltaY);
+
+        newGeometry.setWidth(qMax(newGeometry.width() + deltaX, 50));
+        newGeometry.setHeight(qMax(newGeometry.height() + deltaY, 50));
 
         currentResizingWindow->setGeometry(newGeometry);
 
