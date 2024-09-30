@@ -29,7 +29,6 @@ public:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
-    void resizeWindow(const QPoint &mousePos, bool onLeftEdge, bool onRightEdge, bool onTopEdge, bool onBottomEdge);
 
 signals:
     void closeRequested();
