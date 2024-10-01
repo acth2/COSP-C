@@ -280,6 +280,41 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     topBar->updatePosition();
 }
 
+void WindowManager::resizeTrackedWindow(WId xorgWindowId, int newWidth, int newHeight) {
+    if (!trackedWindows.contains(xorgWindowId)) {
+        appendLog("ERR: Window ID not found in tracked windows.");
+        return;
+    }
+
+    QWindow* x11Window = trackedWindows.value(xorgWindowId);
+    if (!x11Window) {
+        appendLog("ERR: No QWindow found for the provided window ID.");
+        return;
+    }
+
+    QWidget* containerWidget = x11Window->parentWidget();
+    if (!containerWidget) {
+        appendLog("ERR: No container widget found for the window.");
+        return;
+    }
+
+    int topbarHeight = 30;
+
+    QRect newGeometry(containerWidget->x(), containerWidget->y(), newWidth, newHeight + topbarHeight);
+    containerWidget->setGeometry(newGeometry);
+    
+    x11Window->resize(newWidth, newHeight);
+
+    if (windowTopBars.contains(xorgWindowId)) {
+        TopBar* topBar = windowTopBars.value(xorgWindowId);
+        if (topBar) {
+            topBar->setGeometry(containerWidget->x(), containerWidget->y() - topbarHeight, newWidth, topbarHeight);
+        }
+    }
+
+    appendLog(QString("INFO: Resized window and container to (%1, %2)").arg(newWidth).arg(newHeight));
+}
+
 void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton && resizeMode) {
         resizeMode = false;
