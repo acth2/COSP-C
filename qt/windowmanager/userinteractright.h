@@ -1,6 +1,7 @@
 #ifndef USERINTERACTRIGHT_H
 #define USERINTERACTRIGHT_H
 
+#include "windowmanager.h"
 #include <QWidget>
 #include <QPushButton>
 #include <QLabel>
@@ -11,7 +12,7 @@ class UserInteractRight : public QWidget {
     Q_OBJECT
 
 public:
-    explicit UserInteractRight(QWidget *parent = nullptr);
+    explicit UserInteractRight(WindowManager *wm, QWidget *parent = nullptr);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
