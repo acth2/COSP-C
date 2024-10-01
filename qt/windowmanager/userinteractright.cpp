@@ -202,11 +202,17 @@ void UserInteractRight::onMouseMove(QMouseEvent *event) {
         int deltaX = currentPos.x() - initialClickPos.x();
         int deltaY = currentPos.y() - initialClickPos.y();
 
-        QRect newGeometry = currentResizingWidget->geometry();
-        newGeometry.setWidth(newGeometry.width() + deltaX);
-        newGeometry.setHeight(newGeometry.height() + deltaY);
+        QWindow* window = currentResizingWidget->windowHandle();
+        if (!window) {
+            qDebug() << "Failed to get QWindow for resizing";
+            return;
+        }
 
-        currentResizingWidget->setGeometry(newGeometry);
+        WId windowId = window->winId();
+
+        int newWidth = currentResizingWidget->width() + deltaX;
+        int newHeight = currentResizingWidget->height() + deltaY;
+        windowManagerInstance->resizeTrackedWindow(windowId, newWidth, newHeight);
 
         initialClickPos = currentPos;
     }
