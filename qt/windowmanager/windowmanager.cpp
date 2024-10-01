@@ -288,10 +288,9 @@ void WindowManager::resizeTrackedWindow(WId xorgWindowId, int newWidth, int newH
         return;
     }
 
-    QWidget* containerWidget = x11Window->parentWidget();
-    if (!containerWidget) {
-        appendLog("ERR: No container widget found for the window.");
-        return;
+    QWidget *containerWidget = windowTopBars.value(window->winId())->parentWidget();
+    if (containerWidget) {
+        containerWidget->resize(newWidth, newHeight);
     }
 
     int topbarHeight = 30;
