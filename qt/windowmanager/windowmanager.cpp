@@ -227,15 +227,16 @@ void WindowManager::toggleConsole() {
 
 void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
-
+    
     QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
-
+    
     if (!x11Window) {
         appendLog("ERR: Failed to create QWindow from X11 ID.");
         return;
     }
 
     trackedWindows.insert(xorgWindowId, x11Window);
+    appendLog(QString("INFO: Detected new window: %1").arg(xorgWindowId));
 
     QWidget *containerWidget = new QWidget(this);
     if (!containerWidget) {
@@ -267,17 +268,15 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
         return;
     }
 
-    topBar->setGeometry(containerWidget->geometry().x(), containerWidget->geometry().y() - topbarHeight,
+    topBar->setGeometry(containerWidget->geometry().x(), containerWidget->geometry().y() - topbarHeight, 
                         containerWidget->geometry().width(), topbarHeight);
-
+    
     topBar->show();
     containerWidget->show();
 
     appendLog(QString("INFO: Successfully created container and TopBar for window: %1").arg(xorgWindowId));
 
     windowTopBars.insert(xorgWindowId, topBar);
-    trackedContainers.insert(xorgWindowId, containerWidget);
-
     topBar->updatePosition();
 }
 
