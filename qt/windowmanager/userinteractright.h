@@ -42,6 +42,7 @@ private:
     bool waitingForClick = false;
     QWindow *currentResizingWindow = nullptr;
     QWidget *currentResizingWidget;
+    WindowManager *windowManagerInstance;
 
 };
 
