@@ -24,6 +24,7 @@ public:
     void appendLog(const QString &message);
     QMap<WId, TopBar*> windowTopBars;
     void closeWindow(WId xorgWindowId);
+    void resizeTrackedWindow(WId xorgWindowId, int newWidth, int newHeight);
 
 protected:
     bool event(QEvent *event) override;
