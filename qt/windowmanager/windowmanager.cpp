@@ -238,7 +238,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
     trackedWindows.insert(xorgWindowId, x11Window);
     appendLog(QString("INFO: Detected new window: %1").arg(xorgWindowId));
 
-    QWidget *containerWidget = windowTopBars.value(window->winId())->parentWidget();
+    QWidget *containerWidget = windowTopBars.value(window()->winId())->parentWidget();
     
     QRect geometry = x11Window->geometry();
     int topbarHeight = 30;
@@ -288,7 +288,7 @@ void WindowManager::resizeTrackedWindow(WId xorgWindowId, int newWidth, int newH
         return;
     }
 
-    QWidget *containerWidget = windowTopBars.value(window->winId())->parentWidget();
+    QWidget *containerWidget = windowTopBars.value(window()->winId())->parentWidget();
     if (containerWidget) {
         containerWidget->resize(newWidth, newHeight);
     }
