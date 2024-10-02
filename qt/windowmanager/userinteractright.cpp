@@ -122,12 +122,6 @@ void UserInteractRight::mousePressEvent(QMouseEvent *event) {
         QPoint cursorPos = event->globalPos();
         move(cursorPos.x() - width() / 2, cursorPos.y() - height() / 2);
         show();
-    } else if (event->button() == Qt::LeftButton) {
-        QPoint cursorPos = event->globalPos();
-        QWindow *clickedWindow = QGuiApplication::topLevelAt(cursorPos);
-        if (clickedWindow && clickedWindow->title() != "A2WM") {
-            onWindowClick(clickedWindow);
-        }
     }
     
     QWidget::mousePressEvent(event);
