@@ -11,7 +11,7 @@
 #include <QWindow>
 
 UserInteractRight::UserInteractRight(QWidget *parent) 
-    : QWidget(parent), isDarkMode(false), {
+    : QWidget(parent), isDarkMode(false) {
 
     setWindowFlags(Qt::Popup | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
