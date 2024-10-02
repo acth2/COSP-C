@@ -11,7 +11,7 @@
 #include <QWindow>
 
 UserInteractRight::UserInteractRight(QWidget *parent) 
-    : QWidget(parent), isDarkMode(false), resizeMode(false) {
+    : QWidget(parent), isDarkMode(false), {
 
     setWindowFlags(Qt::Popup | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -170,35 +170,6 @@ void UserInteractRight::button2Clicked() {
     QApplication::setOverrideCursor(Qt::SizeAllCursor);
 
     qDebug() << "Resize mode enabled. Click on a window to resize it.";
-}
-
-void UserInteractRight::onMouseMove(QMouseEvent *event) {
-    if (resizeMode && currentResizingWidget) {
-        QPoint currentPos = QCursor::pos();
-        int deltaX = currentPos.x() - initialClickPos.x();
-        int deltaY = currentPos.y() - initialClickPos.y();
-
-        QWindow* window = currentResizingWidget->windowHandle();
-        if (!window) {
-            qDebug() << "Failed to get QWindow for resizing";
-            return;
-        }
-
-        WId windowId = window->winId();
-
-        int newWidth = currentResizingWidget->width() + deltaX;
-        int newHeight = currentResizingWidget->height() + deltaY;
-
-        initialClickPos = currentPos;
-    }
-}
-
-void UserInteractRight::onMouseRelease(QMouseEvent *event) {
-    if (resizeMode) {
-        resizeMode = false;
-        QApplication::restoreOverrideCursor();
-        qDebug() << "Resize mode disabled";
-    }
 }
 
 void UserInteractRight::closeIfClickedOutside(QMouseEvent *event) {
