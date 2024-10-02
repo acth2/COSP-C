@@ -40,9 +40,6 @@ private:
     bool isDarkMode;
     bool resizeMode;
     QPoint initialClickPos;
-    bool waitingForClick = false;
-    QWindow *currentResizingWindow = nullptr;
-    QWidget *currentResizingWidget;
     WindowManager *windowManagerInstance;
 
 };
