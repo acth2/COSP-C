@@ -206,7 +206,6 @@ void UserInteractRight::onMouseMove(QMouseEvent *event) {
 
         int newWidth = currentResizingWidget->width() + deltaX;
         int newHeight = currentResizingWidget->height() + deltaY;
-        windowManagerInstance->resizeTrackedWindow(windowId, newWidth, newHeight);
 
         initialClickPos = currentPos;
     }
@@ -216,39 +215,8 @@ void UserInteractRight::onMouseRelease(QMouseEvent *event) {
     if (resizeMode) {
         resizeMode = false;
         QApplication::restoreOverrideCursor();
-        currentResizingWidget = nullptr;
         qDebug() << "Resize mode disabled";
     }
-}
-
-bool UserInteractRight::eventFilter(QObject *obj, QEvent *event) {
-    if (waitingForClick) {
-        if (event->type() == QEvent::MouseButtonPress) {
-            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-            if (mouseEvent->button() == Qt::LeftButton) {
-                QPoint cursorPos = mouseEvent->globalPos();
-                QWindow *clickedWindow = QGuiApplication::topLevelAt(cursorPos);
-                if (clickedWindow) {
-                    qDebug() << "Detected click on window:" << clickedWindow->title();
-                    onWindowClick(clickedWindow);
-                    return true;
-                }
-            }
-        }
-    } 
-    else if (resizeMode) {
-        if (event->type() == QEvent::MouseMove) {
-            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-            onMouseMove(mouseEvent);
-            return true;
-        } else if (event->type() == QEvent::MouseButtonRelease) {
-            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-            onMouseRelease(mouseEvent);
-            return true;
-        }
-    }
-
-    return QObject::eventFilter(obj, event);
 }
 
 void UserInteractRight::closeIfClickedOutside(QMouseEvent *event) {
