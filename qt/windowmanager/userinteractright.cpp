@@ -167,27 +167,9 @@ void UserInteractRight::button1Clicked() {
 }
 
 void UserInteractRight::button2Clicked() {
-    waitingForClick = true;
     QApplication::setOverrideCursor(Qt::SizeAllCursor);
 
     qDebug() << "Resize mode enabled. Click on a window to resize it.";
-}
-
-void UserInteractRight::onWindowClick(QWindow *window) {
-    if (waitingForClick && window) {
-        QWidget *containerWidget = window->findChild<QWidget*>();
-        if (!containerWidget) {
-            qDebug() << "Failed to find container widget for window:" << window->title();
-            return;
-        }
-
-        qDebug() << "Container widget clicked for resizing.";
-        currentResizingWidget = containerWidget;
-        initialClickPos = QCursor::pos();
-
-        resizeMode = true;
-        waitingForClick = false;
-    }
 }
 
 void UserInteractRight::onMouseMove(QMouseEvent *event) {
