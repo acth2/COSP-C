@@ -33,7 +33,7 @@ UserInteractRight::UserInteractRight(QWidget *parent)
 
 void UserInteractRight::setupUI() {
     button1 = new QPushButton("Terminal", this);
-    button2 = new QPushButton("Resize Mode", this);
+    button2 = new QPushButton("Object 2", this);
     button3 = new QPushButton("Thing 3 bruh", this);
     textLabel = new QLabel("Control panel", this);
 
@@ -122,12 +122,6 @@ void UserInteractRight::mousePressEvent(QMouseEvent *event) {
         QPoint cursorPos = event->globalPos();
         move(cursorPos.x() - width() / 2, cursorPos.y() - height() / 2);
         show();
-    } else if (event->button() == Qt::LeftButton) {
-        QPoint cursorPos = event->globalPos();
-        QWindow *clickedWindow = QGuiApplication::topLevelAt(cursorPos);
-        if (clickedWindow && clickedWindow->title() != "A2WM") {
-            onWindowClick(clickedWindow);
-        }
     }
     
     QWidget::mousePressEvent(event);
@@ -172,84 +166,6 @@ void UserInteractRight::button1Clicked() {
     close();
 }
 
-void UserInteractRight::button2Clicked() {
-    waitingForClick = true;
-    QApplication::setOverrideCursor(Qt::SizeAllCursor);
-
-    qDebug() << "Resize mode enabled. Click on a window to resize it.";
-}
-
-void UserInteractRight::onWindowClick(QWindow *window) {
-    if (waitingForClick && window) {
-        QWidget *containerWidget = window->findChild<QWidget*>();
-        if (!containerWidget) {
-            qDebug() << "Failed to find container widget for window:" << window->title();
-            return;
-        }
-
-        qDebug() << "Container widget clicked for resizing.";
-        currentResizingWidget = containerWidget;
-        initialClickPos = QCursor::pos();
-
-        resizeMode = true;
-        waitingForClick = false;
-    }
-}
-
-void UserInteractRight::onMouseMove(QMouseEvent *event) {
-    if (resizeMode && currentResizingWidget) {
-        QPoint currentPos = QCursor::pos();
-        int deltaX = currentPos.x() - initialClickPos.x();
-        int deltaY = currentPos.y() - initialClickPos.y();
-
-        QRect newGeometry = currentResizingWidget->geometry();
-        newGeometry.setWidth(newGeometry.width() + deltaX);
-        newGeometry.setHeight(newGeometry.height() + deltaY);
-
-        currentResizingWidget->setGeometry(newGeometry);
-
-        initialClickPos = currentPos;
-    }
-}
-
-void UserInteractRight::onMouseRelease(QMouseEvent *event) {
-    if (resizeMode) {
-        resizeMode = false;
-        QApplication::restoreOverrideCursor();
-        currentResizingWidget = nullptr;
-        qDebug() << "Resize mode disabled";
-    }
-}
-
-bool UserInteractRight::eventFilter(QObject *obj, QEvent *event) {
-    if (waitingForClick) {
-        if (event->type() == QEvent::MouseButtonPress) {
-            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-            if (mouseEvent->button() == Qt::LeftButton) {
-                QPoint cursorPos = mouseEvent->globalPos();
-                QWindow *clickedWindow = QGuiApplication::topLevelAt(cursorPos);
-                if (clickedWindow) {
-                    qDebug() << "Detected click on window:" << clickedWindow->title();
-                    onWindowClick(clickedWindow);
-                    return true;
-                }
-            }
-        }
-    } 
-    else if (resizeMode) {
-        if (event->type() == QEvent::MouseMove) {
-            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-            onMouseMove(mouseEvent);
-            return true;
-        } else if (event->type() == QEvent::MouseButtonRelease) {
-            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-            onMouseRelease(mouseEvent);
-            return true;
-        }
-    }
-
-    return QObject::eventFilter(obj, event);
-}
 
 void UserInteractRight::closeIfClickedOutside(QMouseEvent *event) {
     if (!rect().contains(mapFromGlobal(event->globalPos()))) {
