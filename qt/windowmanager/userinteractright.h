@@ -38,7 +38,6 @@ private:
     QPushButton *button3;
     QLabel *textLabel;
     bool isDarkMode;
-    bool resizeMode;
     QPoint initialClickPos;
     WindowManager *windowManagerInstance;
 
