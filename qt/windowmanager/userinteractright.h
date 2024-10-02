@@ -1,7 +1,6 @@
 #ifndef USERINTERACTRIGHT_H
 #define USERINTERACTRIGHT_H
 
-#include "windowmanager.h"
 #include <QWidget>
 #include <QPushButton>
 #include <QLabel>
@@ -18,6 +17,7 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private slots:
     void button1Clicked();
@@ -37,8 +37,11 @@ private:
     QPushButton *button3;
     QLabel *textLabel;
     bool isDarkMode;
+    bool resizeMode;
     QPoint initialClickPos;
-    WindowManager *windowManagerInstance;
+    bool waitingForClick = false;
+    QWindow *currentResizingWindow = nullptr;
+    QWidget *currentResizingWidget;
 
 };
 
