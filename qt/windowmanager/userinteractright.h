@@ -17,7 +17,6 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private slots:
     void button1Clicked();
@@ -37,11 +36,7 @@ private:
     QPushButton *button3;
     QLabel *textLabel;
     bool isDarkMode;
-    bool resizeMode;
     QPoint initialClickPos;
-    bool waitingForClick = false;
-    QWindow *currentResizingWindow = nullptr;
-    QWidget *currentResizingWidget;
 
 };
 
