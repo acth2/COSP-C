@@ -12,7 +12,7 @@ class UserInteractRight : public QWidget {
     Q_OBJECT
 
 public:
-    explicit UserInteractRight(WindowManager *wm, QWidget *parent = nullptr);
+    explicit UserInteractRight(QWidget *parent = nullptr);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
