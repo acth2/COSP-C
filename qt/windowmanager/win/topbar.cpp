@@ -297,10 +297,12 @@ void TopBar::closeTrackedWindow() {
 void TopBar::toggleMaximizeRestore() {
     if (isMaximized) {
         trackedWindow->setGeometry(restoreGeometry);
+        resizeButton->setVisible(false);
         isMaximized = false;
     } else {
         restoreGeometry = trackedWindow->geometry();
         maximizeWindow();
+        resizeButton->setVisible(true);
         isMaximized = true;
     }
 
