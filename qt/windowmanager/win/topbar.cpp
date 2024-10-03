@@ -309,38 +309,17 @@ void TopBar::toggleMaximizeRestore() {
 }
 
 void TopBar::maximizeWindow() {
-    static bool firstCall = true;
+     QScreen *screen = QGuiApplication::primaryScreen();
+     QRect screenGeometry = screen->availableGeometry();
 
-    if (trackedWindow) {
-        if (firstCall) {
-            firstCall = false;
-            QTimer::singleShot(500, [this]() {
-                QScreen *screen = QGuiApplication::primaryScreen();
-                QRect screenGeometry = screen->availableGeometry();
+     int topbarHeight = 36;
+     int bottomMargin = 40;
 
-                int topbarHeight = 36;
-                int bottomMargin = 40;
+     int newWidth = screenGeometry.width();
+     int newHeight = screenGeometry.height() - bottomMargin - topbarHeight;
 
-                int newWidth = screenGeometry.width();
-                int newHeight = screenGeometry.height() - bottomMargin - topbarHeight;
+     trackedWindow->setGeometry(0, topbarHeight, newWidth, newHeight);
 
-                trackedWindow->setGeometry(0, topbarHeight, newWidth, newHeight);
-
-                updatePosition();
-            });
-        } else {
-            QScreen *screen = QGuiApplication::primaryScreen();
-            QRect screenGeometry = screen->availableGeometry();
-
-            int topbarHeight = 36;
-            int bottomMargin = 40;
-
-            int newWidth = screenGeometry.width();
-            int newHeight = screenGeometry.height() - bottomMargin - topbarHeight;
-
-            trackedWindow->setGeometry(0, topbarHeight, newWidth, newHeight);
-
-            updatePosition();
-        }
+     updatePosition();
     }
 }
