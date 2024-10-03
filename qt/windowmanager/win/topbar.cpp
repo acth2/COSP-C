@@ -9,6 +9,8 @@
 #include <QString>
 #include <QGuiApplication>
 #include <QScreen>
+#include <QSpacerItem>
+#include <QSizePolicy>
 #include <QFile>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
@@ -145,7 +147,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addWidget(titleLabel);
     layout->addStretch();
     layout->addWidget(resizeButton);
-    layout->addStretch();
+    layout->addItem(new QSpacerItem(10, 0, QSizePolicy::Fixed, QSizePolicy::Minimum));
     layout->addWidget(maximizeButton);
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
