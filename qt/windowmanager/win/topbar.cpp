@@ -250,6 +250,7 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
     if (isDragging) {
         if (isMaximized) {
             trackedWindow->setGeometry(restoreGeometry);
+            resizeButton->setVisible(true);
             isMaximized = false;
         }
         trackedWindow->setPosition(windowStartPos + (event->globalPos() - dragStartPos));
