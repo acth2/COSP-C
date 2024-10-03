@@ -214,6 +214,7 @@ void TopBar::startResizing() {
     if (trackedWindow) {
         QRect windowGeometry = trackedWindow->geometry();
         QPoint bottomRightCorner = windowGeometry.bottomRight();
+        bottomRightCorner += QPoint(10, 10);
         QCursor::setPos(bottomRightCorner);
 
         isResizing = true;
@@ -224,27 +225,6 @@ void TopBar::startResizing() {
 
 void TopBar::stopResizing() {
     isResizing = false;
-}
-
-
-void TopBar::resizeTrackedWindow() {
-    if (!trackedWindow) return;
-    QRect windowGeometry = trackedWindow->geometry();
-
-    QPoint bottomRightCorner = windowGeometry.bottomRight();
-    QCursor::setPos(bottomRightCorner);
-
-    QMouseEvent pressEvent(QEvent::MouseButtonPress, bottomRightCorner, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-    QCoreApplication::sendEvent(trackedWindow, &pressEvent);
-
-    QPoint newCorner = bottomRightCorner + QPoint(50, 50);
-    QMouseEvent moveEvent(QEvent::MouseMove, newCorner, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-    QCoreApplication::sendEvent(trackedWindow, &moveEvent);
-
-    QMouseEvent releaseEvent(QEvent::MouseButtonRelease, newCorner, Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-    QCoreApplication::sendEvent(trackedWindow, &releaseEvent);
-
-    updatePosition();
 }
 
 void TopBar::mousePressEvent(QMouseEvent *event) {
