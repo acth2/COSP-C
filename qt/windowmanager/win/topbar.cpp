@@ -30,11 +30,9 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 
     titleLabel = new QLabel(this);
     titleLabel->setStyleSheet("QLabel { color: white; }");
-    titleLabel->setText(trackedWindow->title());
 
     popup = new QLabel(this);
     popup->setFixedSize(500, 500);
-    //popup->setStyleSheet("background-color: #333;");
         
     closeButton = new QPushButton("✕", this);
     closeButton->setFixedSize(30, 30);
@@ -311,18 +309,38 @@ void TopBar::toggleMaximizeRestore() {
 }
 
 void TopBar::maximizeWindow() {
+    static bool firstCall = true;
+
     if (trackedWindow) {
-        QScreen *screen = QGuiApplication::primaryScreen();
-        QRect screenGeometry = screen->availableGeometry();
+        if (firstCall) {
+            firstCall = false;
+            QTimer::singleShot(500, [this]() {
+                QScreen *screen = QGuiApplication::primaryScreen();
+                QRect screenGeometry = screen->availableGeometry();
 
-        int topbarHeight = 36;
-        int bottomMargin = 40;
+                int topbarHeight = 36;
+                int bottomMargin = 40;
 
-        int newWidth = screenGeometry.width();
-        int newHeight = screenGeometry.height() - bottomMargin - topbarHeight;
+                int newWidth = screenGeometry.width();
+                int newHeight = screenGeometry.height() - bottomMargin - topbarHeight;
 
-        trackedWindow->setGeometry(0, topbarHeight, newWidth, newHeight);
+                trackedWindow->setGeometry(0, topbarHeight, newWidth, newHeight);
 
-        updatePosition();
+                updatePosition();
+            });
+        } else {
+            QScreen *screen = QGuiApplication::primaryScreen();
+            QRect screenGeometry = screen->availableGeometry();
+
+            int topbarHeight = 36;
+            int bottomMargin = 40;
+
+            int newWidth = screenGeometry.width();
+            int newHeight = screenGeometry.height() - bottomMargin - topbarHeight;
+
+            trackedWindow->setGeometry(0, topbarHeight, newWidth, newHeight);
+
+            updatePosition();
+        }
     }
 }
