@@ -56,6 +56,7 @@ private:
     bool isMaximized;
 
     bool isDarkMode;
+    void resizeTrackedWindow();
 };
 
 #endif // TOPBAR_H
