@@ -142,6 +142,7 @@ void WindowManager::listExistingWindows() {
                     }
                         XFree(children);
                 }
+        }
     } else {
         appendLog("ERR: Failed to open X Display ..");
     }
