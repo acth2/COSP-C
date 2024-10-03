@@ -20,7 +20,6 @@ protected:
 
 private slots:
     void button1Clicked();
-    void button2Clicked();
 
 private:
     void setupUI();
