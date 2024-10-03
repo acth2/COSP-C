@@ -220,6 +220,7 @@ void TopBar::startResizing() {
         isResizing = true;
         resizeStartPos = bottomRightCorner;
         windowStartSize = windowGeometry.size();
+        setCursor(Qt::SizeAllCursor);
     }
 }
 
@@ -255,7 +256,7 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
         trackedWindow->setPosition(windowStartPos + (event->globalPos() - dragStartPos));
     }
 
-    if (isResizing && trackedWindow) {
+    if (isResizing) {
         QPoint currentPos = QCursor::pos();
 
         int newWidth = windowStartSize.width() + (currentPos.x() - resizeStartPos.x());
