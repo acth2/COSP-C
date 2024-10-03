@@ -257,24 +257,15 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
     }
 
     if (isResizing) {
-        if (firstCall) {
-            firstCall = false;
-            QTimer::singleShot(500, [this]() {
-                QPoint currentPos = QCursor::pos();
-
-                int newWidth = windowStartSize.width() + (currentPos.x() - resizeStartPos.x());
-                int newHeight = windowStartSize.height() + (currentPos.y() - resizeStartPos.y());
-
-                trackedWindow->setGeometry(trackedWindow->x(), trackedWindow->y(), newWidth, newHeight);
-            });
-        } else {
+            QRect windowGeometry = trackedWindow->geometry();
+            QPoint bottomRightCorner = windowGeometry.bottomRight();
+            QCursor::setPos(bottomRightCorner);
             QPoint currentPos = QCursor::pos();
 
             int newWidth = windowStartSize.width() + (currentPos.x() - resizeStartPos.x());
             int newHeight = windowStartSize.height() + (currentPos.y() - resizeStartPos.y());
 
             trackedWindow->setGeometry(trackedWindow->x(), trackedWindow->y(), newWidth, newHeight);
-        }
     }
 
     updatePosition();
