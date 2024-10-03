@@ -211,7 +211,8 @@ void TopBar::paintEvent(QPaintEvent *event) {
 void TopBar::startResizing() {
     if (trackedWindow) {
         QPoint originalCursorPos = QCursor::pos();
-
+        maximizeButton->setVisible(false);
+        
         QRect windowGeometry = trackedWindow->geometry();
         QPoint bottomRightCorner = windowGeometry.bottomRight();
         QCursor::setPos(bottomRightCorner);
@@ -229,6 +230,7 @@ void TopBar::startResizing() {
 
 void TopBar::stopResizing() {
     isResizing = false;
+    maximizeButton->setVisible(true);
 }
 
 void TopBar::mousePressEvent(QMouseEvent *event) {
