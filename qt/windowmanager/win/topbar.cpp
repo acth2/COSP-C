@@ -30,7 +30,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 
     titleLabel = new QLabel(this);
     titleLabel->setStyleSheet("QLabel { color: white; }");
-    titleLabel->setText("Test window");
+    titleLabel->setText(trackedWindow->title());
 
     popup = new QLabel(this);
     popup->setFixedSize(500, 500);
