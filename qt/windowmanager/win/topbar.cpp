@@ -29,7 +29,6 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     setAttribute(Qt::WA_TranslucentBackground);
 
     titleLabel = new QLabel(this);
-    titleLabel->setAlignment(Qt::AlignCenter);
     titleLabel->setStyleSheet("QLabel { color: white; }");
 
     popup = new QLabel(this);
