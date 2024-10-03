@@ -147,7 +147,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addWidget(titleLabel);
     layout->addStretch();
     layout->addWidget(resizeButton);
-    layout->addItem(new QSpacerItem(10, 0, QSizePolicy::Fixed, QSizePolicy::Minimum));
+    layout->addItem(new QSpacerItem(20, 0, QSizePolicy::Fixed, QSizePolicy::Minimum));
     layout->addWidget(maximizeButton);
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
