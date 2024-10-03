@@ -245,6 +245,8 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
+    static bool firstCall = true;
+
     if (isDragging) {
         if (isMaximized) {
             trackedWindow->setGeometry(restoreGeometry);
@@ -255,14 +257,26 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
     }
 
     if (isResizing) {
-        QPoint currentPos = QCursor::pos();
+        if (firstCall) {
+            firstCall = false;
+            QTimer::singleShot(500, [this]() {
+                QPoint currentPos = QCursor::pos();
 
-        int newWidth = windowStartSize.width() + (currentPos.x() - resizeStartPos.x());
-        int newHeight = windowStartSize.height() + (currentPos.y() - resizeStartPos.y());
+                int newWidth = windowStartSize.width() + (currentPos.x() - resizeStartPos.x());
+                int newHeight = windowStartSize.height() + (currentPos.y() - resizeStartPos.y());
 
-        trackedWindow->setGeometry(trackedWindow->x(), trackedWindow->y(), newWidth, newHeight);
+                trackedWindow->setGeometry(trackedWindow->x(), trackedWindow->y(), newWidth, newHeight);
+            });
+        } else {
+            QPoint currentPos = QCursor::pos();
+
+            int newWidth = windowStartSize.width() + (currentPos.x() - resizeStartPos.x());
+            int newHeight = windowStartSize.height() + (currentPos.y() - resizeStartPos.y());
+
+            trackedWindow->setGeometry(trackedWindow->x(), trackedWindow->y(), newWidth, newHeight);
+        }
     }
-    
+
     updatePosition();
     QWidget::mouseMoveEvent(event);
 }
