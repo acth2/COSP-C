@@ -212,9 +212,7 @@ void TopBar::paintEvent(QPaintEvent *event) {
 
 void TopBar::startResizing() {
     if (trackedWindow) {
-        QRect windowGeometry = trackedWindow->geometry();
-        QPoint bottomRightCorner = windowGeometry.bottomRight();
-        bottomRightCorner += QPoint(10, 10);
+
         QCursor::setPos(bottomRightCorner);
 
         isResizing = true;
@@ -229,12 +227,14 @@ void TopBar::stopResizing() {
 }
 
 void TopBar::mousePressEvent(QMouseEvent *event) {
-    isDragging = true;
-    dragStartPos = event->globalPos();
-    windowStartPos = trackedWindow->position();
-    setCursor(Qt::ClosedHandCursor);
-    updatePosition();
-    QWidget::mousePressEvent(event);
+    if (!isResizing) {
+        isDragging = true;
+        dragStartPos = event->globalPos();
+        windowStartPos = trackedWindow->position();
+        setCursor(Qt::ClosedHandCursor);
+        updatePosition();
+        QWidget::mousePressEvent(event);
+    }
 }
 
 void TopBar::mouseReleaseEvent(QMouseEvent *event) {
