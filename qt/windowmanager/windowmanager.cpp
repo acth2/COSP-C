@@ -133,13 +133,15 @@ void WindowManager::listExistingWindows() {
                 }
 
                 appendLog("INFO: Detected graphical X11 window: " + QString::number(child));
-            
-                if (!trackedWindows.contains(child)) {
-                    createAndTrackWindow(child);
+                    char *windowName2 = nullptr;
+                    if (XFetchName(xDisplay, child, &windowName2) && windowName2) {
+                        QString name2(windowName2);
+                        if (!trackedWindows.contains(child)) {
+                            createAndTrackWindow(child, name2);
+                        }
+                    }
+                        XFree(children);
                 }
-            }
-            XFree(children);
-        }
     } else {
         appendLog("ERR: Failed to open X Display ..");
     }
