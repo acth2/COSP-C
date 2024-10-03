@@ -217,7 +217,7 @@ void TopBar::startResizing() {
         QPoint bottomRightCorner = windowGeometry.bottomRight();
         QCursor::setPos(bottomRightCorner);
 
-        QTimer::singleShot(50, this, [this, originalCursorPos]() {
+        QTimer::singleShot(1, this, [this, originalCursorPos]() {
             isResizing = true;
             setCursor(Qt::SizeAllCursor);
             resizeStartPos = QCursor::pos();
