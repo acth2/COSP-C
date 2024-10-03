@@ -58,6 +58,7 @@ private:
     bool isMaximized;
 
     bool isDarkMode;
+    bool atomicStopper = false;
 
     bool isResizing;
     QPoint resizeStartPos;
