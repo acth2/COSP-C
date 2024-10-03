@@ -257,7 +257,10 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
     if (isResizing) {
             QRect windowGeometry = trackedWindow->geometry();
             QPoint bottomRightCorner = windowGeometry.bottomRight();
-            QCursor::setPos(bottomRightCorner);
+            if (!atomicStopper) {
+                QCursor::setPos(bottomRightCorner);
+                atomicStopper = true;
+            }
             QPoint currentPos = QCursor::pos();
 
             int newWidth = windowStartSize.width() + (currentPos.x() - resizeStartPos.x());
