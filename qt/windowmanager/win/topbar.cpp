@@ -142,7 +142,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
         
     connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
     connect(maximizeButton, &QPushButton::clicked, this, &TopBar::toggleMaximizeRestore);
-    connect(resizeButton, &QPushButton::clicked, this, &TopBar::resizeTrackedWindow);
+    connect(resizeButton, &QPushButton::clicked, this, &TopBar::startResizing);
         
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
@@ -210,6 +210,23 @@ void TopBar::paintEvent(QPaintEvent *event) {
     painter.drawRect(rect());
 }
 
+void TopBar::startResizing() {
+    if (trackedWindow) {
+        QRect windowGeometry = trackedWindow->geometry();
+        QPoint bottomRightCorner = windowGeometry.bottomRight();
+        QCursor::setPos(bottomRightCorner);
+
+        isResizing = true;
+        resizeStartPos = bottomRightCorner;
+        windowStartSize = windowGeometry.size();
+    }
+}
+
+void TopBar::stopResizing() {
+    isResizing = false;
+}
+
+
 void TopBar::resizeTrackedWindow() {
     if (!trackedWindow) return;
     QRect windowGeometry = trackedWindow->geometry();
@@ -244,6 +261,9 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
     setCursor(Qt::ArrowCursor);
     QWidget::mouseReleaseEvent(event);
     updatePosition();
+    if (isResizing) {
+        stopResizing();
+    }
 }
 
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
@@ -254,6 +274,16 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
         }
         trackedWindow->setPosition(windowStartPos + (event->globalPos() - dragStartPos));
     }
+
+    if (isResizing && trackedWindow) {
+        QPoint currentPos = QCursor::pos();
+
+        int newWidth = windowStartSize.width() + (currentPos.x() - resizeStartPos.x());
+        int newHeight = windowStartSize.height() + (currentPos.y() - resizeStartPos.y());
+
+        trackedWindow->setGeometry(trackedWindow->x(), trackedWindow->y(), newWidth, newHeight);
+    }
+    
     updatePosition();
     QWidget::mouseMoveEvent(event);
 }
