@@ -228,17 +228,10 @@ void TopBar::stopResizing() {
 }
 
 void TopBar::mousePressEvent(QMouseEvent *event) {
-    if (resizeMode) {
-        isResizing = true;
-        setCursor(Qt::SizeFDiagCursor);
-        dragStartPos = event->globalPos();
-        windowStartSize = trackedWindow->geometry().size();
-    } else {
-        isDragging = true;
-        dragStartPos = event->globalPos();
-        windowStartPos = trackedWindow->position();
-        setCursor(Qt::ClosedHandCursor);
-    }
+    isDragging = true;
+    dragStartPos = event->globalPos();
+    windowStartPos = trackedWindow->position();
+    setCursor(Qt::ClosedHandCursor);
     updatePosition();
     QWidget::mousePressEvent(event);
 }
