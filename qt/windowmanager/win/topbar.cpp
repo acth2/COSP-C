@@ -211,7 +211,16 @@ void TopBar::paintEvent(QPaintEvent *event) {
 void TopBar::startResizing() {
     if (trackedWindow) {
         isResizing = true;
-        setCursor(Qt::SizeAllCursor);
+
+        atomicStopper = true; 
+
+        QRect windowGeometry = trackedWindow->geometry();
+        QPoint bottomRightCorner = windowGeometry.bottomRight();
+        QCursor::setPos(bottomRightCorner);
+        QTimer::singleShot(50, this, [this]() {
+            atomicStopper = false; 
+            setCursor(Qt::SizeAllCursor);
+        });
     }
 }
 
@@ -256,7 +265,7 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
     if (isResizing) {
         QRect windowGeometry = trackedWindow->geometry();
 
-        QPoint bottomRightCorner = windowGeometry.bottomRight() + QPoint(10, 10);
+        QPoint bottomRightCorner = windowGeometry.bottomRight();
 
         if (!atomicStopper) {
             QCursor::setPos(bottomRightCorner);
