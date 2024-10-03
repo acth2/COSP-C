@@ -110,7 +110,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     resizeButton->setText("⌞⌝");
     resizeButton->setFixedSize(30, 30);
     if (!isDarkMode){
-        maximizeButton->setStyleSheet(
+        resizeButton->setStyleSheet(
             "QPushButton {"
             "   background-color: black;"
             "   border-radius: 15px;"
@@ -124,7 +124,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
             "}"
         );
     } else {
-        maximizeButton->setStyleSheet(
+        resizeButton->setStyleSheet(
             "QPushButton {"
             "   background-color: white;"
             "   border-radius: 15px;"
