@@ -336,4 +336,3 @@ void TopBar::maximizeWindow() {
 
      updatePosition();
     }
-}
