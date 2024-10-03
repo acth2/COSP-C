@@ -255,6 +255,7 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
         stopResizing();
     }
 }
+
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
     if (isDragging) {
         if (isMaximized) {
@@ -267,18 +268,16 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
 
     if (isResizing) {
         QRect windowGeometry = trackedWindow->geometry();
-
-        QPoint bottomRightCorner = windowGeometry.bottomRight();
-
-        if (!atomicStopper) {
-            QCursor::setPos(bottomRightCorner);
-            atomicStopper = true;
-        }
-
         QPoint currentPos = QCursor::pos();
 
         int newWidth = windowStartSize.width() + (currentPos.x() - resizeStartPos.x());
         int newHeight = windowStartSize.height() + (currentPos.y() - resizeStartPos.y());
+
+        const int minWidth = 200;
+        const int minHeight = 150;
+
+        newWidth = std::max(newWidth, minWidth);
+        newHeight = std::max(newHeight, minHeight);
 
         trackedWindow->setGeometry(trackedWindow->x(), trackedWindow->y(), newWidth, newHeight);
     }
