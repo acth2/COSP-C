@@ -58,7 +58,6 @@ private:
     bool isMaximized;
 
     bool isDarkMode;
-    void resizeTrackedWindow();
 
     bool isResizing;
     QPoint resizeStartPos;
