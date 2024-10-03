@@ -21,7 +21,7 @@ class TopBar : public QWidget {
 public:
     explicit TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent = nullptr);
     void updatePosition();
-    void setTitle(const QString &title)
+    void setTitle(const QString &title);
     QWindow* getTrackedWindow() const;
     QLabel* getPopup() const;
     void closePopup();
