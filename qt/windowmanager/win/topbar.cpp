@@ -212,12 +212,7 @@ void TopBar::paintEvent(QPaintEvent *event) {
 
 void TopBar::startResizing() {
     if (trackedWindow) {
-
-        QCursor::setPos(bottomRightCorner);
-
         isResizing = true;
-        resizeStartPos = bottomRightCorner;
-        windowStartSize = windowGeometry.size();
         setCursor(Qt::SizeAllCursor);
     }
 }
