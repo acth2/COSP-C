@@ -335,4 +335,4 @@ void TopBar::maximizeWindow() {
      trackedWindow->setGeometry(0, topbarHeight, newWidth, newHeight);
 
      updatePosition();
-    }
+}
