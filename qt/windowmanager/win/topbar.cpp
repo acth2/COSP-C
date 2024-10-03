@@ -245,8 +245,6 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
-    static bool firstCall = true;
-
     if (isDragging) {
         if (isMaximized) {
             trackedWindow->setGeometry(restoreGeometry);
