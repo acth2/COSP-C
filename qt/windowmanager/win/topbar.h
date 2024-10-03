@@ -39,6 +39,8 @@ protected:
 private slots:
     void closeTrackedWindow();
     void maximizeWindow();
+    void startResizing();
+    void stopResizing();
     void toggleMaximizeRestore();
 
 private:
@@ -57,6 +59,10 @@ private:
 
     bool isDarkMode;
     void resizeTrackedWindow();
+
+    bool isResizing;
+    QPoint resizeStartPos;
+    QSize windowStartSize;
 };
 
 #endif // TOPBAR_H
