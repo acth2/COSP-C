@@ -103,11 +103,48 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
         );
     }
 
+
+    resizeButton = new QPushButton(this);
+    resizeButton->setText("⌞⌝");
+    resizeButton->setFixedSize(30, 30);
+    if (!isDarkMode){
+        maximizeButton->setStyleSheet(
+            "QPushButton {"
+            "   background-color: black;"
+            "   border-radius: 15px;"
+            "   font-size: 18px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: gray;"
+            "}"
+            "QPushButton:pressed {"
+            "   background-color: #404040;"
+            "}"
+        );
+    } else {
+        maximizeButton->setStyleSheet(
+            "QPushButton {"
+            "   background-color: white;"
+            "   border-radius: 15px;"
+            "   font-size: 18px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: gray;"
+            "}"
+            "QPushButton:pressed {"
+            "   background-color: #404040;"
+            "}"
+        );
+    }
+
+        
     connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
     connect(maximizeButton, &QPushButton::clicked, this, &TopBar::toggleMaximizeRestore);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(titleLabel);
+    layout->addStretch();
+    layout->addWidget(resizeButton);
     layout->addStretch();
     layout->addWidget(maximizeButton);
     layout->addWidget(closeButton);
