@@ -193,7 +193,7 @@ void TopBar::updatePosition() {
     }
 }
 
-void TopBar::updateTitle(const QString &title) {
+void TopBar::setTitle(const QString &title) {
     titleLabel->setText(title);
 }
 
