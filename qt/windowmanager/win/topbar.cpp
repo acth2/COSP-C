@@ -229,6 +229,10 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
         setCursor(Qt::ClosedHandCursor);
         updatePosition();
         QWidget::mousePressEvent(event);
+    }  else {
+        QRect windowGeometry = trackedWindow->geometry();
+        QPoint bottomRightCorner = windowGeometry.bottomRight();
+        QCursor::setPos(bottomRightCorner);
     }
 }
 
@@ -252,9 +256,6 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
     }
 
     if (isResizing) {
-        QRect windowGeometry = trackedWindow->geometry();
-        QPoint bottomRightCorner = windowGeometry.bottomRight();
-        QCursor::setPos(bottomRightCorner);
         QPoint currentPos = QCursor::pos();
 
         int newWidth = windowStartSize.width() + (currentPos.x() - resizeStartPos.x());
