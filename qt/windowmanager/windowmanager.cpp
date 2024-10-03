@@ -88,7 +88,7 @@ void WindowManager::listExistingWindows() {
                     QString name(windowName);
                     if (name == "QTerminal") {
                         appendLog("INFO: Detected QTerminal window: " + QString::number(child));
-                        createAndTrackWindow(child);
+                        createAndTrackWindow(child, name);
                         XFree(windowName);
                         continue;
                     }
@@ -225,7 +225,7 @@ void WindowManager::toggleConsole() {
     appendLog("Welcome into the DEBUG window (Where my nightmare comes true), Press ESC to exit it");
 }
 
-void WindowManager::createAndTrackWindow(WId xorgWindowId) {
+void WindowManager::createAndTrackWindow(WId xorgWindowId, QString windowName) {
     appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
 
     QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
@@ -269,7 +269,8 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     topBar->setGeometry(containerWidget->geometry().x(), containerWidget->geometry().y() - topbarHeight,
                         containerWidget->geometry().width(), topbarHeight);
-
+    
+    topBar->setTitle(windowName);
     topBar->show();
     containerWidget->show();
 
