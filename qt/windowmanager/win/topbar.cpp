@@ -255,18 +255,23 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
     }
 
     if (isResizing) {
+        if (!atomicStopper) {
             QRect windowGeometry = trackedWindow->geometry();
             QPoint bottomRightCorner = windowGeometry.bottomRight();
-            if (!atomicStopper) {
-                QCursor::setPos(bottomRightCorner);
-                atomicStopper = true;
-            }
-            QPoint currentPos = QCursor::pos();
+            QCursor::setPos(bottomRightCorner);
+            atomicStopper = true;
+        }
 
-            int newWidth = windowStartSize.width() + (currentPos.x() - resizeStartPos.x());
-            int newHeight = windowStartSize.height() + (currentPos.y() - resizeStartPos.y());
+        QPoint currentPos = QCursor::pos();
 
-            trackedWindow->setGeometry(trackedWindow->x(), trackedWindow->y(), newWidth, newHeight);
+        int newWidth = windowStartSize.width() + (currentPos.x() - resizeStartPos.x());
+        int newHeight = windowStartSize.height() + (currentPos.y() - resizeStartPos.y());
+
+        trackedWindow->setGeometry(trackedWindow->x(), trackedWindow->y(), newWidth, newHeight);
+
+        if (currentPos == QCursor::pos()) {
+            atomicStopper = true;
+        }
     }
 
     updatePosition();
