@@ -268,7 +268,7 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
         trackedWindow->raise();
         this->raise();
 
-        for (TopBar *topBar : WindowManager::getAllTopBars()) {
+        for (TopBar *topBar : windowManager->getAllTopBars()) {
             if (topBar != this) {
                 topBar->lower();
             }
