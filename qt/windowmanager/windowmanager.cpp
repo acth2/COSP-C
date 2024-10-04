@@ -89,7 +89,8 @@ void WindowManager::listExistingWindows() {
         Atom netWmWindowTypeUtility = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_UTILITY", False);
         Atom netWmWindowTypeSplash = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_SPLASH", False);
         Atom netWmWindowTypeDialog = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DIALOG", False);
-
+        Atom wmTransientFor = XInternAtom(xDisplay, "WM_TRANSIENT_FOR", False);
+        
         Window windowRoot = DefaultRootWindow(xDisplay);
         Window parent, *children;
         unsigned int nChildren;
@@ -132,6 +133,11 @@ void WindowManager::listExistingWindows() {
                             continue;
                         }
                     }
+                }
+
+                Window transientFor;
+                if (XGetTransientForHint(xDisplay, child, &transientFor) && transientFor != None) {
+                    appendLog("INFO: Detected transient window (likely dialog): " + QString::number(child));
                 }
 
                 XWindowAttributes attributes;
