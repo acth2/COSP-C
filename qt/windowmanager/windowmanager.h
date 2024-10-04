@@ -9,6 +9,7 @@
 #include <QTimer>
 #include <QMap>
 #include <QResizeEvent>
+#include <QVector>
 #include "taskbar.h"
 #include "konami_code_handler.h"
 #include "userinteractright.h"
@@ -78,6 +79,7 @@ private:
 
     QRect *windowGeometry;
     QMap<WId, QWidget*> trackedContainers;
+    QVector<TopBar*> getAllTopBars() const;
 
     void onLoop();
 };
