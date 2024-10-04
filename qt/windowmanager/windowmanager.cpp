@@ -89,7 +89,7 @@ void WindowManager::listExistingWindows() {
         Atom netWmWindowTypeUtility = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_UTILITY", False);
         Atom netWmWindowTypeSplash = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_SPLASH", False);
         Atom netWmWindowTypeDialog = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DIALOG", False);
-
+        
         Window windowRoot = DefaultRootWindow(xDisplay);
         Window parent, *children;
         unsigned int nChildren;
@@ -119,20 +119,6 @@ void WindowManager::listExistingWindows() {
                                        &type, &format, &nItems, &bytesAfter, &data) == Success) {
                     if (data) {
                         Atom *atoms = (Atom *)data;
-
-                        if (atoms[0] == netWmWindowTypeDesktop) {
-                            appendLog("INFO: Detected desktop background window: " + QString::number(child));
-
-                            if (!trackedWindows.contains(child)) {
-                                createAndTrackWindow(child, "Desktop Background", false);
-                            }
-
-                            XLowerWindow(xDisplay, child);
-
-                            XFree(data);
-                            continue;
-                        }
-
                         if (atoms[0] != netWmWindowTypeNormal &&
                             atoms[0] != netWmWindowTypeDesktop &&
                             atoms[0] != netWmWindowTypeDock &&
@@ -141,7 +127,7 @@ void WindowManager::listExistingWindows() {
                             atoms[0] != netWmWindowTypeUtility &&
                             atoms[0] != netWmWindowTypeSplash &&
                             atoms[0] != netWmWindowTypeDialog) {
-                            appendLog("INFO: Skipping non-supported window: " + QString::number(child));
+                            appendLog("INFO: Skipping non-desktop-dock-toolbar-menu-utility-splash-dialog window: " + QString::number(child));
                             XFree(data);
                             continue;
                         }
@@ -150,18 +136,17 @@ void WindowManager::listExistingWindows() {
 
                 XWindowAttributes attributes;
                 if (XGetWindowAttributes(xDisplay, child, &attributes) == 0 || attributes.map_state != IsViewable) {
-                    appendLog("INFO: Skipping non-viewable window: " + QString::number(child));
+                    appendLog("INFO: Skipping attribute window: " + QString::number(child));
                     continue;
                 }
 
                 QRect windowGeometry(attributes.x, attributes.y, attributes.width, attributes.height);
-
                 if (windowGeometry.width() == 0 || windowGeometry.height() == 0) {
                     appendLog("INFO: Skipping non-graphical window (0x0 size): " + QString::number(child));
                     continue;
                 }
 
-                bool applyTopbar = true;
+                bool applyTopbar = !hasTopbar(child);
                 if (windowGeometry.height() <= 50) {
                     appendLog("INFO: Menu window detected. Not giving topbar for " + QString::number(child));
                     applyTopbar = false;
@@ -183,7 +168,6 @@ void WindowManager::listExistingWindows() {
         appendLog("ERR: Failed to open X Display ..");
     }
 }
-
 
 void WindowManager::setSupportingWMCheck() {
     xDisplay = XOpenDisplay(nullptr);
