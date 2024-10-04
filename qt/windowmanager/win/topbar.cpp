@@ -265,6 +265,15 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
             resizeButton->setVisible(true);
             isMaximized = false;
         }
+        trackedWindow->raise();
+        this->raise();
+
+        for (TopBar *topBar : WindowManager::getAllTopBars()) {
+            if (topBar != this) {
+                topBar->lower();
+            }
+        }
+
         trackedWindow->setPosition(windowStartPos + (event->globalPos() - dragStartPos));
     }
 
