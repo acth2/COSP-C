@@ -22,6 +22,7 @@ public:
         treeView = new QTreeView(this);
         treeView->setModel(model);
         treeView->setRootIndex(model->index(QDir::rootPath()));
+        connect(treeView, &QTreeView::clicked, this, &FileExplorer::onTreeViewClicked);
 
         listView = new QListView(this);
         listView->setModel(model);
@@ -30,7 +31,7 @@ public:
         QSplitter *splitter = new QSplitter(this);
         splitter->addWidget(treeView);
         splitter->addWidget(listView);
-        
+
         setCentralWidget(splitter);
 
         QToolBar *toolBar = new QToolBar(this);
@@ -42,7 +43,7 @@ public:
 
         QLineEdit *searchEdit = new QLineEdit(this);
         toolBar->addWidget(searchEdit);
-        
+
         QComboBox *viewComboBox = new QComboBox(this);
         viewComboBox->addItems({"Détails", "Icônes"});
         connect(viewComboBox, &QComboBox::currentTextChanged, this, &FileExplorer::changeView);
@@ -54,7 +55,9 @@ public:
 
 public slots:
     void refresh() {
-        model->refresh();
+        model->setRootPath(QDir::rootPath());
+        treeView->setRootIndex(model->index(QDir::rootPath()));
+        listView->setRootIndex(model->index(QDir::rootPath()));
     }
 
     void changeView(const QString &viewType) {
@@ -63,6 +66,11 @@ public slots:
         } else {
             listView->setViewMode(QListView::ListMode);
         }
+    }
+
+    void onTreeViewClicked(const QModelIndex &index) {
+        QString path = model->filePath(index);
+        listView->setRootIndex(model->index(path));
     }
 
 private:
