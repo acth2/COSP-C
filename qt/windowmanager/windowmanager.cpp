@@ -67,7 +67,7 @@ Display *xDisplay;
 bool WindowManager::hasTopbar(Window child) {
     Atom wmHintsAtom = XInternAtom(xDisplay, "WM_HINTS", False);
     XWMHints *wmHints = XGetWMHints(xDisplay, child);
-
+    
     if (wmHints && (wmHints->flags & InputHint) && wmHints->input) {
         appendLog("INFO: Detected built-in topbar for window: " + QString::number(child));
         XFree(wmHints);
@@ -89,7 +89,6 @@ void WindowManager::listExistingWindows() {
         Atom netWmWindowTypeUtility = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_UTILITY", False);
         Atom netWmWindowTypeSplash = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_SPLASH", False);
         Atom netWmWindowTypeDialog = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DIALOG", False);
-        Atom wmTransientFor = XInternAtom(xDisplay, "WM_TRANSIENT_FOR", False);
         
         Window windowRoot = DefaultRootWindow(xDisplay);
         Window parent, *children;
@@ -135,11 +134,6 @@ void WindowManager::listExistingWindows() {
                     }
                 }
 
-                Window transientFor;
-                if (XGetTransientForHint(xDisplay, child, &transientFor) && transientFor != None) {
-                    appendLog("INFO: Detected transient window (likely dialog): " + QString::number(child));
-                }
-
                 XWindowAttributes attributes;
                 if (XGetWindowAttributes(xDisplay, child, &attributes) == 0 || attributes.map_state != IsViewable) {
                     appendLog("INFO: Skipping attribute window: " + QString::number(child));
@@ -174,31 +168,6 @@ void WindowManager::listExistingWindows() {
         appendLog("ERR: Failed to open X Display ..");
     }
 }
-
-void WindowManager::registerWindowCreationListener() {
-    XSelectInput(xDisplay, DefaultRootWindow(xDisplay), SubstructureNotifyMask);
-    while (true) {
-        XEvent event;
-        XNextEvent(xDisplay, &event);
-
-        if (event.type == MapNotify) {
-            Window child = event.xmap.window;
-
-            char *windowName = nullptr;
-            if (XFetchName(xDisplay, child, &windowName) && windowName) {
-                QString name(windowName);
-                if (!trackedWindows.contains(child)) {
-                    bool applyTopbar = !hasTopbar(child);
-                    if (applyTopbar) {
-                        createAndTrackWindow(child, name, applyTopbar);
-                    }
-                }
-                XFree(windowName);
-            }
-        }
-    }
-}
-
 
 void WindowManager::setSupportingWMCheck() {
     xDisplay = XOpenDisplay(nullptr);
