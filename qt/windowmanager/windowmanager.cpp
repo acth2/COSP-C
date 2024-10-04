@@ -132,12 +132,19 @@ void WindowManager::listExistingWindows() {
                     continue;
                 }
 
+                bool applyTopbar = true;
+                if (windowGeometry.width() <= 75 || windowGeometry.height() <= 75) {
+                    appendLog("INFO: Menu window detected. Not giving topbar for " + QString::number(child));
+                    applyTopbar = false;
+                }
+                
+
                 appendLog("INFO: Detected graphical X11 window: " + QString::number(child));
                     char *windowName2 = nullptr;
                     if (XFetchName(xDisplay, child, &windowName2) && windowName2) {
                         QString name2(windowName2);
                         if (!trackedWindows.contains(child)) {
-                            createAndTrackWindow(child, name2, true);
+                            createAndTrackWindow(child, name2, applyTopbar);
                         }
                     }
                         XFree(children);
