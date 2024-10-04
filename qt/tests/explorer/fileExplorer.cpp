@@ -1,23 +1,74 @@
 #include <QApplication>
 #include <QMainWindow>
 #include <QTreeView>
+#include <QListView>
 #include <QFileSystemModel>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QToolBar>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QComboBox>
+#include <QSplitter>
 
 class FileExplorer : public QMainWindow {
+    Q_OBJECT
+
 public:
     FileExplorer(QWidget *parent = nullptr) : QMainWindow(parent) {
-        QFileSystemModel *model = new QFileSystemModel(this);
+        model = new QFileSystemModel(this);
         model->setRootPath(QDir::rootPath());
 
-        QTreeView *treeView = new QTreeView(this);
+        treeView = new QTreeView(this);
         treeView->setModel(model);
         treeView->setRootIndex(model->index(QDir::rootPath()));
+
+        listView = new QListView(this);
+        listView->setModel(model);
+        listView->setRootIndex(model->index(QDir::rootPath()));
+
+        QSplitter *splitter = new QSplitter(this);
+        splitter->addWidget(treeView);
+        splitter->addWidget(listView);
         
-        setCentralWidget(treeView);
-        setWindowTitle("File Explorer");
+        setCentralWidget(splitter);
+
+        QToolBar *toolBar = new QToolBar(this);
+        addToolBar(Qt::TopToolBarArea, toolBar);
+
+        QPushButton *refreshButton = new QPushButton("Rafraîchir", this);
+        connect(refreshButton, &QPushButton::clicked, this, &FileExplorer::refresh);
+        toolBar->addWidget(refreshButton);
+
+        QLineEdit *searchEdit = new QLineEdit(this);
+        toolBar->addWidget(searchEdit);
+        
+        QComboBox *viewComboBox = new QComboBox(this);
+        viewComboBox->addItems({"Détails", "Icônes"});
+        connect(viewComboBox, &QComboBox::currentTextChanged, this, &FileExplorer::changeView);
+        toolBar->addWidget(viewComboBox);
+
+        setWindowTitle("Explorateur de fichiers");
         resize(800, 600);
     }
+
+public slots:
+    void refresh() {
+        model->refresh();
+    }
+
+    void changeView(const QString &viewType) {
+        if (viewType == "Icônes") {
+            listView->setViewMode(QListView::IconMode);
+        } else {
+            listView->setViewMode(QListView::ListMode);
+        }
+    }
+
+private:
+    QFileSystemModel *model;
+    QTreeView *treeView;
+    QListView *listView;
 };
 
 int main(int argc, char *argv[]) {
