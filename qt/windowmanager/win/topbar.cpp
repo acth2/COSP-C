@@ -25,7 +25,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     trackedWindow->installEventFilter(this);
     isMaximized = false;
 
-    setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::WindowDoesNotAcceptFocus);
+    setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowDoesNotAcceptFocus);
     setAttribute(Qt::WA_TranslucentBackground);
 
     titleLabel = new QLabel(this);
