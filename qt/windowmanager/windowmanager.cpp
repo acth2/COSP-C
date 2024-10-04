@@ -63,6 +63,20 @@ WindowManager::WindowManager(QWidget *parent)
 }
 
 Display *xDisplay;
+bool WindowManager::hasTopbar(Window child) {
+    Atom wmHintsAtom = XInternAtom(xDisplay, "WM_HINTS", False);
+    XWMHints *wmHints = XGetWMHints(xDisplay, child);
+    
+    if (wmHints && (wmHints->flags & InputHint) && wmHints->input) {
+        appendLog("INFO: Detected built-in topbar for window: " + QString::number(child));
+        XFree(wmHints);
+        return true;
+    }
+
+    XFree(wmHints);
+    return false;
+}
+
 void WindowManager::listExistingWindows() {
     if (xDisplay) {
         Atom netWmWindowType = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE", False);
@@ -101,7 +115,7 @@ void WindowManager::listExistingWindows() {
                 unsigned char *data = nullptr;
 
                 if (XGetWindowProperty(xDisplay, child, netWmWindowType, 0, 1, False, XA_ATOM,
-                                   &type, &format, &nItems, &bytesAfter, &data) == Success) {
+                                       &type, &format, &nItems, &bytesAfter, &data) == Success) {
                     if (data) {
                         Atom *atoms = (Atom *)data;
                         if (atoms[0] != netWmWindowTypeNormal &&
@@ -126,29 +140,28 @@ void WindowManager::listExistingWindows() {
                 }
 
                 QRect windowGeometry(attributes.x, attributes.y, attributes.width, attributes.height);
-
                 if (windowGeometry.width() == 0 || windowGeometry.height() == 0) {
                     appendLog("INFO: Skipping non-graphical window (0x0 size): " + QString::number(child));
                     continue;
                 }
 
-                bool applyTopbar = true;
+                bool applyTopbar = !hasTopbar(child);
                 if (windowGeometry.height() <= 50) {
                     appendLog("INFO: Menu window detected. Not giving topbar for " + QString::number(child));
                     applyTopbar = false;
                 }
-                
 
                 appendLog("INFO: Detected graphical X11 window: " + QString::number(child));
-                    char *windowName2 = nullptr;
-                    if (XFetchName(xDisplay, child, &windowName2) && windowName2) {
-                        QString name2(windowName2);
-                        if (!trackedWindows.contains(child)) {
-                            createAndTrackWindow(child, name2, applyTopbar);
-                        }
+                char *windowName2 = nullptr;
+                if (XFetchName(xDisplay, child, &windowName2) && windowName2) {
+                    QString name2(windowName2);
+                    if (!trackedWindows.contains(child)) {
+                        createAndTrackWindow(child, name2, applyTopbar);
                     }
-                        XFree(children);
+                    XFree(windowName2);
                 }
+            }
+            XFree(children);
         }
     } else {
         appendLog("ERR: Failed to open X Display ..");
