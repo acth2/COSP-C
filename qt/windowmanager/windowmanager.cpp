@@ -264,7 +264,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId, QString windowName) {
     QVBoxLayout *layout = new QVBoxLayout(containerWidget);
     layout->addWidget(windowWidget);
 
-    TopBar *topBar = new TopBar(x11Window, this);
+    TopBar *topBar = new TopBar(x11Window, this, windowWidget);
     if (!topBar) {
         appendLog("ERR: Failed to create TopBar.");
         return;
