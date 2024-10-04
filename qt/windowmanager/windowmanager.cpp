@@ -17,6 +17,7 @@
 #include <QResizeEvent>
 #include <QDateTime>
 #include <QTransform>
+#include <QVector>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
