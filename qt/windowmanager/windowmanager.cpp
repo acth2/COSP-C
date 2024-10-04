@@ -63,6 +63,14 @@ WindowManager::WindowManager(QWidget *parent)
     showFullScreen();
 }
 
+QVector<TopBar*> WindowManager::getAllTopBars() const {
+    QVector<TopBar*> topBarsList;
+    for (const auto& key : windowTopBars.keys()) {
+        topBarsList.append(windowTopBars.value(key));
+    }
+    return topBarsList;
+}
+
 Display *xDisplay;
 void WindowManager::listExistingWindows() {
     if (xDisplay) {
@@ -147,14 +155,6 @@ void WindowManager::listExistingWindows() {
     } else {
         appendLog("ERR: Failed to open X Display ..");
     }
-}
-
-QVector<TopBar*> WindowManager::getAllTopBars() const {
-    QVector<TopBar*> topBarsList;
-    for (const auto& key : windowTopBars.keys()) {
-        topBarsList.append(windowTopBars.value(key));
-    }
-    return topBarsList;
 }
 
 void WindowManager::setSupportingWMCheck() {
