@@ -27,6 +27,7 @@ public:
     QMap<WId, TopBar*> windowTopBars;
     void closeWindow(WId xorgWindowId);
     void resizeTrackedWindow(WId xorgWindowId, int newWidth, int newHeight);
+    void createAndTrackWindow(WId xorgWindowId);
 
 protected:
     bool event(QEvent *event) override;
