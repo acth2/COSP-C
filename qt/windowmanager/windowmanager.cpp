@@ -88,7 +88,7 @@ void WindowManager::listExistingWindows() {
                     QString name(windowName);
                     if (name == "QTerminal") {
                         appendLog("INFO: Detected QTerminal window: " + QString::number(child));
-                        createAndTrackWindow(child);
+                        createAndTrackWindow(child, name);
                         XFree(windowName);
                         continue;
                     }
@@ -133,12 +133,15 @@ void WindowManager::listExistingWindows() {
                 }
 
                 appendLog("INFO: Detected graphical X11 window: " + QString::number(child));
-            
-                if (!trackedWindows.contains(child)) {
-                    createAndTrackWindow(child);
+                    char *windowName2 = nullptr;
+                    if (XFetchName(xDisplay, child, &windowName2) && windowName2) {
+                        QString name2(windowName2);
+                        if (!trackedWindows.contains(child)) {
+                            createAndTrackWindow(child, name2);
+                        }
+                    }
+                        XFree(children);
                 }
-            }
-            XFree(children);
         }
     } else {
         appendLog("ERR: Failed to open X Display ..");
@@ -225,7 +228,7 @@ void WindowManager::toggleConsole() {
     appendLog("Welcome into the DEBUG window (Where my nightmare comes true), Press ESC to exit it");
 }
 
-void WindowManager::createAndTrackWindow(WId xorgWindowId) {
+void WindowManager::createAndTrackWindow(WId xorgWindowId, QString windowName) {
     appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
 
     QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
@@ -269,7 +272,8 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId) {
 
     topBar->setGeometry(containerWidget->geometry().x(), containerWidget->geometry().y() - topbarHeight,
                         containerWidget->geometry().width(), topbarHeight);
-
+    
+    topBar->setTitle(windowName);
     topBar->show();
     containerWidget->show();
 
