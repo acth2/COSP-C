@@ -18,7 +18,6 @@
 #include <QDateTime>
 #include <QTransform>
 #include <X11/Xlib.h>
-#include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
 #undef KeyPress
@@ -64,20 +63,6 @@ WindowManager::WindowManager(QWidget *parent)
 }
 
 Display *xDisplay;
-bool WindowManager::hasTopbar(Window child) {
-    Atom wmHintsAtom = XInternAtom(xDisplay, "WM_HINTS", False);
-    XWMHints *wmHints = XGetWMHints(xDisplay, child);
-    
-    if (wmHints && (wmHints->flags & InputHint) && wmHints->input) {
-        appendLog("INFO: Detected built-in topbar for window: " + QString::number(child));
-        XFree(wmHints);
-        return true;
-    }
-
-    XFree(wmHints);
-    return false;
-}
-
 void WindowManager::listExistingWindows() {
     if (xDisplay) {
         Atom netWmWindowType = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE", False);
@@ -103,7 +88,7 @@ void WindowManager::listExistingWindows() {
                     QString name(windowName);
                     if (name == "QTerminal") {
                         appendLog("INFO: Detected QTerminal window: " + QString::number(child));
-                        createAndTrackWindow(child, name, true);
+                        createAndTrackWindow(child);
                         XFree(windowName);
                         continue;
                     }
@@ -116,7 +101,7 @@ void WindowManager::listExistingWindows() {
                 unsigned char *data = nullptr;
 
                 if (XGetWindowProperty(xDisplay, child, netWmWindowType, 0, 1, False, XA_ATOM,
-                                       &type, &format, &nItems, &bytesAfter, &data) == Success) {
+                                   &type, &format, &nItems, &bytesAfter, &data) == Success) {
                     if (data) {
                         Atom *atoms = (Atom *)data;
                         if (atoms[0] != netWmWindowTypeNormal &&
@@ -141,25 +126,16 @@ void WindowManager::listExistingWindows() {
                 }
 
                 QRect windowGeometry(attributes.x, attributes.y, attributes.width, attributes.height);
+
                 if (windowGeometry.width() == 0 || windowGeometry.height() == 0) {
                     appendLog("INFO: Skipping non-graphical window (0x0 size): " + QString::number(child));
                     continue;
                 }
 
-                bool applyTopbar = !hasTopbar(child);
-                if (windowGeometry.height() <= 50) {
-                    appendLog("INFO: Menu window detected. Not giving topbar for " + QString::number(child));
-                    applyTopbar = false;
-                }
-
                 appendLog("INFO: Detected graphical X11 window: " + QString::number(child));
-                char *windowName2 = nullptr;
-                if (XFetchName(xDisplay, child, &windowName2) && windowName2) {
-                    QString name2(windowName2);
-                    if (!trackedWindows.contains(child)) {
-                        createAndTrackWindow(child, name2, applyTopbar);
-                    }
-                    XFree(windowName2);
+            
+                if (!trackedWindows.contains(child)) {
+                    createAndTrackWindow(child);
                 }
             }
             XFree(children);
@@ -249,63 +225,60 @@ void WindowManager::toggleConsole() {
     appendLog("Welcome into the DEBUG window (Where my nightmare comes true), Press ESC to exit it");
 }
 
-void WindowManager::createAndTrackWindow(WId xorgWindowId, QString windowName, bool isTracking) {
-    if (isTracking) {
-        appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
+void WindowManager::createAndTrackWindow(WId xorgWindowId) {
+    appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
 
-        QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
+    QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
 
-        if (!x11Window) {
-            appendLog("ERR: Failed to create QWindow from X11 ID.");
-            return;
-        }
-
-        trackedWindows.insert(xorgWindowId, x11Window);
-
-        QWidget *containerWidget = new QWidget(this);
-        if (!containerWidget) {
-            appendLog("ERR: Failed to create container widget.");
-            return;
-        }
-
-        QRect geometry = x11Window->geometry();
-        int topbarHeight = 30;
-
-        if (geometry.isValid()) {
-            containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
-        } else {
-            containerWidget->setGeometry(50, 80, 400, 400 + topbarHeight);
-        }
-
-        QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
-        if (!windowWidget) {
-            appendLog("ERR: Failed to create window container.");
-            return;
-        }
-
-        QVBoxLayout *layout = new QVBoxLayout(containerWidget);
-        layout->addWidget(windowWidget);
-
-        TopBar *topBar = new TopBar(x11Window, this);
-        if (!topBar) {
-            appendLog("ERR: Failed to create TopBar.");
-            return;
-        }
-
-        topBar->setGeometry(containerWidget->geometry().x(), containerWidget->geometry().y() - topbarHeight,
-                            containerWidget->geometry().width(), topbarHeight);
-    
-        topBar->setTitle(windowName);
-        topBar->show();
-        containerWidget->show();
-
-        appendLog(QString("INFO: Successfully created container and TopBar for window: %1").arg(xorgWindowId));
-
-        windowTopBars.insert(xorgWindowId, topBar);
-        trackedContainers.insert(xorgWindowId, containerWidget);
-
-        topBar->updatePosition();
+    if (!x11Window) {
+        appendLog("ERR: Failed to create QWindow from X11 ID.");
+        return;
     }
+
+    trackedWindows.insert(xorgWindowId, x11Window);
+
+    QWidget *containerWidget = new QWidget(this);
+    if (!containerWidget) {
+        appendLog("ERR: Failed to create container widget.");
+        return;
+    }
+
+    QRect geometry = x11Window->geometry();
+    int topbarHeight = 30;
+
+    if (geometry.isValid()) {
+        containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
+    } else {
+        containerWidget->setGeometry(50, 80, 400, 400 + topbarHeight);
+    }
+
+    QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
+    if (!windowWidget) {
+        appendLog("ERR: Failed to create window container.");
+        return;
+    }
+
+    QVBoxLayout *layout = new QVBoxLayout(containerWidget);
+    layout->addWidget(windowWidget);
+
+    TopBar *topBar = new TopBar(x11Window, this);
+    if (!topBar) {
+        appendLog("ERR: Failed to create TopBar.");
+        return;
+    }
+
+    topBar->setGeometry(containerWidget->geometry().x(), containerWidget->geometry().y() - topbarHeight,
+                        containerWidget->geometry().width(), topbarHeight);
+
+    topBar->show();
+    containerWidget->show();
+
+    appendLog(QString("INFO: Successfully created container and TopBar for window: %1").arg(xorgWindowId));
+
+    windowTopBars.insert(xorgWindowId, topBar);
+    trackedContainers.insert(xorgWindowId, containerWidget);
+
+    topBar->updatePosition();
 }
 
 void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
