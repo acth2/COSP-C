@@ -246,6 +246,8 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
         QPoint bottomRightCorner = windowGeometry.bottomRight();
         QCursor::setPos(bottomRightCorner);
     }
+    getTrackedWindow()->raise();
+    this->raise();
 }
 
 void TopBar::mouseReleaseEvent(QMouseEvent *event) {
@@ -256,6 +258,9 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
     if (isResizing) {
         stopResizing();
     }
+    getTrackedWindow()->raise();
+    this->raise();
+
 }
 
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
@@ -265,7 +270,7 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
             resizeButton->setVisible(true);
             isMaximized = false;
         }
-        trackedWindow->raise();
+        getTrackedWindow()->raise();
         this->raise();
 
         trackedWindow->setPosition(windowStartPos + (event->globalPos() - dragStartPos));
