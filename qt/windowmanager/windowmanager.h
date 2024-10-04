@@ -25,7 +25,6 @@ class WindowManager : public QWidget {
 public:
     explicit WindowManager(QWidget *parent = nullptr);
     void appendLog(const QString &message);
-    QVector<TopBar*> getAllTopBars() const;
     QMap<WId, TopBar*> windowTopBars;
     void closeWindow(WId xorgWindowId);
     void resizeTrackedWindow(WId xorgWindowId, int newWidth, int newHeight);
