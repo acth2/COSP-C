@@ -148,6 +148,14 @@ void WindowManager::listExistingWindows() {
     }
 }
 
+QVector<TopBar*> WindowManager::getAllTopBars() const {
+    QVector<TopBar*> topBarsList;
+    for (const auto& key : windowTopBars.keys()) {
+        topBarsList.append(windowTopBars.value(key));
+    }
+    return topBarsList;
+}
+
 void WindowManager::setSupportingWMCheck() {
     xDisplay = XOpenDisplay(nullptr);
     if (!xDisplay) {
