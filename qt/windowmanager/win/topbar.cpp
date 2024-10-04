@@ -268,12 +268,6 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
         trackedWindow->raise();
         this->raise();
 
-        for (TopBar *topBar : windowManager->getAllTopBars()) {
-            if (topBar != this) {
-                topBar->lower();
-            }
-        }
-
         trackedWindow->setPosition(windowStartPos + (event->globalPos() - dragStartPos));
     }
 
