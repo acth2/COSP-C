@@ -17,7 +17,6 @@
 #include <QResizeEvent>
 #include <QDateTime>
 #include <QTransform>
-#include <QVector>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
@@ -61,14 +60,6 @@ WindowManager::WindowManager(QWidget *parent)
     windowCheckTimer->start(50);
         
     showFullScreen();
-}
-
-QVector<TopBar*> WindowManager::getAllTopBars() const {
-    QVector<TopBar*> topBarsList;
-    for (const auto& key : windowTopBars.keys()) {
-        topBarsList.append(windowTopBars.value(key));
-    }
-    return topBarsList;
 }
 
 Display *xDisplay;
