@@ -4,7 +4,6 @@
 #include <QListView>
 #include <QFileSystemModel>
 #include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QToolBar>
 #include <QPushButton>
 #include <QLineEdit>
@@ -85,3 +84,5 @@ int main(int argc, char *argv[]) {
     explorer.show();
     return app.exec();
 }
+
+#include "main.moc"
