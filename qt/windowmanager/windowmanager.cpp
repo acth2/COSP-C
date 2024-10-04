@@ -133,7 +133,7 @@ void WindowManager::listExistingWindows() {
                 }
 
                 bool applyTopbar = true;
-                if (windowGeometry.width() <= 75 || windowGeometry.height() <= 75) {
+                if (windowGeometry.height() <= 50) {
                     appendLog("INFO: Menu window detected. Not giving topbar for " + QString::number(child));
                     applyTopbar = false;
                 }
