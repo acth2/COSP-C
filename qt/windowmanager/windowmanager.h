@@ -27,7 +27,6 @@ public:
     QMap<WId, TopBar*> windowTopBars;
     void closeWindow(WId xorgWindowId);
     void resizeTrackedWindow(WId xorgWindowId, int newWidth, int newHeight);
-    bool hasTopbar(Window child);
 
 protected:
     bool event(QEvent *event) override;
@@ -58,7 +57,7 @@ private:
     bool isConsoleVisible;
     UserInteractRight *userInteractRightWidget;
 
-    void createAndTrackWindow(WId xorgWindowId, QString windowName = "Unknown window", bool isTracking = true);
+    void createAndTrackWindow(WId xorgWindowId, QString windowName = "Unknown window");
     void listExistingWindows();
     QMap<WId, QWindow*> trackedWindows;
     QMap<QWindow*, TaskBar*> windowTaskbars;
