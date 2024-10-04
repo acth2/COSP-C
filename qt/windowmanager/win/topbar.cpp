@@ -157,6 +157,15 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     updatePosition();
 }
 
+void TopBar::focusInEvent(QFocusEvent *event) {
+    QWidget::focusInEvent(event);
+    this->show();
+}
+
+void TopBar::focusOutEvent(QFocusEvent *event) {
+    QWidget::focusOutEvent(event);
+    this->hide();
+}
 
 QWindow* TopBar::getTrackedWindow() const {
     return trackedWindow;
