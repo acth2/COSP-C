@@ -12,6 +12,7 @@
 #include <QSpacerItem>
 #include <QSizePolicy>
 #include <QFile>
+#include <QFocusEvent>
 #include <QWidget>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
