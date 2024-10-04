@@ -228,61 +228,63 @@ void WindowManager::toggleConsole() {
     appendLog("Welcome into the DEBUG window (Where my nightmare comes true), Press ESC to exit it");
 }
 
-void WindowManager::createAndTrackWindow(WId xorgWindowId, QString windowName) {
-    appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
+void WindowManager::createAndTrackWindow(WId xorgWindowId, QString windowName, bool isTracking) {
+    if (isTracking) {
+        appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
 
-    QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
+        QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
 
-    if (!x11Window) {
-        appendLog("ERR: Failed to create QWindow from X11 ID.");
-        return;
-    }
+        if (!x11Window) {
+            appendLog("ERR: Failed to create QWindow from X11 ID.");
+            return;
+        }
 
-    trackedWindows.insert(xorgWindowId, x11Window);
+        trackedWindows.insert(xorgWindowId, x11Window);
 
-    QWidget *containerWidget = new QWidget(this);
-    if (!containerWidget) {
-        appendLog("ERR: Failed to create container widget.");
-        return;
-    }
+        QWidget *containerWidget = new QWidget(this);
+        if (!containerWidget) {
+            appendLog("ERR: Failed to create container widget.");
+            return;
+        }
 
-    QRect geometry = x11Window->geometry();
-    int topbarHeight = 30;
+        QRect geometry = x11Window->geometry();
+        int topbarHeight = 30;
 
-    if (geometry.isValid()) {
-        containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
-    } else {
-        containerWidget->setGeometry(50, 80, 400, 400 + topbarHeight);
-    }
+        if (geometry.isValid()) {
+            containerWidget->setGeometry(geometry.x(), geometry.y(), geometry.width(), geometry.height() + topbarHeight);
+        } else {
+            containerWidget->setGeometry(50, 80, 400, 400 + topbarHeight);
+        }
 
-    QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
-    if (!windowWidget) {
-        appendLog("ERR: Failed to create window container.");
-        return;
-    }
+        QWidget *windowWidget = QWidget::createWindowContainer(x11Window, containerWidget);
+        if (!windowWidget) {
+            appendLog("ERR: Failed to create window container.");
+            return;
+        }
 
-    QVBoxLayout *layout = new QVBoxLayout(containerWidget);
-    layout->addWidget(windowWidget);
+        QVBoxLayout *layout = new QVBoxLayout(containerWidget);
+        layout->addWidget(windowWidget);
 
-    TopBar *topBar = new TopBar(x11Window, this);
-    if (!topBar) {
-        appendLog("ERR: Failed to create TopBar.");
-        return;
-    }
+        TopBar *topBar = new TopBar(x11Window, this);
+        if (!topBar) {
+            appendLog("ERR: Failed to create TopBar.");
+            return;
+        }
 
-    topBar->setGeometry(containerWidget->geometry().x(), containerWidget->geometry().y() - topbarHeight,
-                        containerWidget->geometry().width(), topbarHeight);
+        topBar->setGeometry(containerWidget->geometry().x(), containerWidget->geometry().y() - topbarHeight,
+                            containerWidget->geometry().width(), topbarHeight);
     
-    topBar->setTitle(windowName);
-    topBar->show();
-    containerWidget->show();
+        topBar->setTitle(windowName);
+        topBar->show();
+        containerWidget->show();
 
-    appendLog(QString("INFO: Successfully created container and TopBar for window: %1").arg(xorgWindowId));
+        appendLog(QString("INFO: Successfully created container and TopBar for window: %1").arg(xorgWindowId));
 
-    windowTopBars.insert(xorgWindowId, topBar);
-    trackedContainers.insert(xorgWindowId, containerWidget);
+        windowTopBars.insert(xorgWindowId, topBar);
+        trackedContainers.insert(xorgWindowId, containerWidget);
 
-    topBar->updatePosition();
+        topBar->updatePosition();
+    }
 }
 
 void WindowManager::mouseReleaseEvent(QMouseEvent *event) {
