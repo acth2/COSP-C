@@ -19,7 +19,7 @@ class TopBar : public QWidget {
     Q_OBJECT
 
 public:
-    explicit TopBar(QWindow *parentWindow, WindowManager *manager, QWidget* container, QWidget *parent = nullptr);
+    explicit TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent = nullptr);
     void updatePosition();
     void setTitle(const QString &title);
     QWindow* getTrackedWindow() const;
