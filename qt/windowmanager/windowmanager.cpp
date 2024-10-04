@@ -74,7 +74,7 @@ void WindowManager::listExistingWindows() {
         Atom netWmWindowTypeUtility = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_UTILITY", False);
         Atom netWmWindowTypeSplash = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_SPLASH", False);
         Atom netWmWindowTypeDialog = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DIALOG", False);
-
+        
         Window windowRoot = DefaultRootWindow(xDisplay);
         Window parent, *children;
         unsigned int nChildren;
@@ -86,7 +86,6 @@ void WindowManager::listExistingWindows() {
                 char *windowName = nullptr;
                 if (XFetchName(xDisplay, child, &windowName) && windowName) {
                     QString name(windowName);
-                    
                     if (name == "QTerminal") {
                         appendLog("INFO: Detected QTerminal window: " + QString::number(child));
                         createAndTrackWindow(child, name, true);
@@ -105,52 +104,49 @@ void WindowManager::listExistingWindows() {
                                    &type, &format, &nItems, &bytesAfter, &data) == Success) {
                     if (data) {
                         Atom *atoms = (Atom *)data;
-
                         if (atoms[0] != netWmWindowTypeNormal &&
                             atoms[0] != netWmWindowTypeDesktop &&
-                            atoms[0] != netWmWindowTypeDock) {
-                            appendLog("INFO: Skipping window type without topbar: " + QString::number(child));
+                            atoms[0] != netWmWindowTypeDock &&
+                            atoms[0] != netWmWindowTypeToolbar &&
+                            atoms[0] != netWmWindowTypeMenu &&
+                            atoms[0] != netWmWindowTypeUtility &&
+                            atoms[0] != netWmWindowTypeSplash &&
+                            atoms[0] != netWmWindowTypeDialog) {
+                            appendLog("INFO: Skipping non-desktop-dock-toolbar-menu-utility-splash-dialog window: " + QString::number(child));
                             XFree(data);
                             continue;
                         }
-                        XFree(data);
                     }
                 }
 
                 XWindowAttributes attributes;
                 if (XGetWindowAttributes(xDisplay, child, &attributes) == 0 || attributes.map_state != IsViewable) {
-                    appendLog("INFO: Skipping non-viewable window: " + QString::number(child));
+                    appendLog("INFO: Skipping attribute window: " + QString::number(child));
                     continue;
                 }
 
                 QRect windowGeometry(attributes.x, attributes.y, attributes.width, attributes.height);
+
                 if (windowGeometry.width() == 0 || windowGeometry.height() == 0) {
                     appendLog("INFO: Skipping non-graphical window (0x0 size): " + QString::number(child));
                     continue;
                 }
 
-                bool shouldTrackWithTopbar = true;
-
-                if (windowGeometry.height() < 50) {
-                    shouldTrackWithTopbar = false;
-                    appendLog("INFO: Skipping topbar for small height window: " + QString::number(child));
-                }
-
-                char *windowName2 = nullptr;
-                if (XFetchName(xDisplay, child, &windowName2) && windowName2) {
-                    QString name2(windowName2);
-                    if (!trackedWindows.contains(child)) {
-                        createAndTrackWindow(child, name2, shouldTrackWithTopbar);
+                appendLog("INFO: Detected graphical X11 window: " + QString::number(child));
+                    char *windowName2 = nullptr;
+                    if (XFetchName(xDisplay, child, &windowName2) && windowName2) {
+                        QString name2(windowName2);
+                        if (!trackedWindows.contains(child)) {
+                            createAndTrackWindow(child, name2, true);
+                        }
                     }
+                        XFree(children);
                 }
-                XFree(windowName2);
-            }
         }
     } else {
         appendLog("ERR: Failed to open X Display ..");
     }
 }
-
 
 void WindowManager::setSupportingWMCheck() {
     xDisplay = XOpenDisplay(nullptr);
