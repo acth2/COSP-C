@@ -12,6 +12,7 @@
 #include <QSpacerItem>
 #include <QSizePolicy>
 #include <QFile>
+#include <QWidget>
 
 TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), isDragging(false) {
