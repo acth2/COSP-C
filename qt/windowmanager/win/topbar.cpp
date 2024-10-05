@@ -183,7 +183,6 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
         if (getTrackedWindow()) {
             getTrackedWindow()->requestActivate();
             getTrackedWindow()->raise();
-            this->raise();
         }
 
         if (getPopup()->isVisible() && !getPopup()->geometry().contains(mouseEvent->globalPos())) {
@@ -271,8 +270,6 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
         stopResizing();
     }
     getTrackedWindow()->raise();
-    this->raise();
-
 }
 
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
