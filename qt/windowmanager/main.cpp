@@ -1,4 +1,5 @@
 #include "windowmanager.h"
+#include "desk/desktopicons.cpp"
 #include "taskbar.h"
 #include <QApplication>
 #include <QScreen>
@@ -34,7 +35,10 @@ int main(int argc, char *argv[]) {
 
     manager.setWindowTitle("A2WM");
     manager.showFullScreen();
-
+    
+    DesktopIcons desktopIcons;
+    desktopIcons.show();
+    
     taskBar.show();
     return app.exec();
 }
