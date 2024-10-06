@@ -13,7 +13,8 @@ SOURCES += main.cpp \
            konami_code_handler.cpp \
            userinteractright.cpp \
            taskbar.cpp \
-           win/topbar.cpp
+           win/topbar.cpp \
+           desk/desktopicons.cpp
            
 HEADERS += windowmanager.h \
            konami_code_handler.h \
