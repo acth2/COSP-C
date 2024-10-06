@@ -77,7 +77,6 @@ private:
     void setupCloseButton(QWindow *window);
     void setSupportingWMCheck();
 
-    void createDesktopIcons();
 
     QRect *windowGeometry;
     QMap<WId, QWidget*> trackedContainers;
