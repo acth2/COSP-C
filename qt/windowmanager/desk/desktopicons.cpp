@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
+
 class DesktopIcons : public QWidget {
 public:
     DesktopIcons(QWidget *parent = nullptr) : QWidget(parent) {
