@@ -18,18 +18,6 @@
 #include <QDateTime>
 #include <QTransform>
 #include <QPushButton>
-
-#include <QDir>
-#include <QPushButton>
-#include <QLabel>
-#include <QDesktopServices>
-#include <QUrl>
-#include <QFileInfoList>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QIcon>
-#include <QProcess>
-
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
@@ -419,54 +407,6 @@ void WindowManager::cleanUpClosedWindows() {
         }
 
     }
-}
-void WindowManager::createDesktopIcons() {
-    QString homeDir = QProcessEnvironment::systemEnvironment().value("HOME");
-    QString desktopPath = homeDir + "/A2WM/Desktop";
-    QDir desktopDir(desktopPath);
-
-    if (!desktopDir.exists()) {
-        appendLog("Directory not found: " + desktopPath);
-        return;
-    }
-
-    QFileInfoList entries = desktopDir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries, QDir::DirsFirst | QDir::Name);
-
-    QGridLayout* gridLayout = new QGridLayout(this);
-    int row = 0, col = 0;
-    int maxCols = 5;
-
-    foreach (const QFileInfo& entry, entries) {
-        QPushButton* iconButton = new QPushButton(this);
-        iconButton->setFixedSize(32, 32);
-        iconButton->setIconSize(QSize(32, 32));
-
-        if (entry.isDir()) {
-            iconButton->setIcon(QIcon("/usr/cydra/icons/folder.png"));
-            connect(iconButton, &QPushButton::clicked, [=]() {
-                QDesktopServices::openUrl(QUrl::fromLocalFile(entry.absoluteFilePath()));
-            });
-        } else if (entry.isFile()) {
-            iconButton->setIcon(QIcon("/usr/cydra/icons/file.png"));
-            connect(iconButton, &QPushButton::clicked, [=]() {
-                QDesktopServices::openUrl(QUrl::fromLocalFile(entry.absoluteFilePath()));
-            });
-        }
-
-        QLabel* nameLabel = new QLabel(entry.fileName(), this);
-        nameLabel->setStyleSheet("QLabel { color : white; }");
-
-        gridLayout->addWidget(iconButton, row, col);
-        gridLayout->addWidget(nameLabel, row + 1, col);
-
-        col++;
-        if (col >= maxCols) {
-            col = 0;
-            row += 2;
-        }
-    }
-
-    this->setLayout(gridLayout);
 }
 
 void WindowManager::keyPressEvent(QKeyEvent *event) {
