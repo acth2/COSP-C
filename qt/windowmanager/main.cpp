@@ -1,5 +1,4 @@
 #include "windowmanager.h"
-#include "desk/desktopicons.cpp"
 #include "taskbar.h"
 #include <QApplication>
 #include <QScreen>
