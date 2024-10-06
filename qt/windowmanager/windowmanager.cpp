@@ -20,6 +20,10 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QDir>
+#include <QFileInfo>
+#include <QFileInfoList>
+#include <QLabel>
+#include <QPushButton>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
