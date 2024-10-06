@@ -153,18 +153,16 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addWidget(maximizeButton);
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
-
-    connect(trackedWindow, &QWindow::windowStateChanged, this, &TopBar::updateVisibility);
-    connect(trackedWindow, &QWindow::visibilityChanged, this, &TopBar::updateVisibility);
-
+        
+    connect(QApplication::instance(), &QApplication::focusWindowChanged, this, &TopBar::onFocusWindowChanged);
     updateVisibility();
 
     setLayout(layout);
     updatePosition();
 }
 
-void TopBar::updateVisibility() {
-    if (trackedWindow->isActive() && trackedWindow->visibility() == QWindow::Windowed) {
+void TopBar::onFocusWindowChanged(QWindow* focusWindow) {
+    if (focusWindow == trackedWindow) {
         this->show();
     } else {
         this->hide();
