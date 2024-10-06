@@ -59,8 +59,6 @@ WindowManager::WindowManager(QWidget *parent)
     windowCheckTimer = new QTimer(this);
     connect(windowCheckTimer, &QTimer::timeout, this, &WindowManager::checkForNewWindows);
     windowCheckTimer->start(50);
-
-    createDesktopIcons(); 
     
     showFullScreen();
 }
