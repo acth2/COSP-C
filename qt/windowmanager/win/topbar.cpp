@@ -190,6 +190,14 @@ QLabel* TopBar::getPopup() const {
 }
 
 bool TopBar::eventFilter(QObject *obj, QEvent *event) {
+    if (obj == trackedWindow) {
+        if (event->type() == QEvent::WindowActivate) {
+            this->show();
+        } else if (event->type() == QEvent::WindowDeactivate) {
+            this->hide();
+        }
+    }
+
     if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
 
@@ -203,6 +211,7 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
             return true;
         }
     }
+
     return QWidget::eventFilter(obj, event);
 }
 
