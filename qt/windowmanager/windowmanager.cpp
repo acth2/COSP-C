@@ -419,8 +419,8 @@ void WindowManager::createDesktopIcons() {
     QString desktopPath = QDir::homePath() + "/A2WM/Desktop";
     QDir directory(desktopPath);
 
-    if (!directory.exists()) {
-        appendLog("Desktop directory not found: " + desktopPath);
+    if (!directory.isReadable()) {
+        appendLog("Desktop directory not found or not readable: " + desktopPath);
         return;
     }
 
@@ -464,7 +464,6 @@ void WindowManager::createDesktopIcons() {
         }
     }
 }
-
 
 void WindowManager::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Escape && logLabel->isVisible()) {
