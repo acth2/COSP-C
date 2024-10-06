@@ -66,8 +66,8 @@ private:
     bool isResizing;
     QPoint resizeStartPos;
     QSize windowStartSize;
+    void onFocusWindowChanged(QWindow* focusWindow);
 
-    void updateVisibility();
 };
 
 #endif // TOPBAR_H
