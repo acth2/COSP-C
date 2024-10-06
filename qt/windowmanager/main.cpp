@@ -36,9 +36,6 @@ int main(int argc, char *argv[]) {
     manager.setWindowTitle("A2WM");
     manager.showFullScreen();
     
-    DesktopIcons desktopIcons;
-    desktopIcons.show();
-    
     taskBar.show();
     return app.exec();
 }
