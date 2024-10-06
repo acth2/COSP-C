@@ -17,6 +17,9 @@
 #include <QResizeEvent>
 #include <QDateTime>
 #include <QTransform>
+#include <QDesktopServices>
+#include <QUrl>
+#include <QDir>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
@@ -58,7 +61,9 @@ WindowManager::WindowManager(QWidget *parent)
     windowCheckTimer = new QTimer(this);
     connect(windowCheckTimer, &QTimer::timeout, this, &WindowManager::checkForNewWindows);
     windowCheckTimer->start(50);
-        
+
+    createDesktopIcons(); 
+    
     showFullScreen();
 }
 
@@ -405,6 +410,57 @@ void WindowManager::cleanUpClosedWindows() {
 
     }
 }
+
+void WindowManager::createDesktopIcons() {
+    QString desktopPath = QDir::homePath() + "/A2WM/Desktop";
+    QDir directory(desktopPath);
+
+    if (!directory.exists()) {
+        appendLog("Desktop directory not found: " + desktopPath);
+        return;
+    }
+
+    QFileInfoList entries = directory.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    int iconSize = 64;
+    int x = 10;
+    int y = 10;
+
+    foreach (QFileInfo entry, entries) {
+        QString entryName = entry.fileName();
+        QString entryPath = entry.absoluteFilePath();
+
+        QPushButton* iconButton = new QPushButton(this);
+        iconButton->setFixedSize(iconSize, iconSize);
+        iconButton->setIconSize(QSize(iconSize, iconSize));
+
+        if (entry.isDir()) {
+            iconButton->setIcon(QIcon("/usr/cydra/icons/folder.png"));
+            connect(iconButton, &QPushButton::clicked, [entryPath, this]() {
+                QDesktopServices::openUrl(QUrl::fromLocalFile(entryPath));
+            });
+        } else if (entry.isFile()) {
+            iconButton->setIcon(QIcon("/usr/cydra/icons/file.png"));
+            connect(iconButton, &QPushButton::clicked, [entryPath, this]() {
+                QDesktopServices::openUrl(QUrl::fromLocalFile(entryPath));
+            });
+        }
+
+        iconButton->move(x, y);
+        iconButton->show();
+
+        QLabel* nameLabel = new QLabel(entryName, this);
+        nameLabel->move(x, y + iconSize + 5);
+        nameLabel->setStyleSheet("color: white;");
+        nameLabel->show();
+
+        x += iconSize + 30;
+        if (x > width() - iconSize) {
+            x = 10;
+            y += iconSize + 50;
+        }
+    }
+}
+
 
 void WindowManager::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Escape && logLabel->isVisible()) {
