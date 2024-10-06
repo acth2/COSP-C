@@ -154,18 +154,9 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
         
-    connect(QApplication::instance(), &QApplication::focusWindowChanged, this, &TopBar::onFocusWindowChanged);
 
     setLayout(layout);
     updatePosition();
-}
-
-void TopBar::onFocusWindowChanged(QWindow* focusWindow) {
-    if (focusWindow == trackedWindow) {
-        this->show();
-    } else {
-        this->hide();
-    }
 }
 
 void TopBar::focusInEvent(QFocusEvent *event) {
