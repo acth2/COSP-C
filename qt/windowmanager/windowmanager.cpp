@@ -105,9 +105,7 @@ void WindowManager::listExistingWindows() {
                                    &type, &format, &nItems, &bytesAfter, &data) == Success) {
                     if (data) {
                         Atom *atoms = (Atom *)data;
-                        /*if (atoms[0] != netWmWindowTypeNormal &&
-                            atoms[0] != netWmWindowTypeDesktop &&
-                            atoms[0] != netWmWindowTypeDock &&
+                        if (atoms[0] != netWmWindowTypeDock &&
                             atoms[0] != netWmWindowTypeToolbar &&
                             atoms[0] != netWmWindowTypeMenu &&
                             atoms[0] != netWmWindowTypeUtility &&
@@ -117,7 +115,6 @@ void WindowManager::listExistingWindows() {
                             XFree(data);
                             continue;
                         }
-                        */
                     }
                 }
 
