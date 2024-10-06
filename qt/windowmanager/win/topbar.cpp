@@ -155,7 +155,6 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->setContentsMargins(10, 5, 10, 2);
         
     connect(QApplication::instance(), &QApplication::focusWindowChanged, this, &TopBar::onFocusWindowChanged);
-    updateVisibility();
 
     setLayout(layout);
     updatePosition();
