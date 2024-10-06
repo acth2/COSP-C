@@ -24,6 +24,7 @@
 #include <QFileInfoList>
 #include <QLabel>
 #include <QPushButton>
+#include <QStandardPaths>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
@@ -416,16 +417,16 @@ void WindowManager::cleanUpClosedWindows() {
 }
 
 void WindowManager::createDesktopIcons() {
-    QString desktopPath = QDir::homePath() + "/A2WM/Desktop";
+    QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/A2WM/Desktop";
     QDir directory(desktopPath);
 
-    if (!directory.isReadable()) {
-        appendLog("Desktop directory not found or not readable: " + desktopPath);
+    if (!directory.exists()) {
+        appendLog("Desktop directory not found: " + desktopPath);
         return;
     }
 
     QFileInfoList entries = directory.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
-    int iconSize = 64;
+    int iconSize = 32;
     int x = 10;
     int y = 10;
 
