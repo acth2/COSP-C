@@ -17,14 +17,19 @@
 #include <QResizeEvent>
 #include <QDateTime>
 #include <QTransform>
+#include <QPushButton>
+
+#include <QDir>
+#include <QPushButton>
+#include <QLabel>
 #include <QDesktopServices>
 #include <QUrl>
-#include <QDir>
-#include <QFileInfo>
 #include <QFileInfoList>
-#include <QLabel>
-#include <QPushButton>
-#include <QStandardPaths>
+#include <QHBoxLayout>
+#include <QGridLayout>
+#include <QIcon>
+#include <QProcess>
+
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
@@ -415,55 +420,53 @@ void WindowManager::cleanUpClosedWindows() {
 
     }
 }
-
 void WindowManager::createDesktopIcons() {
-    QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/A2WM/Desktop";
-    QDir directory(desktopPath);
+    QString homeDir = QProcessEnvironment::systemEnvironment().value("HOME");
+    QString desktopPath = homeDir + "/A2WM/Desktop";
+    QDir desktopDir(desktopPath);
 
-    if (!directory.exists()) {
-        appendLog("Desktop directory not found: " + desktopPath);
+    if (!desktopDir.exists()) {
+        appendLog("Directory not found: " + desktopPath);
         return;
     }
 
-    QFileInfoList entries = directory.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
-    int iconSize = 32;
-    int x = 10;
-    int y = 10;
+    QFileInfoList entries = desktopDir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries, QDir::DirsFirst | QDir::Name);
 
-    foreach (QFileInfo entry, entries) {
-        QString entryName = entry.fileName();
-        QString entryPath = entry.absoluteFilePath();
+    QGridLayout* gridLayout = new QGridLayout(this);
+    int row = 0, col = 0;
+    int maxCols = 5;
 
+    foreach (const QFileInfo& entry, entries) {
         QPushButton* iconButton = new QPushButton(this);
-        iconButton->setFixedSize(iconSize, iconSize);
-        iconButton->setIconSize(QSize(iconSize, iconSize));
+        iconButton->setFixedSize(32, 32);
+        iconButton->setIconSize(QSize(32, 32));
 
         if (entry.isDir()) {
             iconButton->setIcon(QIcon("/usr/cydra/icons/folder.png"));
-            connect(iconButton, &QPushButton::clicked, [entryPath, this]() {
-                QDesktopServices::openUrl(QUrl::fromLocalFile(entryPath));
+            connect(iconButton, &QPushButton::clicked, [=]() {
+                QDesktopServices::openUrl(QUrl::fromLocalFile(entry.absoluteFilePath()));
             });
         } else if (entry.isFile()) {
             iconButton->setIcon(QIcon("/usr/cydra/icons/file.png"));
-            connect(iconButton, &QPushButton::clicked, [entryPath, this]() {
-                QDesktopServices::openUrl(QUrl::fromLocalFile(entryPath));
+            connect(iconButton, &QPushButton::clicked, [=]() {
+                QDesktopServices::openUrl(QUrl::fromLocalFile(entry.absoluteFilePath()));
             });
         }
 
-        iconButton->move(x, y);
-        iconButton->show();
+        QLabel* nameLabel = new QLabel(entry.fileName(), this);
+        nameLabel->setStyleSheet("QLabel { color : white; }");
 
-        QLabel* nameLabel = new QLabel(entryName, this);
-        nameLabel->move(x, y + iconSize + 5);
-        nameLabel->setStyleSheet("color: white;");
-        nameLabel->show();
+        gridLayout->addWidget(iconButton, row, col);
+        gridLayout->addWidget(nameLabel, row + 1, col);
 
-        x += iconSize + 30;
-        if (x > width() - iconSize) {
-            x = 10;
-            y += iconSize + 50;
+        col++;
+        if (col >= maxCols) {
+            col = 0;
+            row += 2;
         }
     }
+
+    this->setLayout(gridLayout);
 }
 
 void WindowManager::keyPressEvent(QKeyEvent *event) {
