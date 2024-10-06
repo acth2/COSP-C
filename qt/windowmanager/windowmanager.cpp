@@ -87,7 +87,7 @@ void WindowManager::listExistingWindows() {
                 char *windowName = nullptr;
                 if (XFetchName(xDisplay, child, &windowName) && windowName) {
                     QString name(windowName);
-                    if (name == "QTerminal") {
+                    if (name == "QTerminal" || name == "Shell No. 1") {
                         appendLog("INFO: Detected QTerminal window: " + QString::number(child));
                         createAndTrackWindow(child, name);
                         XFree(windowName);
