@@ -17,7 +17,7 @@ class TaskBar : public QWidget {
     Q_OBJECT
 
 public:
-    explicit TaskBar(QWidget *parent = nullptr, TaskBar taskbar);
+    explicit TaskBar(QWidget *parent = nullptr);
     void showPopup();
     void closePopup();
     void addMinimizedWindow(QWindow *window);
