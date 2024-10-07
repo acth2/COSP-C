@@ -1,6 +1,7 @@
 #ifndef TASKBAR_H
 #define TASKBAR_H
 
+#include "win/topbar.h"
 #include <QWidget>
 #include <QPushButton>
 #include <QHBoxLayout>
@@ -16,7 +17,7 @@ class TaskBar : public QWidget {
     Q_OBJECT
 
 public:
-    explicit TaskBar(QWidget *parent = nullptr);
+    explicit TaskBar(QWidget *parent = nullptr, TaskBar taskbar);
     void showPopup();
     void closePopup();
     void addMinimizedWindow(QWindow *window);
@@ -33,6 +34,7 @@ private:
     QLabel *popup;
     QPushButton *startButton;
     QPushButton *powerButton;
+    QHBoxLayout *minimizedLayout;
     void adjustSizeToScreen();
     void showPowerMenu();
     void closePowerMenu();
