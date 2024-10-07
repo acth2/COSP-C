@@ -175,6 +175,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
         
     connect(closeButton, &QPushButton::clicked, this, &TopBar::closeTrackedWindow);
     connect(maximizeButton, &QPushButton::clicked, this, &TopBar::toggleMaximizeRestore);
+    connect(minusButton, &QPushButton::clicked, this, &TopBar::minimizeWindow);
     connect(resizeButton, &QPushButton::clicked, this, &TopBar::startResizing);
         
     QHBoxLayout *layout = new QHBoxLayout(this);
@@ -190,6 +191,14 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     setLayout(layout);
     updatePosition();
 }
+
+void TopBar::minimizeWindow() {
+    if (trackedWindow) {
+        trackedWindow->hide();
+        this->hide();
+    }
+}
+
 
 void TopBar::focusInEvent(QFocusEvent *event) {
     QWidget::focusInEvent(event);
