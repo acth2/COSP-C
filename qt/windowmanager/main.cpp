@@ -22,9 +22,9 @@ int main(int argc, char *argv[]) {
     logFile.open(QIODevice::Append | QIODevice::Text);
 
     qInstallMessageHandler(customLogOutput);
-    
-    WindowManager manager;
+
     TaskBar taskBar;
+    WindowManager *manager = new WindowManager(taskBar);
 
     QScreen *screen = QApplication::primaryScreen();
     if (screen) {
