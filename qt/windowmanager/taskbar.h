@@ -9,6 +9,7 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QDialog>
+#include <QWindow>
 #include <QEvent>
 
 class TaskBar : public QWidget {
@@ -18,10 +19,9 @@ public:
     explicit TaskBar(QWidget *parent = nullptr);
     void showPopup();
     void closePopup();
+    void addMinimizedWindow(QWindow *window);
+    void restoreMinimizedWindow(QWindow *window);
     bool isPopupVisible = false;
-
-signals:
-    void windowMinimized();
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
