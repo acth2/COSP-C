@@ -106,6 +106,38 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
         );
     }
 
+    minusButton = new QPushButton(this);
+    minusButton->setText("−");
+    minusButton->setFixedSize(30, 30);
+    if (!isDarkMode){
+        minusButton->setStyleSheet(
+            "QPushButton {"
+            "   background-color: black;"
+            "   border-radius: 15px;"
+            "   font-size: 18px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: gray;"
+            "}"
+            "QPushButton:pressed {"
+            "   background-color: #404040;"
+            "}"
+        );
+    } else {
+        minusButton->setStyleSheet(
+            "QPushButton {"
+            "   background-color: white;"
+            "   border-radius: 15px;"
+            "   font-size: 18px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: gray;"
+            "}"
+            "QPushButton:pressed {"
+            "   background-color: #404040;"
+            "}"
+        );
+    }
 
     resizeButton = new QPushButton(this);
     resizeButton->setText("⌞⌝");
@@ -150,11 +182,11 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addStretch();
     layout->addWidget(resizeButton);
     layout->addItem(new QSpacerItem(20, 0, QSizePolicy::Fixed, QSizePolicy::Minimum));
+    layout->addWidget(minusButton);
     layout->addWidget(maximizeButton);
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
-        
-
+    
     setLayout(layout);
     updatePosition();
 }
