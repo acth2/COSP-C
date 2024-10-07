@@ -23,7 +23,7 @@
 
 #undef KeyPress
 
-WindowManager::WindowManager(QWidget *parent)
+WindowManager::WindowManager(QWidget *parent, TaskBar taskBar)
     : QWidget(parent),
       isConsoleVisible(false),
       userInteractRightWidget(nullptr),
@@ -57,14 +57,14 @@ WindowManager::WindowManager(QWidget *parent)
     userInteractRightWidget = nullptr;
         
     windowCheckTimer = new QTimer(this);
-    connect(windowCheckTimer, &QTimer::timeout, this, &WindowManager::checkForNewWindows);
+    connect(windowCheckTimer, &QTimer::timeout, this, &WindowManager::checkForNewWindows(taskBar));
     windowCheckTimer->start(50);
     
     showFullScreen();
 }
 
 Display *xDisplay;
-void WindowManager::listExistingWindows() {
+void WindowManager::listExistingWindows(taskBar) {
     if (xDisplay) {
         Atom netWmWindowType = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE", False);
         Atom netWmWindowTypeNormal = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", False);
@@ -89,7 +89,7 @@ void WindowManager::listExistingWindows() {
                     QString name(windowName);
                     if (name == "QTerminal" || name == "Shell No. 1") {
                         appendLog("INFO: Detected QTerminal window: " + QString::number(child));
-                        createAndTrackWindow(child, "QTerminal");
+                        createAndTrackWindow(child, "QTerminal", taskBar);
                         XFree(windowName);
                         continue;
                     }
@@ -136,7 +136,7 @@ void WindowManager::listExistingWindows() {
                     if (XFetchName(xDisplay, child, &windowName2) && windowName2) {
                         QString name2(windowName2);
                         if (!trackedWindows.contains(child)) {
-                            createAndTrackWindow(child, name2);
+                            createAndTrackWindow(child, name2, taskBar);
                         }
                     }
                         XFree(children);
@@ -165,10 +165,10 @@ void WindowManager::setSupportingWMCheck() {
     XCloseDisplay(xDisplay);
 }
 
-void WindowManager::checkForNewWindows() {
+void WindowManager::checkForNewWindows(TaskBar taskBar) {
     xDisplay = XOpenDisplay(nullptr);
     if (xDisplay) {
-        listExistingWindows();
+        listExistingWindows(taskBar);
         processX11Events(); 
         cleanUpClosedWindows();
         
