@@ -20,6 +20,9 @@ public:
     void closePopup();
     bool isPopupVisible = false;
 
+signals:
+    void windowMinimized();
+
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -36,6 +39,7 @@ private:
     void installEventFilter();
     bool powerMenuVisible = false;
     bool isDarkMode;
+    bool isWindowVisible = true;
 };
 
 #endif // TASKBAR_H
