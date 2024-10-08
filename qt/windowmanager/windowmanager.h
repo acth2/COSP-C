@@ -25,7 +25,7 @@ class WindowManager : public QWidget {
     Q_OBJECT
 
 public:
-    explicit WindowManager(QWidget *parent = nullptr, TaskBar taskBar);
+    explicit WindowManager(TaskBar taskBar, QWidget *parent = nullptr);
     void appendLog(const QString &message);
     QMap<WId, TopBar*> windowTopBars;
     void closeWindow(WId xorgWindowId);
