@@ -227,7 +227,7 @@ void WindowManager::toggleConsole() {
     appendLog("Welcome into the DEBUG window (Where my nightmare comes true), Press ESC to exit it");
 }
 
-void WindowManager::createAndTrackWindow(WId xorgWindowId, QString windowName) {
+void WindowManager::createAndTrackWindow(WId xorgWindowId, QString windowName, TaskBar taskBar) {
     appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
 
     QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
@@ -263,7 +263,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId, QString windowName) {
     QVBoxLayout *layout = new QVBoxLayout(containerWidget);
     layout->addWidget(windowWidget);
 
-    TopBar *topBar = new TopBar(x11Window, this);
+    TopBar *topBar = new TopBar(x11Window, this, taskBar);
     if (!topBar) {
         appendLog("ERR: Failed to create TopBar.");
         return;
