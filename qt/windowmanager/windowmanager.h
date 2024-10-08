@@ -19,6 +19,8 @@ class TopBar;
 
 class UserInteractRight;
 
+class TaskBar;
+
 class WindowManager : public QWidget {
     Q_OBJECT
 
