@@ -19,7 +19,7 @@ class WindowManager;
 class TopBar : public QWidget {
     Q_OBJECT
 
-class TaskBar
+class TaskBar;
 
 public:
     explicit TopBar(QWindow *parentWindow, WindowManager *manager, TaskBar *taskBar, QWidget *parent = nullptr);
