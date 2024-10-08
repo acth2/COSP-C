@@ -28,7 +28,7 @@ public:
     QMap<WId, TopBar*> windowTopBars;
     void closeWindow(WId xorgWindowId);
     void resizeTrackedWindow(WId xorgWindowId, int newWidth, int newHeight);
-    void createAndTrackWindow(WId xorgWindowId);
+    void createAndTrackWindow(WId xorgWindowId, TaskBar taskBar);
 
 protected:
     bool event(QEvent *event) override;
@@ -45,7 +45,7 @@ protected:
     void removeCloseButton(WId windowId);
 
 private slots:
-    void checkForNewWindows();
+    void checkForNewWindows(TaskBar taskBar);
     void toggleConsole();
     void processX11Events();
     void cleanUpClosedWindows();
@@ -59,8 +59,8 @@ private:
     bool isConsoleVisible;
     UserInteractRight *userInteractRightWidget;
 
-    void createAndTrackWindow(WId xorgWindowId, QString windowName = "Unknown window");
-    void listExistingWindows();
+    void createAndTrackWindow(WId xorgWindowId, QString windowName = "Unknown window", TaskBar taskBar);
+    void listExistingWindows(TaskBar taskBar);
     QMap<WId, QWindow*> trackedWindows;
     QMap<QWindow*, TaskBar*> windowTaskbars;
     QTimer *windowCheckTimer;
