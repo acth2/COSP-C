@@ -11,6 +11,7 @@
 #include <QKeyEvent>
 #include <QDialog>
 #include <QWindow>
+#include <QMap>
 #include <QEvent>
 
 class TaskBar : public QWidget {
@@ -23,6 +24,10 @@ public:
     void addMinimizedWindow(QWindow *window);
     void restoreMinimizedWindow(QWindow *window);
     bool isPopupVisible = false;
+
+public slots:
+    void addWindowToTaskbar(const QString &windowTitle, const QIcon &windowIcon);
+    void toggleWindowVisibility(QWindow *window);
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
@@ -42,6 +47,7 @@ private:
     bool powerMenuVisible = false;
     bool isDarkMode;
     bool isWindowVisible = true;
+    QMap<QPushButton *, QWindow *> taskbarButtons;
 };
 
 #endif // TASKBAR_H
