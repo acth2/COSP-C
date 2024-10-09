@@ -23,7 +23,7 @@
 
 #undef KeyPress
 
-WindowManager::WindowManager(QWidget *parent, TaskBar taskBar)
+WindowManager::WindowManager(QWidget *parent)
     : QWidget(parent),
       isConsoleVisible(false),
       userInteractRightWidget(nullptr),
@@ -57,14 +57,14 @@ WindowManager::WindowManager(QWidget *parent, TaskBar taskBar)
     userInteractRightWidget = nullptr;
         
     windowCheckTimer = new QTimer(this);
-    connect(windowCheckTimer, &QTimer::timeout, this, &WindowManager::checkForNewWindows(taskBar));
+    connect(windowCheckTimer, &QTimer::timeout, this, &WindowManager::checkForNewWindows);
     windowCheckTimer->start(50);
     
     showFullScreen();
 }
 
 Display *xDisplay;
-void WindowManager::listExistingWindows(taskBar) {
+void WindowManager::listExistingWindows() {
     if (xDisplay) {
         Atom netWmWindowType = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE", False);
         Atom netWmWindowTypeNormal = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", False);
@@ -89,7 +89,7 @@ void WindowManager::listExistingWindows(taskBar) {
                     QString name(windowName);
                     if (name == "QTerminal" || name == "Shell No. 1") {
                         appendLog("INFO: Detected QTerminal window: " + QString::number(child));
-                        createAndTrackWindow(child, "QTerminal", taskBar);
+                        createAndTrackWindow(child, name);
                         XFree(windowName);
                         continue;
                     }
@@ -136,7 +136,7 @@ void WindowManager::listExistingWindows(taskBar) {
                     if (XFetchName(xDisplay, child, &windowName2) && windowName2) {
                         QString name2(windowName2);
                         if (!trackedWindows.contains(child)) {
-                            createAndTrackWindow(child, name2, taskBar);
+                            createAndTrackWindow(child, name2);
                         }
                     }
                         XFree(children);
@@ -165,10 +165,10 @@ void WindowManager::setSupportingWMCheck() {
     XCloseDisplay(xDisplay);
 }
 
-void WindowManager::checkForNewWindows(TaskBar taskBar) {
+void WindowManager::checkForNewWindows() {
     xDisplay = XOpenDisplay(nullptr);
     if (xDisplay) {
-        listExistingWindows(taskBar);
+        listExistingWindows();
         processX11Events(); 
         cleanUpClosedWindows();
         
@@ -227,7 +227,7 @@ void WindowManager::toggleConsole() {
     appendLog("Welcome into the DEBUG window (Where my nightmare comes true), Press ESC to exit it");
 }
 
-void WindowManager::createAndTrackWindow(WId xorgWindowId, QString windowName, TaskBar taskBar) {
+void WindowManager::createAndTrackWindow(WId xorgWindowId, QString windowName) {
     appendLog(QString("INFO: Creating and tracking window: %1").arg(xorgWindowId));
 
     QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
@@ -263,7 +263,7 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId, QString windowName, T
     QVBoxLayout *layout = new QVBoxLayout(containerWidget);
     layout->addWidget(windowWidget);
 
-    TopBar *topBar = new TopBar(x11Window, this, taskBar);
+    TopBar *topBar = new TopBar(x11Window, this);
     if (!topBar) {
         appendLog("ERR: Failed to create TopBar.");
         return;
