@@ -22,18 +22,18 @@ int main(int argc, char *argv[]) {
     logFile.open(QIODevice::Append | QIODevice::Text);
 
     qInstallMessageHandler(customLogOutput);
-
+    
+    WindowManager manager;
     TaskBar taskBar;
-    WindowManager *manager = new WindowManager(taskBar);
 
     QScreen *screen = QApplication::primaryScreen();
     if (screen) {
         QRect screenGeometry = screen->geometry();
-        manager->setGeometry(screenGeometry);
+        manager.setGeometry(screenGeometry);
     }
 
-    manager->setWindowTitle("A2WM");
-    manager->showFullScreen();
+    manager.setWindowTitle("A2WM");
+    manager.showFullScreen();
     
     taskBar.show();
     return app.exec();
