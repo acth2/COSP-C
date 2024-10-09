@@ -30,6 +30,16 @@ public:
     void resizeTrackedWindow(WId xorgWindowId, int newWidth, int newHeight);
     void createAndTrackWindow(WId xorgWindowId);
 
+    void setTaskBar(TaskBar *taskBar) {
+        this->taskBar = taskBar;
+    }
+
+    void createNewWindow() {
+        TopBar *topBarInstance = new TopBar(this);
+
+        connect(topBarInstance, &TopBar::windowAddedToTaskbar, taskBar, &TaskBar::addWindowToTaskbar);
+    }
+
 protected:
     bool event(QEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
@@ -59,6 +69,7 @@ private:
     bool isConsoleVisible;
     UserInteractRight *userInteractRightWidget;
 
+    TaskBar *taskBar;
     void createAndTrackWindow(WId xorgWindowId, QString windowName = "Unknown window");
     void listExistingWindows();
     QMap<WId, QWindow*> trackedWindows;
