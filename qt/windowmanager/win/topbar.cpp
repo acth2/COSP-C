@@ -15,7 +15,7 @@
 #include <QFocusEvent>
 #include <QWidget>
 
-TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, TaskBar *taskbar, QWidget *parent)
+TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     : QWidget(parent), trackedWindow(parentWindow), taskbar(taskbar), isDragging(false) {
 
     if (QFile::exists("/usr/cydra/settings/darkmode")) {
