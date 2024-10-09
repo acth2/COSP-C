@@ -26,6 +26,8 @@ int main(int argc, char *argv[]) {
     WindowManager manager;
     TaskBar taskBar;
 
+    manager.setTaskBar(&taskBar);
+    
     QScreen *screen = QApplication::primaryScreen();
     if (screen) {
         QRect screenGeometry = screen->geometry();
