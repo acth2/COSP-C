@@ -64,6 +64,31 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     installEventFilter();
 }
 
+void TaskBar::toggleWindowVisibility(QWindow *window) {
+    if (window->isVisible()) {
+        window->hide();
+    } else {
+        window->show();
+        window->raise();
+        window->requestActivate();
+    }
+}
+
+void TaskBar::addWindowToTaskbar(const QString &windowTitle, const QIcon &windowIcon) {
+    QPushButton *windowButton = new QPushButton(this);
+    windowButton->setIcon(windowIcon);
+    windowButton->setToolTip(windowTitle);
+    windowButton->setIconSize(QSize(32, 32));
+    windowButton->setStyleSheet("border: none;");
+
+    layout()->addWidget(windowButton);
+
+    taskbarButtons[windowButton] = trackedWindow;
+    connect(windowButton, &QPushButton::clicked, this, [=]() {
+        toggleWindowVisibility(taskbarButtons[windowButton]);
+    });
+}
+
 void TaskBar::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
     adjustSizeToScreen();
