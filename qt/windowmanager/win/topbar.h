@@ -70,6 +70,8 @@ private:
     bool isResizing;
     QPoint resizeStartPos;
     QSize windowStartSize;
+
+    TaskBar *taskbar;
 };
 
 #endif // TOPBAR_H
