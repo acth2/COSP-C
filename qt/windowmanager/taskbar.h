@@ -28,7 +28,6 @@ public:
     bool isPopupVisible = false;
 
 public slots:
-    void addWindowToTaskbar(const QString &windowTitle, const QIcon &windowIcon);
     void toggleWindowVisibility(QWindow *window);
 
 protected:
