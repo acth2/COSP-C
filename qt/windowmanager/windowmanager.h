@@ -34,10 +34,14 @@ public:
         this->taskBar = taskBar;
     }
 
-    void createNewWindow() {
-        TopBar *topBarInstance = new TopBar(this);
-
+    void createNewWindow(WId xorgWindowId, const QString &windowName) {
+        QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
+        TopBar *topBarInstance = new TopBar(x11Window, this);
+    
+        topBarInstance->setWindowTitle(windowName);
+    
         connect(topBarInstance, &TopBar::windowAddedToTaskbar, taskBar, &TaskBar::addWindowToTaskbar);
+        windowTopBars.insert(xorgWindowId, topBarInstance);
     }
 
 protected:
