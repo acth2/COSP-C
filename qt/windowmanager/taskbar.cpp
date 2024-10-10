@@ -74,7 +74,7 @@ void TaskBar::toggleWindowVisibility(QWindow *window) {
     }
 }
 
-void TaskBar::addWindowToTaskbar(const QString &windowTitle, const QIcon &windowIcon) {
+void TaskBar::addWindowToTaskbar(const QString &windowTitle, const QIcon &windowIcon, QWindow *trackedWindow) {
     QPushButton *windowButton = new QPushButton(this);
     windowButton->setIcon(windowIcon);
     windowButton->setToolTip(windowTitle);
@@ -84,6 +84,7 @@ void TaskBar::addWindowToTaskbar(const QString &windowTitle, const QIcon &window
     layout()->addWidget(windowButton);
 
     taskbarButtons[windowButton] = trackedWindow;
+
     connect(windowButton, &QPushButton::clicked, this, [=]() {
         toggleWindowVisibility(taskbarButtons[windowButton]);
     });
