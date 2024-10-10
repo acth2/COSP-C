@@ -281,8 +281,6 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId, QString windowName) {
     windowTopBars.insert(xorgWindowId, topBar);
     trackedContainers.insert(xorgWindowId, containerWidget);
 
-    connect(topBar, &TopBar::windowAddedToTaskbar, taskBar, &TaskBar::addWindowToTaskbar);
-
     emit topBar->windowAddedToTaskbar(windowName, QIcon(), x11Window);
     topBar->updatePosition();
 }
