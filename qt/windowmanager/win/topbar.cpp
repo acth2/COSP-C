@@ -188,8 +188,8 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
 
-    emit windowAddedToTaskbar(trackedWindow->title(), trackedWindow->icon());
-    
+    emit windowAddedToTaskbar(windowTitle, windowIcon, associatedWindow);
+        
     setLayout(layout);
     updatePosition();
 }
