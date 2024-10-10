@@ -192,6 +192,13 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     updatePosition();
 }
 
+void TopBar::minimizeWindow() {
+    if (trackedWindow) {
+        trackedWindow->hide();
+        taskbar->addMinimizedWindow(trackedWindow);
+    }
+}
+
 void TopBar::focusInEvent(QFocusEvent *event) {
     QWidget::focusInEvent(event);
     this->show();
