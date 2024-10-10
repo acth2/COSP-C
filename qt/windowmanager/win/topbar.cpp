@@ -187,8 +187,6 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addWidget(maximizeButton);
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
-
-    emit windowAddedToTaskbar(windowTitle, windowIcon, associatedWindow);
         
     setLayout(layout);
     updatePosition();
