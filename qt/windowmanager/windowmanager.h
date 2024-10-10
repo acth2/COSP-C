@@ -40,7 +40,6 @@ public:
     
         topBarInstance->setWindowTitle(windowName);
     
-        connect(topBarInstance, &TopBar::windowAddedToTaskbar, taskBar, &TaskBar::addWindowToTaskbar);
         windowTopBars.insert(xorgWindowId, topBarInstance);
     }
 
