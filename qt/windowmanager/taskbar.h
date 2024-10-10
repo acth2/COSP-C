@@ -13,6 +13,7 @@
 #include <QWindow>
 #include <QMap>
 #include <QEvent>
+#include <QIcon>
 
 class TaskBar : public QWidget {
     Q_OBJECT
@@ -23,6 +24,7 @@ public:
     void closePopup();
     void addMinimizedWindow(QWindow *window);
     void restoreMinimizedWindow(QWindow *window);
+    void addWindowToTaskbar(const QString &windowTitle, const QIcon &windowIcon, QWindow *trackedWindow);
     bool isPopupVisible = false;
 
 public slots:
