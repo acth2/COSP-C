@@ -36,7 +36,7 @@ public:
     bool eventFilter(QObject *obj, QEvent *event) override;
 
 signals:
-    void windowAddedToTaskbar(const QString &windowTitle, const QIcon &windowIcon);
+    void windowAddedToTaskbar(const QString &windowTitle, const QIcon &windowIcon, QWindow *trackedWindow);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
