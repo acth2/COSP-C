@@ -9,6 +9,7 @@
 #include <QDialog>
 #include <QMessageBox>
 #include <QWidget>
+#include <QDebug>
 #include <QFile>
 
 TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
@@ -32,7 +33,7 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     startButton->setIconSize(QSize(32, 32));
     startButton->setStyleSheet("border: none;");
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    layout = new QHBoxLayout(this);
     layout->addWidget(startButton, 0, Qt::AlignLeft | Qt::AlignBottom);
     layout->setContentsMargins(5, 5, 5, 5);
     layout->setSpacing(10);
