@@ -35,6 +35,7 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(startButton, 0, Qt::AlignLeft | Qt::AlignBottom);
     layout->setContentsMargins(5, 5, 5, 5);
+    layout->setSpacing(10);
     setLayout(layout);
 
     popup = new QLabel(nullptr);
@@ -74,20 +75,22 @@ void TaskBar::toggleWindowVisibility(QWindow *window) {
     }
 }
 
-void TaskBar::addWindowToTaskbar(const QString &windowTitle, const QIcon &windowIcon, QWindow *trackedWindow) {
+void Taskbar::addWindowButton(const QString &windowName, const QIcon &windowIcon, WId windowId) {
     QPushButton *windowButton = new QPushButton(this);
+
     windowButton->setIcon(windowIcon);
-    windowButton->setToolTip(windowTitle);
+    windowButton->setText(windowName);
     windowButton->setIconSize(QSize(32, 32));
-    windowButton->setStyleSheet("border: none;");
+    windowButton->setMinimumSize(120, 40);
 
-    layout()->addWidget(windowButton);
+    layout->addWidget(windowButton);
+    windowButtons.insert(windowId, windowButton);
 
-    taskbarButtons[windowButton] = trackedWindow;
-
-    connect(windowButton, &QPushButton::clicked, this, [=]() {
-        toggleWindowVisibility(taskbarButtons[windowButton]);
+    connect(windowButton, &QPushButton::clicked, [this, windowId]() {
+        emit windowButtonClicked(windowId);
     });
+
+    qDebug() << "Taskbar: Button added for window:" << windowName;
 }
 
 void TaskBar::resizeEvent(QResizeEvent *event) {
