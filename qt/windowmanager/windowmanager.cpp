@@ -28,6 +28,7 @@ WindowManager::WindowManager(QWidget *parent)
       isConsoleVisible(false),
       userInteractRightWidget(nullptr),
       resizeMode(false),
+      taskbar(new Taskbar(this)),
       backgroundImagePath("/usr/cydra/backgrounds/current.png") {
 
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -59,6 +60,8 @@ WindowManager::WindowManager(QWidget *parent)
     windowCheckTimer = new QTimer(this);
     connect(windowCheckTimer, &QTimer::timeout, this, &WindowManager::checkForNewWindows);
     windowCheckTimer->start(50);
+
+    connect(this, &WindowManager::windowAddedToTaskbar, taskbar, &Taskbar::addWindowButton);
     
     showFullScreen();
 }
@@ -281,7 +284,9 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId, QString windowName) {
     windowTopBars.insert(xorgWindowId, topBar);
     trackedContainers.insert(xorgWindowId, containerWidget);
 
-    emit topBar->windowAddedToTaskbar(windowName, QIcon(), x11Window);
+    QIcon windowIcon = fetchWindowIcon(xorgWindowId);
+    emit windowAddedToTaskbar(windowName, windowIcon, xorgWindowId);
+    
     topBar->updatePosition();
 }
 
