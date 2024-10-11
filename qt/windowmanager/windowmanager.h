@@ -19,6 +19,8 @@ class TopBar;
 
 class UserInteractRight;
 
+class Taskbar;
+
 class WindowManager : public QWidget {
     Q_OBJECT
 
@@ -42,6 +44,10 @@ public:
     
         windowTopBars.insert(xorgWindowId, topBarInstance);
     }
+    QIcon fetchWindowIcon(WId windowId);
+
+signals:
+    void windowAddedToTaskbar(QString windowName, QIcon windowIcon, WId windowId);
 
 protected:
     bool event(QEvent *event) override;
@@ -90,8 +96,6 @@ private:
 
     void setupCloseButton(QWindow *window);
     void setSupportingWMCheck();
-    void fetchWindowIcon(WId windowId);
-
 
     QRect *windowGeometry;
     QMap<WId, QWidget*> trackedContainers;
