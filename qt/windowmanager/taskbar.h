@@ -25,6 +25,7 @@ public:
     void addMinimizedWindow(QWindow *window);
     void restoreMinimizedWindow(QWindow *window);
     void addWindowToTaskbar(const QString &windowTitle, const QIcon &windowIcon, QWindow *trackedWindow);
+    void addWindowButton(const QString &windowName, const QIcon &windowIcon, WId windowId);
     bool isPopupVisible = false;
 
 public slots:
@@ -49,6 +50,11 @@ private:
     bool isDarkMode;
     bool isWindowVisible = true;
     QMap<QPushButton *, QWindow *> taskbarButtons;
+    QHBoxLayout *layout;
+    QMap<WId, QPushButton*> windowButtons;
+
+signals:
+    void windowButtonClicked(WId windowId);
 };
 
 #endif // TASKBAR_H
