@@ -90,6 +90,7 @@ private:
 
     void setupCloseButton(QWindow *window);
     void setSupportingWMCheck();
+    void fetchWindowIcon(WId windowId);
 
 
     QRect *windowGeometry;
