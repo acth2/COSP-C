@@ -200,6 +200,7 @@ void WindowManager::processX11Events() {
     if (xDisplay) {
         while (XPending(xDisplay)) {
             XNextEvent(xDisplay, &event);
+
             if (event.type == ConfigureNotify) {
                 XConfigureEvent xce = event.xconfigure;
 
@@ -212,6 +213,81 @@ void WindowManager::processX11Events() {
                         .arg(xce.width).arg(xce.height));
 
                     updateTaskbarPosition(window);
+                }
+            }
+
+            if (event.type == PropertyNotify) {
+                XPropertyEvent *propEvent = (XPropertyEvent *)&event;
+
+                if (propEvent->atom == XInternAtom(xDisplay, "_NET_WM_STATE", False)) {
+                    if (trackedWindows.contains(propEvent->window)) {
+                        QWindow *window = trackedWindows.value(propEvent->window);
+                        QWidget *container = trackedContainers.value(propEvent->window);
+
+                        Atom fullscreenAtom = XInternAtom(xDisplay, "_NET_WM_STATE_FULLSCREEN", False);
+                        Atom netWmState = XInternAtom(xDisplay, "_NET_WM_STATE", False);
+
+                        Atom actualType;
+                        int actualFormat;
+                        unsigned long nItems, bytesAfter;
+                        unsigned char *prop = nullptr;
+
+                        int status = XGetWindowProperty(xDisplay, propEvent->window, netWmState, 0, (~0L), False, XA_ATOM, 
+                                                        &actualType, &actualFormat, &nItems, &bytesAfter, &prop);
+
+                        if (status == Success && prop) {
+                            Atom *atoms = (Atom *)prop;
+                            bool isFullscreen = false;
+
+                            for (unsigned long i = 0; i < nItems; ++i) {
+                                if (atoms[i] == fullscreenAtom) {
+                                    isFullscreen = true;
+                                    break;
+                                }
+                            }
+
+                            XFree(prop);
+
+                            if (isFullscreen) {
+                                appendLog("INFO: Window is fullscreen, adjusting container size.");
+                                QScreen *screen = QApplication::primaryScreen();
+                                QRect screenGeometry = screen->geometry();
+                                container->setGeometry(screenGeometry);
+                            } else {
+                                appendLog("INFO: Window exited fullscreen, restoring container size.");
+                                container->setGeometry(window->geometry());
+                            }
+                        }
+                    }
+                }
+
+                if (propEvent->atom == XInternAtom(xDisplay, "_NET_WM_WINDOW_OPACITY", False)) {
+                    if (trackedWindows.contains(propEvent->window)) {
+                        QWindow *window = trackedWindows.value(propEvent->window);
+                        QWidget *container = trackedContainers.value(propEvent->window);
+
+                        Atom opacityAtom = XInternAtom(xDisplay, "_NET_WM_WINDOW_OPACITY", False);
+                        unsigned long opacityValue = 0xffffffff;
+
+                        Atom actualType;
+                        int actualFormat;
+                        unsigned long nItems, bytesAfter;
+                        unsigned char *prop = nullptr;
+
+                        int status = XGetWindowProperty(xDisplay, propEvent->window, opacityAtom, 0, (~0L), False, XA_CARDINAL,
+                                                        &actualType, &actualFormat, &nItems, &bytesAfter, &prop);
+
+                        if (status == Success && prop) {
+                            opacityValue = *(unsigned long *)prop;
+                            XFree(prop);
+
+                            qreal opacity = static_cast<qreal>(opacityValue) / 0xffffffff;
+
+                            appendLog(QString("INFO: Window opacity changed: %1").arg(opacity));
+
+                            container->setWindowOpacity(opacity);
+                        }
+                    }
                 }
             }
         }
