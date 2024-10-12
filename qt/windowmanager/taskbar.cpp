@@ -74,8 +74,76 @@ void TaskBar::resizeEvent(QResizeEvent *event) {
     adjustSizeToScreen();
 }
 
+Display *xDisplay;
 void TaskBar::onLoop() {
+    if (xDisplay) {
+        Atom netWmWindowType = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE", False);
+        Atom netWmWindowTypeNormal = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", False);
+        Atom netWmWindowTypeDesktop = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
+        Atom netWmWindowTypeDock = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DOCK", False);
+        Atom netWmWindowTypeToolbar = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_TOOLBAR", False);
+        Atom netWmWindowTypeMenu = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_MENU", False);
+        Atom netWmWindowTypeUtility = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_UTILITY", False);
+        Atom netWmWindowTypeSplash = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_SPLASH", False);
+        Atom netWmWindowTypeDialog = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DIALOG", False);
+        
+        Window windowRoot = DefaultRootWindow(xDisplay);
+        Window parent, *children;
+        unsigned int nChildren;
 
+        if (XQueryTree(xDisplay, windowRoot, &windowRoot, &parent, &children, &nChildren)) {
+            for (unsigned int i = 0; i < nChildren; i++) {
+                Window child = children[i];
+
+                char *windowName = nullptr;
+                if (XFetchName(xDisplay, child, &windowName) && windowName) {
+                    QString name(windowName);
+                    XFree(windowName);
+                }
+
+                Atom type;
+                int format;
+                unsigned long nItems, bytesAfter;
+                unsigned char *data = nullptr;
+
+                if (XGetWindowProperty(xDisplay, child, netWmWindowType, 0, 1, False, XA_ATOM,
+                                   &type, &format, &nItems, &bytesAfter, &data) == Success) {
+                    if (data) {
+                        Atom *atoms = (Atom *)data;
+                        if (atoms[0] != netWmWindowTypeDock &&
+                            atoms[0] != netWmWindowTypeToolbar &&
+                            atoms[0] != netWmWindowTypeMenu &&
+                            atoms[0] != netWmWindowTypeUtility &&
+                            atoms[0] != netWmWindowTypeSplash &&
+                            atoms[0] != netWmWindowTypeDialog) {
+                            XFree(data);
+                            continue;
+                        }
+                    }
+                }
+
+                XWindowAttributes attributes;
+                if (XGetWindowAttributes(xDisplay, child, &attributes) == 0 || attributes.map_state != IsViewable) {
+                    continue;
+                }
+
+                QRect windowGeometry(attributes.x, attributes.y, attributes.width, attributes.height);
+
+                if (windowGeometry.width() == 0 || windowGeometry.height() == 0) {
+                    continue;
+                }
+
+                    char *windowName2 = nullptr;
+                    if (XFetchName(xDisplay, child, &windowName2) && windowName2) {
+                        QString name2(windowName2);
+                        if (!trackedWindows.contains(child)) {
+                            // ...
+                        }
+                    }
+                        XFree(children);
+                }
+        }
+    }
 }
 
 void TaskBar::mousePressEvent(QMouseEvent *event) {
