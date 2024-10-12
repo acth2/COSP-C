@@ -19,8 +19,6 @@ class WindowManager;
 class TopBar : public QWidget {
     Q_OBJECT
 
-class TaskBar;
-
 public:
     explicit TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent = nullptr);
     void updatePosition();
@@ -36,7 +34,7 @@ public:
     bool eventFilter(QObject *obj, QEvent *event) override;
 
 signals:
-    void windowAddedToTaskbar(const QString &windowTitle, const QIcon &windowIcon, QWindow *trackedWindow);
+    void closeRequested();
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -70,8 +68,6 @@ private:
     bool isResizing;
     QPoint resizeStartPos;
     QSize windowStartSize;
-
-    TaskBar *taskbar;
 };
 
 #endif // TOPBAR_H
