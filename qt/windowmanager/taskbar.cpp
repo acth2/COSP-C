@@ -78,29 +78,29 @@ void TaskBar::resizeEvent(QResizeEvent *event) {
     adjustSizeToScreen();
 }
 
-Display *xDisplay;
+Display *x2Display;
 void TaskBar::onLoop() {
-    if (xDisplay) {
-        Atom netWmWindowType = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE", False);
-        Atom netWmWindowTypeNormal = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", False);
-        Atom netWmWindowTypeDesktop = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
-        Atom netWmWindowTypeDock = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DOCK", False);
-        Atom netWmWindowTypeToolbar = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_TOOLBAR", False);
-        Atom netWmWindowTypeMenu = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_MENU", False);
-        Atom netWmWindowTypeUtility = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_UTILITY", False);
-        Atom netWmWindowTypeSplash = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_SPLASH", False);
-        Atom netWmWindowTypeDialog = XInternAtom(xDisplay, "_NET_WM_WINDOW_TYPE_DIALOG", False);
+    if (x2Display) {
+        Atom netWmWindowType = XInternAtom(x2Display, "_NET_WM_WINDOW_TYPE", False);
+        Atom netWmWindowTypeNormal = XInternAtom(x2Display, "_NET_WM_WINDOW_TYPE_NORMAL", False);
+        Atom netWmWindowTypeDesktop = XInternAtom(x2Display, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
+        Atom netWmWindowTypeDock = XInternAtom(x2Display, "_NET_WM_WINDOW_TYPE_DOCK", False);
+        Atom netWmWindowTypeToolbar = XInternAtom(x2Display, "_NET_WM_WINDOW_TYPE_TOOLBAR", False);
+        Atom netWmWindowTypeMenu = XInternAtom(x2Display, "_NET_WM_WINDOW_TYPE_MENU", False);
+        Atom netWmWindowTypeUtility = XInternAtom(x2Display, "_NET_WM_WINDOW_TYPE_UTILITY", False);
+        Atom netWmWindowTypeSplash = XInternAtom(x2Display, "_NET_WM_WINDOW_TYPE_SPLASH", False);
+        Atom netWmWindowTypeDialog = XInternAtom(x2Display, "_NET_WM_WINDOW_TYPE_DIALOG", False);
         
-        Window windowRoot = DefaultRootWindow(xDisplay);
+        Window windowRoot = DefaultRootWindow(x2Display);
         Window parent, *children;
         unsigned int nChildren;
 
-        if (XQueryTree(xDisplay, windowRoot, &windowRoot, &parent, &children, &nChildren)) {
+        if (XQueryTree(x2Display, windowRoot, &windowRoot, &parent, &children, &nChildren)) {
             for (unsigned int i = 0; i < nChildren; i++) {
                 Window child = children[i];
 
                 char *windowName = nullptr;
-                if (XFetchName(xDisplay, child, &windowName) && windowName) {
+                if (XFetchName(x2Display, child, &windowName) && windowName) {
                     QString name(windowName);
                     XFree(windowName);
                 }
@@ -110,7 +110,7 @@ void TaskBar::onLoop() {
                 unsigned long nItems, bytesAfter;
                 unsigned char *data = nullptr;
 
-                if (XGetWindowProperty(xDisplay, child, netWmWindowType, 0, 1, False, XA_ATOM,
+                if (XGetWindowProperty(x2Display, child, netWmWindowType, 0, 1, False, XA_ATOM,
                                    &type, &format, &nItems, &bytesAfter, &data) == Success) {
                     if (data) {
                         Atom *atoms = (Atom *)data;
@@ -127,7 +127,7 @@ void TaskBar::onLoop() {
                 }
 
                 XWindowAttributes attributes;
-                if (XGetWindowAttributes(xDisplay, child, &attributes) == 0 || attributes.map_state != IsViewable) {
+                if (XGetWindowAttributes(x2Display, child, &attributes) == 0 || attributes.map_state != IsViewable) {
                     continue;
                 }
 
@@ -138,7 +138,7 @@ void TaskBar::onLoop() {
                 }
 
                     char *windowName2 = nullptr;
-                    if (XFetchName(xDisplay, child, &windowName2) && windowName2) {
+                    if (XFetchName(x2Display, child, &windowName2) && windowName2) {
                         QString name2(windowName2);
                     }
                         XFree(children);
