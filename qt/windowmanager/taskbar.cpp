@@ -1,4 +1,5 @@
 #include "taskbar.h"
+#include <QtCore/qtextstream.h>
 #include <QApplication>
 #include <QScreen>
 #include <QPropertyAnimation>
@@ -10,6 +11,8 @@
 #include <QMessageBox>
 #include <QWidget>
 #include <QFile>
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
 
 TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     if (QFile::exists("/usr/cydra/settings/darkmode")) {
