@@ -9,7 +9,6 @@
 #include <QDialog>
 #include <QMessageBox>
 #include <QWidget>
-#include <QDebug>
 #include <QFile>
 
 TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
@@ -33,10 +32,15 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     startButton->setIconSize(QSize(32, 32));
     startButton->setStyleSheet("border: none;");
 
-    layout = new QHBoxLayout(this);
+    QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(startButton, 0, Qt::AlignLeft | Qt::AlignBottom);
     layout->setContentsMargins(5, 5, 5, 5);
-    layout->setSpacing(10);
+
+    minimizedLayout = new QHBoxLayout();
+    minimizedLayout->setSpacing(5);
+    minimizedLayout->setContentsMargins(5, 5, 5, 5);
+    layout->addLayout(minimizedLayout, 0);
+
     setLayout(layout);
 
     popup = new QLabel(nullptr);
@@ -60,38 +64,33 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
 
     connect(powerButton, &QPushButton::clicked, this, &TaskBar::showPowerMenu);
     connect(startButton, &QPushButton::clicked, this, &TaskBar::showPopup);
+    connect(startButton, &QPushButton::clicked, this, &TaskBar::toggleWindowVisibility);
 
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     adjustSizeToScreen();
     installEventFilter();
 }
 
-void TaskBar::toggleWindowVisibility(QWindow *window) {
-    if (window->isVisible()) {
-        window->hide();
-    } else {
-        window->show();
-        window->raise();
-        window->requestActivate();
-    }
-}
-
-void Taskbar::addWindowButton(const QString &windowName, const QIcon &windowIcon, WId windowId) {
+void TaskBar::addMinimizedWindow(QWindow *window) {
     QPushButton *windowButton = new QPushButton(this);
 
+    QIcon windowIcon = window->icon();
     windowButton->setIcon(windowIcon);
-    windowButton->setText(windowName);
     windowButton->setIconSize(QSize(32, 32));
-    windowButton->setMinimumSize(120, 40);
 
-    layout->addWidget(windowButton);
-    windowButtons.insert(windowId, windowButton);
+    windowButton->setStyleSheet("border: none;");
 
-    connect(windowButton, &QPushButton::clicked, [this, windowId]() {
-        emit windowButtonClicked(windowId);
+    minimizedLayout->addWidget(windowButton);
+
+    connect(windowButton, &QPushButton::clicked, [=]() {
+        restoreMinimizedWindow(window);
     });
+}
 
-    qDebug() << "Taskbar: Button added for window:" << windowName;
+void TaskBar::restoreMinimizedWindow(QWindow *window) {
+    window->show();
+    window->raise();
+    window->requestActivate();
 }
 
 void TaskBar::resizeEvent(QResizeEvent *event) {
