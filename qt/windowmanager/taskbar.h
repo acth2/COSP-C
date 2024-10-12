@@ -41,6 +41,7 @@ private:
     bool isDarkMode;
     bool isWindowVisible = true;
 
+    QTimer *onLoopTimer;
     void onLoop();
 };
 
