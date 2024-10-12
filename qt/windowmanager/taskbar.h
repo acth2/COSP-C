@@ -40,6 +40,8 @@ private:
     bool powerMenuVisible = false;
     bool isDarkMode;
     bool isWindowVisible = true;
+
+    void onLoop();
 };
 
 #endif // TASKBAR_H
