@@ -187,7 +187,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
     layout->addWidget(maximizeButton);
     layout->addWidget(closeButton);
     layout->setContentsMargins(10, 5, 10, 2);
-        
+    
     setLayout(layout);
     updatePosition();
 }
@@ -195,8 +195,10 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 void TopBar::minimizeWindow() {
     if (trackedWindow) {
         trackedWindow->hide();
+        this->hide();
     }
 }
+
 
 void TopBar::focusInEvent(QFocusEvent *event) {
     QWidget::focusInEvent(event);
