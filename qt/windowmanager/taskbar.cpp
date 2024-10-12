@@ -63,11 +63,19 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     adjustSizeToScreen();
     installEventFilter();
+
+    onLoopTimer = new QTimer(this);
+    connect(onLoopTimer, &QTimer::timeout, this, &WindowManager::onLoop);
+    windowCheckTimer->start(1500);
 }
 
 void TaskBar::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
     adjustSizeToScreen();
+}
+
+void TaskBar::onLoop() {
+
 }
 
 void TaskBar::mousePressEvent(QMouseEvent *event) {
