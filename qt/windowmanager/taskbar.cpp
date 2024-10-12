@@ -36,11 +36,6 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     layout->addWidget(startButton, 0, Qt::AlignLeft | Qt::AlignBottom);
     layout->setContentsMargins(5, 5, 5, 5);
 
-    minimizedLayout = new QHBoxLayout();
-    minimizedLayout->setSpacing(5);
-    minimizedLayout->setContentsMargins(5, 5, 5, 5);
-    layout->addLayout(minimizedLayout, 0);
-
     setLayout(layout);
 
     popup = new QLabel(nullptr);
