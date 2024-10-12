@@ -64,33 +64,10 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
 
     connect(powerButton, &QPushButton::clicked, this, &TaskBar::showPowerMenu);
     connect(startButton, &QPushButton::clicked, this, &TaskBar::showPopup);
-    connect(startButton, &QPushButton::clicked, this, &TaskBar::toggleWindowVisibility);
 
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     adjustSizeToScreen();
     installEventFilter();
-}
-
-void TaskBar::addMinimizedWindow(QWindow *window) {
-    QPushButton *windowButton = new QPushButton(this);
-
-    QIcon windowIcon = window->icon();
-    windowButton->setIcon(windowIcon);
-    windowButton->setIconSize(QSize(32, 32));
-
-    windowButton->setStyleSheet("border: none;");
-
-    minimizedLayout->addWidget(windowButton);
-
-    connect(windowButton, &QPushButton::clicked, [=]() {
-        restoreMinimizedWindow(window);
-    });
-}
-
-void TaskBar::restoreMinimizedWindow(QWindow *window) {
-    window->show();
-    window->raise();
-    window->requestActivate();
 }
 
 void TaskBar::resizeEvent(QResizeEvent *event) {
