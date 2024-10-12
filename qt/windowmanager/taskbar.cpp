@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QWidget>
 #include <QFile>
+#include <QTimer>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
@@ -68,8 +69,8 @@ TaskBar::TaskBar(QWidget *parent) : QWidget(parent) {
     installEventFilter();
 
     onLoopTimer = new QTimer(this);
-    connect(onLoopTimer, &QTimer::timeout, this, &WindowManager::onLoop);
-    windowCheckTimer->start(1500);
+    connect(onLoopTimer, &QTimer::timeout, this, &TaskBar::onLoop);
+    onLoopTimer->start(1500);
 }
 
 void TaskBar::resizeEvent(QResizeEvent *event) {
@@ -139,9 +140,6 @@ void TaskBar::onLoop() {
                     char *windowName2 = nullptr;
                     if (XFetchName(xDisplay, child, &windowName2) && windowName2) {
                         QString name2(windowName2);
-                        if (!trackedWindows.contains(child)) {
-                            // ...
-                        }
                     }
                         XFree(children);
                 }
