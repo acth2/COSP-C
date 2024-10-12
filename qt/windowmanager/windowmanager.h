@@ -19,8 +19,6 @@ class TopBar;
 
 class UserInteractRight;
 
-class Taskbar;
-
 class WindowManager : public QWidget {
     Q_OBJECT
 
@@ -31,23 +29,6 @@ public:
     void closeWindow(WId xorgWindowId);
     void resizeTrackedWindow(WId xorgWindowId, int newWidth, int newHeight);
     void createAndTrackWindow(WId xorgWindowId);
-
-    void setTaskBar(TaskBar *taskBar) {
-        this->taskBar = taskBar;
-    }
-
-    void createNewWindow(WId xorgWindowId, const QString &windowName) {
-        QWindow *x11Window = QWindow::fromWinId(xorgWindowId);
-        TopBar *topBarInstance = new TopBar(x11Window, this);
-    
-        topBarInstance->setWindowTitle(windowName);
-    
-        windowTopBars.insert(xorgWindowId, topBarInstance);
-    }
-    QIcon fetchWindowIcon(WId windowId);
-
-signals:
-    void windowAddedToTaskbar(QString windowName, QIcon windowIcon, WId windowId);
 
 protected:
     bool event(QEvent *event) override;
@@ -78,7 +59,6 @@ private:
     bool isConsoleVisible;
     UserInteractRight *userInteractRightWidget;
 
-    TaskBar *taskBar;
     void createAndTrackWindow(WId xorgWindowId, QString windowName = "Unknown window");
     void listExistingWindows();
     QMap<WId, QWindow*> trackedWindows;
@@ -96,6 +76,7 @@ private:
 
     void setupCloseButton(QWindow *window);
     void setSupportingWMCheck();
+
 
     QRect *windowGeometry;
     QMap<WId, QWidget*> trackedContainers;
