@@ -28,7 +28,6 @@ WindowManager::WindowManager(QWidget *parent)
       isConsoleVisible(false),
       userInteractRightWidget(nullptr),
       resizeMode(false),
-      taskbar(new Taskbar(this)),
       backgroundImagePath("/usr/cydra/backgrounds/current.png") {
 
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -60,8 +59,6 @@ WindowManager::WindowManager(QWidget *parent)
     windowCheckTimer = new QTimer(this);
     connect(windowCheckTimer, &QTimer::timeout, this, &WindowManager::checkForNewWindows);
     windowCheckTimer->start(50);
-
-    connect(this, &WindowManager::windowAddedToTaskbar, taskbar, &Taskbar::addWindowButton);
     
     showFullScreen();
 }
@@ -92,7 +89,7 @@ void WindowManager::listExistingWindows() {
                     QString name(windowName);
                     if (name == "QTerminal" || name == "Shell No. 1") {
                         appendLog("INFO: Detected QTerminal window: " + QString::number(child));
-                        createAndTrackWindow(child, name);
+                        createAndTrackWindow(child, "QTerminal");
                         XFree(windowName);
                         continue;
                     }
@@ -284,9 +281,6 @@ void WindowManager::createAndTrackWindow(WId xorgWindowId, QString windowName) {
     windowTopBars.insert(xorgWindowId, topBar);
     trackedContainers.insert(xorgWindowId, containerWidget);
 
-    QIcon windowIcon = fetchWindowIcon(xorgWindowId);
-    emit windowAddedToTaskbar(windowName, windowIcon, xorgWindowId);
-    
     topBar->updatePosition();
 }
 
