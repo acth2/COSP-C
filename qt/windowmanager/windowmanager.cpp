@@ -33,6 +33,10 @@ WindowManager::WindowManager(QWidget *parent)
       isConsoleVisible(false),
       userInteractRightWidget(nullptr),
       resizeMode(false),
+      desktopDirectoryPath("/home/acth2/a2wm/desktop"),
+      iconTxtFile("/usr/cydra/icons/txtfile.png"),
+      iconFolder("/usr/cydra/icons/folder.png"),
+      iconFile("/usr/cydra/icons/file.png")
       backgroundImagePath("/usr/cydra/backgrounds/current.png") {
 
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -64,7 +68,10 @@ WindowManager::WindowManager(QWidget *parent)
     windowCheckTimer = new QTimer(this);
     connect(windowCheckTimer, &QTimer::timeout, this, &WindowManager::checkForNewWindows);
     windowCheckTimer->start(50);
-
+    
+    desktopLayout = new QGridLayout(this);
+    setLayout(desktopLayout);
+    
     QTimer *desktopUpdateTimer = new QTimer(this);
     connect(desktopUpdateTimer, &QTimer::timeout, this, &WindowManager::updateDesktopIcons);
     desktopUpdateTimer->start(1000); 
@@ -73,58 +80,59 @@ WindowManager::WindowManager(QWidget *parent)
 }
 
 void WindowManager::updateDesktopIcons() {
-    QString desktopPath = "/home/acth2/a2wm/desktop";
-    QDir desktopDir(desktopPath);
-    
-    if (!desktopDir.exists()) {
-        appendLog("ERR: Desktop directory does not exist!");
+    QDir dir(desktopDirectoryPath);
+
+    if (!dir.exists()) {
+        qDebug() << "Directory does not exist: " << desktopDirectoryPath;
         return;
     }
 
-    QStringList filters;
-    QFileInfoList fileInfoList = desktopDir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    while (QLayoutItem *item = desktopLayout->takeAt(0)) {
+        delete item->widget();
+        delete item;
+    }
 
-    QGridLayout *gridLayout = new QGridLayout();
+    QFileInfoList fileList = dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot | QDir::Dirs);
 
-    int row = 0, col = 0;
-    int iconSize = 32;
+    int row = 0;
+    int col = 0;
+    const int maxColumns = 10;
 
-    foreach (const QFileInfo &fileInfo, fileInfoList) {
-        QString fileName = fileInfo.fileName();
+    foreach (const QFileInfo &fileInfo, fileList) {
+        QString filePath = fileInfo.absoluteFilePath();
         QString iconPath;
 
         if (fileInfo.isDir()) {
-            iconPath = "/usr/cydra/icons/folder.png";
+            iconPath = iconFolder;
         } else if (fileInfo.suffix() == "txt") {
-            iconPath = "/usr/cydra/icons/txtfile.png";
+            iconPath = iconTxtFile;
         } else {
-            iconPath = "/usr/cydra/icons/file.png";
+            iconPath = iconFile;
         }
 
         QLabel *iconLabel = new QLabel();
-        iconLabel->setPixmap(QPixmap(iconPath).scaled(iconSize, iconSize, Qt::KeepAspectRatio));
+        iconLabel->setPixmap(QPixmap(iconPath).scaled(32, 32));
+        iconLabel->setAlignment(Qt::AlignCenter);
 
-        QLabel *textLabel = new QLabel(fileName);
+        QLabel *textLabel = new QLabel(fileInfo.fileName());
         textLabel->setAlignment(Qt::AlignCenter);
 
-        QVBoxLayout *iconLayout = new QVBoxLayout();
+        QWidget *iconWidget = new QWidget();
+        QVBoxLayout *iconLayout = new QVBoxLayout(iconWidget);
         iconLayout->addWidget(iconLabel);
         iconLayout->addWidget(textLabel);
-
-        QWidget *iconWidget = new QWidget();
+        iconLayout->setAlignment(Qt::AlignCenter);
+        iconLayout->setSpacing(5);
         iconWidget->setLayout(iconLayout);
 
-        gridLayout->addWidget(iconWidget, row, col);
-        
+        desktopLayout->addWidget(iconWidget, row, col);
+
         col++;
-        if (col >= 10) {
+        if (col >= maxColumns) {
             col = 0;
             row++;
         }
     }
-
-    desktopWidget->setLayout(gridLayout);
-    desktopWidget->show();
 }
 
 Display *xDisplay;
