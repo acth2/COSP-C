@@ -81,14 +81,11 @@ private:
     QRect *windowGeometry;
     QMap<WId, QWidget*> trackedContainers;
 
-    QGridLayout *desktopLayout;
     QTimer *desktopUpdateTimer;
-    QString desktopDirectoryPath;
-    QString iconTxtFile;
-    QString iconFolder;
-    QString iconFile;
+    QWidget *desktopWidget;
 
     void updateDesktopIcons();
+    QGridLayout *desktopLayout;
 };
 
 #endif // WINDOWMANAGER_H
