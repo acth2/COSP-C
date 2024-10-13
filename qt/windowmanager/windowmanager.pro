@@ -5,6 +5,7 @@ CONFIG += qt
 CONFIG += release
 CONFIG += no_accessibility
 CONFIG += no_pro
+CONFIG += c++17
 QT += core gui widgets
 
 LIBS += -lX11
