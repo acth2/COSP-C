@@ -18,6 +18,11 @@
 #include <QDateTime>
 #include <QTransform>
 #include <QPushButton>
+#include <QDir>
+#include <QStringList>
+#include <QFileInfoList>
+#include <QGridLayout>
+
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
@@ -59,8 +64,67 @@ WindowManager::WindowManager(QWidget *parent)
     windowCheckTimer = new QTimer(this);
     connect(windowCheckTimer, &QTimer::timeout, this, &WindowManager::checkForNewWindows);
     windowCheckTimer->start(50);
+
+    QTimer *desktopUpdateTimer = new QTimer(this);
+    connect(desktopUpdateTimer, &QTimer::timeout, this, &WindowManager::updateDesktopIcons);
+    desktopUpdateTimer->start(1000); 
     
     showFullScreen();
+}
+
+void WindowManager::updateDesktopIcons() {
+    QString desktopPath = "/home/acth2/a2wm/desktop";
+    QDir desktopDir(desktopPath);
+    
+    if (!desktopDir.exists()) {
+        appendLog("ERR: Desktop directory does not exist!");
+        return;
+    }
+
+    QStringList filters;
+    QFileInfoList fileInfoList = desktopDir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+
+    QGridLayout *gridLayout = new QGridLayout();
+
+    int row = 0, col = 0;
+    int iconSize = 32;
+
+    foreach (const QFileInfo &fileInfo, fileInfoList) {
+        QString fileName = fileInfo.fileName();
+        QString iconPath;
+
+        if (fileInfo.isDir()) {
+            iconPath = "/usr/cydra/icons/folder.png";
+        } else if (fileInfo.suffix() == "txt") {
+            iconPath = "/usr/cydra/icons/txtfile.png";
+        } else {
+            iconPath = "/usr/cydra/icons/file.png";
+        }
+
+        QLabel *iconLabel = new QLabel();
+        iconLabel->setPixmap(QPixmap(iconPath).scaled(iconSize, iconSize, Qt::KeepAspectRatio));
+
+        QLabel *textLabel = new QLabel(fileName);
+        textLabel->setAlignment(Qt::AlignCenter);
+
+        QVBoxLayout *iconLayout = new QVBoxLayout();
+        iconLayout->addWidget(iconLabel);
+        iconLayout->addWidget(textLabel);
+
+        QWidget *iconWidget = new QWidget();
+        iconWidget->setLayout(iconLayout);
+
+        gridLayout->addWidget(iconWidget, row, col);
+        
+        col++;
+        if (col >= 10) {
+            col = 0;
+            row++;
+        }
+    }
+
+    desktopWidget->setLayout(gridLayout);
+    desktopWidget->show();
 }
 
 Display *xDisplay;
