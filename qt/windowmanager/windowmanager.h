@@ -89,7 +89,6 @@ private:
     QString iconFile;
 
     void updateDesktopIcons();
-    QGridLayout *desktopLayout;
 };
 
 #endif // WINDOWMANAGER_H
