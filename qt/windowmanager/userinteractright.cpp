@@ -49,7 +49,7 @@ void UserInteractRight::setupUI() {
     setLayout(layout);
 
     connect(button1, &QPushButton::clicked, this, &UserInteractRight::button1Clicked);
-    connect(button1, &QPushButton::clicked, this, &UserInteractRight::button2Clicked);
+    connect(button2, &QPushButton::clicked, this, &UserInteractRight::button2Clicked);
 }
 
 void UserInteractRight::applyStyles() {
