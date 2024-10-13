@@ -167,18 +167,18 @@ void UserInteractRight::button1Clicked() {
 }
 
 void UserInteractRight::button2Clicked() {
-    QProcess *xtermProcess = new QProcess(this);
+    QProcess *xtermProcess2 = new QProcess(this);
 
-    QString program = "a2wmedit";
-    QStringList arguments;
+    QString program2 = "a2wmedit";
+    QStringList arguments2;
 
-    xtermProcess->start(program, arguments);
+    xtermProcess2->start(program2, arguments2);
 
-    connect(xtermProcess, &QProcess::errorOccurred, [](QProcess::ProcessError error) {
+    connect(xtermProcess2, &QProcess::errorOccurred, [](QProcess::ProcessError error) {
         qDebug() << "Error occurred:" << error;
     });
 
-    connect(xtermProcess, &QProcess::started, []() {
+    connect(xtermProcess2, &QProcess::started, []() {
         qDebug() << "qterminal started successfully";
     });
     close();
