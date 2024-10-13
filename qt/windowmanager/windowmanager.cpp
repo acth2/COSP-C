@@ -22,7 +22,6 @@
 #include <QStringList>
 #include <QFileInfoList>
 #include <QGridLayout>
-#include <QDirPrivate>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
