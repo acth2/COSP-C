@@ -96,23 +96,9 @@ void WindowManager::listExistingWindows() {
 
                 if (XGetWindowProperty(xDisplay, child, netWmWindowType, 0, 1, False, XA_ATOM,
                                    &type, &format, &nItems, &bytesAfter, &data) == Success) {
-                    if (data) {
-                        Atom *atoms = (Atom *)data;
-                            if (atoms[0] != netWmWindowTypeDock &&
-                                atoms[0] != netWmWindowTypeToolbar &&
-                                atoms[0] != netWmWindowTypeMenu &&
-                                atoms[0] != netWmWindowTypeUtility &&
-                                atoms[0] != netWmWindowTypeSplash &&
-                                atoms[0] != netWmWindowTypeDialog) {
-                                appendLog("INFO: Skipping non-desktop-dock-toolbar-menu-utility-splash-dialog window: " + QString::number(child));
-                                XFree(data);
-                                continue;
-                            }
-                        }
-                    }
                     
                     if (name == "A2WM") {
-                        appendLog("INFO: An A2WM Window is detected (can be the wallpaper / the taskbar) a topbar is not applyed to it" + QString::number(child));
+                        appendLog("INFO: An A2WM Window is detected (can be the wallpaper / the taskbar) a topbar is not applyed to it. ID: " + QString::number(child));
                         continue;
                     }
                     
@@ -123,9 +109,31 @@ void WindowManager::listExistingWindows() {
                         continue;
                     }
                     
-                    appendLog("INFO: External window that passed the A2WM and QTermianl name test detected. Trying to add an Topbar to it.." + QString::number(child));
+                    if (name == "A2WMEdit" || name == "Fadyedit") {
+                        appendLog("INFO: Detected A2WMEdit / FadyEdit window: " + QString::number(child));
+                        createAndTrackWindow(child, "A2WMEdit");
+                        XFree(windowName);
+                        continue;
+                    }
+                    
+                    appendLog("INFO: External window that passed the A2WM and QTermianl name test detected. Trying to add an Topbar to it.. ID: " + QString::number(child));
                     createAndTrackWindow(child, windowName);
                     XFree(windowName);
+                }
+
+                if (data) {
+                      Atom *atoms = (Atom *)data;
+                           if (atoms[0] != netWmWindowTypeDock &&
+                               atoms[0] != netWmWindowTypeToolbar &&
+                               atoms[0] != netWmWindowTypeMenu &&
+                               atoms[0] != netWmWindowTypeUtility &&
+                               atoms[0] != netWmWindowTypeSplash &&
+                               atoms[0] != netWmWindowTypeDialog) {
+                               appendLog("INFO: Skipping non-desktop-dock-toolbar-menu-utility-splash-dialog window: " + QString::number(child));
+                               XFree(data);
+                               continue;
+                           }
+                      }
                 }
 
                 XWindowAttributes attributes;
