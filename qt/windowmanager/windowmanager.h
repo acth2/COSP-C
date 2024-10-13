@@ -88,10 +88,6 @@ private:
     QRect *windowGeometry;
     QMap<WId, QWidget*> trackedContainers;
 
-    QGridLayout *desktopLayout;
-    QTimer *desktopUpdateTimer;
-    void addIconToLayout(const std::string &fileName, const QString &iconPath, int row, int col);
-
     virtual ~WindowManager();
 };
 
