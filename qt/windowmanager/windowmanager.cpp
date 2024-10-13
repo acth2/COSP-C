@@ -31,6 +31,7 @@
 #include <X11/Xatom.h>
 
 #undef KeyPress
+namespace fs = std::filesystem;
 
 WindowManager::WindowManager(QWidget *parent)
     : QWidget(parent),
@@ -92,7 +93,8 @@ void WindowManager::updateDesktopIcons() {
     std::string iconFolder = "/usr/cydra/icons/folder.png";
     std::string iconFile = "/usr/cydra/icons/file.png";
 
-    while (QLayoutItem *item = desktopLayout->takeAt(0)) {
+    QLayoutItem *item;
+    while ((item = desktopLayout->takeAt(0))) {
         delete item->widget();
         delete item;
     }
