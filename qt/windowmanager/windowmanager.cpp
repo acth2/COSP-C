@@ -84,10 +84,33 @@ void WindowManager::listExistingWindows() {
             for (unsigned int i = 0; i < nChildren; i++) {
                 Window child = children[i];
 
+                Atom type;
+                int format;
+                unsigned long nItems, bytesAfter;
+                unsigned char *data = nullptr;
                 char *windowName = nullptr;
+
                 if (XFetchName(xDisplay, child, &windowName) && windowName) {
                     QString name(windowName);
 
+
+                if (XGetWindowProperty(xDisplay, child, netWmWindowType, 0, 1, False, XA_ATOM,
+                                   &type, &format, &nItems, &bytesAfter, &data) == Success) {
+                    if (data) {
+                        Atom *atoms = (Atom *)data;
+                            if (atoms[0] != netWmWindowTypeDock &&
+                                atoms[0] != netWmWindowTypeToolbar &&
+                                atoms[0] != netWmWindowTypeMenu &&
+                                atoms[0] != netWmWindowTypeUtility &&
+                                atoms[0] != netWmWindowTypeSplash &&
+                                atoms[0] != netWmWindowTypeDialog) {
+                                appendLog("INFO: Skipping non-desktop-dock-toolbar-menu-utility-splash-dialog window: " + QString::number(child));
+                                XFree(data);
+                                continue;
+                            }
+                        }
+                    }
+                    
                     if (name == "A2WM") {
                         appendLog("INFO: An A2WM Window is detected (can be the wallpaper / the taskbar) a topbar is not applyed to it" + QString::number(child));
                         continue;
@@ -103,28 +126,6 @@ void WindowManager::listExistingWindows() {
                     appendLog("INFO: External window that passed the A2WM and QTermianl name test detected. Trying to add an Topbar to it.." + QString::number(child));
                     createAndTrackWindow(child, windowName);
                     XFree(windowName);
-                }
-
-                Atom type;
-                int format;
-                unsigned long nItems, bytesAfter;
-                unsigned char *data = nullptr;
-
-                if (XGetWindowProperty(xDisplay, child, netWmWindowType, 0, 1, False, XA_ATOM,
-                                   &type, &format, &nItems, &bytesAfter, &data) == Success) {
-                    if (data) {
-                        Atom *atoms = (Atom *)data;
-                        if (atoms[0] != netWmWindowTypeDock &&
-                            atoms[0] != netWmWindowTypeToolbar &&
-                            atoms[0] != netWmWindowTypeMenu &&
-                            atoms[0] != netWmWindowTypeUtility &&
-                            atoms[0] != netWmWindowTypeSplash &&
-                            atoms[0] != netWmWindowTypeDialog) {
-                            appendLog("INFO: Skipping non-desktop-dock-toolbar-menu-utility-splash-dialog window: " + QString::number(child));
-                            XFree(data);
-                            continue;
-                        }
-                    }
                 }
 
                 XWindowAttributes attributes;
