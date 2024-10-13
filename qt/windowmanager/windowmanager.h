@@ -1,6 +1,10 @@
 #ifndef WINDOWMANAGER_H
 #define WINDOWMANAGER_H
 
+#include <string>
+#include <vector>
+#include <fstream>
+#include <filesystem>
 #include <QtCore/qtextstream.h>
 #include "win/topbar.h"
 #include <QWidget>
@@ -29,6 +33,9 @@ public:
     void closeWindow(WId xorgWindowId);
     void resizeTrackedWindow(WId xorgWindowId, int newWidth, int newHeight);
     void createAndTrackWindow(WId xorgWindowId);
+
+private slots:
+    void updateDesktopIcons();
 
 protected:
     bool event(QEvent *event) override;
@@ -81,11 +88,9 @@ private:
     QRect *windowGeometry;
     QMap<WId, QWidget*> trackedContainers;
 
-    QTimer *desktopUpdateTimer;
-    QWidget *desktopWidget;
-
-    void updateDesktopIcons();
     QGridLayout *desktopLayout;
+    QTimer *desktopUpdateTimer;
+    void addIconToLayout(const std::string &fileName, const QString &iconPath, int row, int col);
 };
 
 #endif // WINDOWMANAGER_H
