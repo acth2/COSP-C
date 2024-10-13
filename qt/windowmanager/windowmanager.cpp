@@ -80,68 +80,8 @@ WindowManager::WindowManager(QWidget *parent)
     showFullScreen();
 }
 
-
-WindowManager::~WindowManager() {
-    desktopUpdateTimer->stop();
-    delete desktopUpdateTimer;
-    delete desktopLayout;
-}
-
 void WindowManager::updateDesktopIcons() {
-    std::string desktopDirectoryPath = "/home/acth2/a2wm/desktop";
-    std::string iconTxtFile = "/usr/cydra/icons/txtfile.png";
-    std::string iconFolder = "/usr/cydra/icons/folder.png";
-    std::string iconFile = "/usr/cydra/icons/file.png";
-
-    QLayoutItem *item;
-    while ((item = desktopLayout->takeAt(0))) {
-        delete item->widget();
-        delete item;
-    }
-
-    int row = 0;
-    int col = 0;
-    const int maxColumns = 10;
-
-    if (fs::exists(desktopDirectoryPath) && fs::is_directory(desktopDirectoryPath)) {
-        for (const auto &entry : fs::directory_iterator(desktopDirectoryPath)) {
-            QString iconPath;
-            if (entry.is_directory()) {
-                iconPath = QString::fromStdString(iconFolder); 
-            } else if (entry.path().extension() == ".txt") {
-                iconPath = QString::fromStdString(iconTxtFile);
-            } else {
-                iconPath = QString::fromStdString(iconFile);
-            }
-
-            addIconToLayout(entry.path().filename().string(), iconPath, row, col);
-
-            col++;
-            if (col >= maxColumns) {
-                col = 0;
-                row++;
-            }
-        }
-    }
-}
-
-void WindowManager::addIconToLayout(const std::string &fileName, const QString &iconPath, int row, int col) {
-    QLabel *iconLabel = new QLabel();
-    iconLabel->setPixmap(QPixmap(iconPath).scaled(32, 32));
-    iconLabel->setAlignment(Qt::AlignCenter);
-
-    QLabel *textLabel = new QLabel(QString::fromStdString(fileName));
-    textLabel->setAlignment(Qt::AlignCenter);
-
-    QWidget *iconWidget = new QWidget();
-    QVBoxLayout *iconLayout = new QVBoxLayout(iconWidget);
-    iconLayout->addWidget(iconLabel);
-    iconLayout->addWidget(textLabel);
-    iconLayout->setAlignment(Qt::AlignCenter);
-    iconLayout->setSpacing(5);
-    iconWidget->setLayout(iconLayout);
-
-    desktopLayout->addWidget(iconWidget, row, col);
+    appendLog("Desktop Icons timer updated!");
 }
 
 Display *xDisplay;
