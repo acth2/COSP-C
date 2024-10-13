@@ -87,12 +87,21 @@ void WindowManager::listExistingWindows() {
                 char *windowName = nullptr;
                 if (XFetchName(xDisplay, child, &windowName) && windowName) {
                     QString name(windowName);
+
+                    if (name == "A2WM") {
+                        appendLog("INFO: An A2WM Window is detected (can be the wallpaper / the taskbar) a topbar is not applyed to it" + QString::number(child));
+                        continue;
+                    }
+                    
                     if (name == "QTerminal" || name == "Shell No. 1") {
                         appendLog("INFO: Detected QTerminal window: " + QString::number(child));
                         createAndTrackWindow(child, "QTerminal");
                         XFree(windowName);
                         continue;
                     }
+                    
+                    appendLog("INFO: External window that passed the A2WM and QTermianl name test detected. Trying to add an Topbar to it.." + QString::number(child));
+                    createAndTrackWindow(child, windowName);
                     XFree(windowName);
                 }
 
