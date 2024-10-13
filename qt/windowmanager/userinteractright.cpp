@@ -33,7 +33,7 @@ UserInteractRight::UserInteractRight(QWidget *parent)
 
 void UserInteractRight::setupUI() {
     button1 = new QPushButton("Terminal", this);
-    button2 = new QPushButton("Object 2", this);
+    button2 = new QPushButton("Text Editor", this);
     button3 = new QPushButton("Thing 3 bruh", this);
     textLabel = new QLabel("Control panel", this);
 
@@ -49,6 +49,7 @@ void UserInteractRight::setupUI() {
     setLayout(layout);
 
     connect(button1, &QPushButton::clicked, this, &UserInteractRight::button1Clicked);
+    connect(button1, &QPushButton::clicked, this, &UserInteractRight::button2Clicked);
 }
 
 void UserInteractRight::applyStyles() {
@@ -151,6 +152,24 @@ void UserInteractRight::button1Clicked() {
     QProcess *xtermProcess = new QProcess(this);
 
     QString program = "qterminal";
+    QStringList arguments;
+
+    xtermProcess->start(program, arguments);
+
+    connect(xtermProcess, &QProcess::errorOccurred, [](QProcess::ProcessError error) {
+        qDebug() << "Error occurred:" << error;
+    });
+
+    connect(xtermProcess, &QProcess::started, []() {
+        qDebug() << "qterminal started successfully";
+    });
+    close();
+}
+
+void UserInteractRight::button2Clicked() {
+    QProcess *xtermProcess = new QProcess(this);
+
+    QString program = "a2wmedit";
     QStringList arguments;
 
     xtermProcess->start(program, arguments);
