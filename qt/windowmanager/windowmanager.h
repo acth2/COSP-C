@@ -81,7 +81,11 @@ private:
     QRect *windowGeometry;
     QMap<WId, QWidget*> trackedContainers;
 
-    void onLoop();
+    QTimer *desktopUpdateTimer;
+    QWidget *desktopWidget;
+
+    void updateDesktopIcons();
+    QGridLayout *desktopLayout;
 };
 
 #endif // WINDOWMANAGER_H
