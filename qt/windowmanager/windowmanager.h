@@ -81,8 +81,12 @@ private:
     QRect *windowGeometry;
     QMap<WId, QWidget*> trackedContainers;
 
+    QGridLayout *desktopLayout;
     QTimer *desktopUpdateTimer;
-    QWidget *desktopWidget;
+    QString desktopDirectoryPath;
+    QString iconTxtFile;
+    QString iconFolder;
+    QString iconFile;
 
     void updateDesktopIcons();
     QGridLayout *desktopLayout;
