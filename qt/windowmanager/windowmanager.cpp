@@ -2,6 +2,10 @@
 #include "win/topbar.h"
 #include "userinteractright.h"
 #include "taskbar.h"
+#include <string>
+#include <vector>
+#include <fstream>
+#include <filesystem>
 #include <QApplication>
 #include <QScreen>
 #include <QDebug>
