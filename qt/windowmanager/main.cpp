@@ -6,6 +6,8 @@
 #include <QTextStream>
 #include <QDateTime>
 #include <QtMessageHandler>
+#include <QMessageBox>
+#include <QGuiApplication>
 
 QFile logFile;
 
@@ -22,6 +24,13 @@ int main(int argc, char *argv[]) {
     logFile.open(QIODevice::Append | QIODevice::Text);
 
     qInstallMessageHandler(customLogOutput);
+
+    QString platform = QGuiApplication::platformName();
+
+    if (platform != "xcb") {
+        QMessageBox::critical(nullptr, "Error", "Sorry ! The windowmanager A2WM only works with X11, try rebooting it using the command startx $(which a2wm) \n (if the command which is installed on your computer else you will need to provide the path manually)");
+        return -1;
+    }
     
     WindowManager manager;
     TaskBar taskBar;
