@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
                      (std::getenv("XDG_SESSION_TYPE") && std::string(std::getenv("XDG_SESSION_TYPE")) == "wayland");
 
     if (platform != "xcb" || isWayland) {
-        QMessageBox::critical(nullptr, "Error", "This window manager only works on X11/Xorg. \n\n Why this error? The variable WAYLAND_DISPLAY is defined or XDG_SESSION_TYPE is set to wayland. \n [PRESS ENTER TO CONTINUE]");
+        QMessageBox::critical(nullptr, "Error", "This window manager only works on X11/Xorg. \n\n Why this error? The variable WAYLAND_DISPLAY is defined or XDG_SESSION_TYPE is set to wayland. \n\n [PRESS ENTER TO CONTINUE]");
         return -1;
     }
     
