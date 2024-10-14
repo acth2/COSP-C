@@ -8,6 +8,7 @@
 #include <QtMessageHandler>
 #include <QMessageBox>
 #include <QGuiApplication>
+#include <cstdlib>
 
 QFile logFile;
 
@@ -27,8 +28,11 @@ int main(int argc, char *argv[]) {
 
     QString platform = QGuiApplication::platformName();
 
-    if (platform != "xcb") {
-        QMessageBox::critical(nullptr, "Error", "Sorry ! The windowmanager A2WM only works with X11, try rebooting it using the command startx $(which a2wm) \n (if the command which is installed on your computer else you will need to provide the path manually)");
+    bool isWayland = std::getenv("WAYLAND_DISPLAY") != nullptr || 
+                     (std::getenv("XDG_SESSION_TYPE") && std::string(std::getenv("XDG_SESSION_TYPE")) == "wayland");
+
+    if (platform != "xcb" || isWayland) {
+        QMessageBox::critical(nullptr, "Error", "This window manager only works on X11/Xorg.");
         return -1;
     }
     
