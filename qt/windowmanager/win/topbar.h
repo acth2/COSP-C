@@ -1,6 +1,7 @@
 #ifndef TOPBAR_H
 #define TOPBAR_H
 
+#include <iostream> 
 #include <QWidget>
 #include <QWindow>
 #include <QLabel>
@@ -68,6 +69,8 @@ private:
     bool isResizing;
     QPoint resizeStartPos;
     QSize windowStartSize;
+
+    int minimalSizePos;
 };
 
 #endif // TOPBAR_H
