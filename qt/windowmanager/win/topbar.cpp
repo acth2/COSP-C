@@ -194,8 +194,13 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 
 void TopBar::minimizeWindow() {
     if (trackedWindow) {
-        trackedWindow->hide();
         
+        trackedWindow->hide();
+        maximizeButton->hide();
+        closeButton->hide();
+        minimizeButton->hide();
+        
+        isMinimized = true;
     }
 }
 
