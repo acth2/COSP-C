@@ -301,6 +301,14 @@ void TopBar::stopResizing() {
 }
 
 void TopBar::mousePressEvent(QMouseEvent *event) {
+    if(isMinimized) {
+        trackedWindow->setVisible(true);
+        maximizeButton->setVisible(true);
+        closeButton->setVisible(true);
+        minimizeButton->setVisible(true);
+        isMinimized = false;
+    }
+    
     if (!isResizing) {
         isDragging = true;
         dragStartPos = event->globalPos();
