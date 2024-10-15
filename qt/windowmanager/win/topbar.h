@@ -71,6 +71,7 @@ private:
     QSize windowStartSize;
 
     int minimalSizePos;
+    bool isMinimized = false;
 };
 
 #endif // TOPBAR_H
