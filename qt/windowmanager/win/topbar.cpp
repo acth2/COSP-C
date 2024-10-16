@@ -210,11 +210,6 @@ void TopBar::focusInEvent(QFocusEvent *event) {
     this->show();
 }
 
-void TopBar::focusOutEvent(QFocusEvent *event) {
-    QWidget::focusOutEvent(event);
-    this->hide();
-}
-
 QWindow* TopBar::getTrackedWindow() const {
     return trackedWindow;
 }
@@ -227,8 +222,6 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
     if (obj == trackedWindow) {
         if (event->type() == QEvent::WindowActivate) {
             this->show();
-        } else if (event->type() == QEvent::WindowDeactivate) {
-            this->hide();
         }
     }
 
