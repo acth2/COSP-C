@@ -244,7 +244,7 @@ bool TopBar::eventFilter(QObject *obj, QEvent *event) {
 
 void TopBar::updatePosition() {
     if (trackedWindow) {
-        QRect windowGeometry = trackedWindow->geometry();
+        //QRect windowGeometry = trackedWindow->geometry();
         int topbarHeight = 36;
         setGeometry(windowGeometry.x(), windowGeometry.y() - topbarHeight, windowGeometry.width(), topbarHeight);
         show();
