@@ -195,10 +195,10 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 void TopBar::minimizeWindow() {
     if (trackedWindow) {
         
-        trackedWindow->hide();
         maximizeButton->hide();
         closeButton->hide();
         minusButton->hide();
+        trackedWindow->setGeometry(0, windowGeometry.y(), 100, 25);
         
         isMinimized = true;
     }
