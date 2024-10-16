@@ -31,7 +31,6 @@ public:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void focusInEvent(QFocusEvent *event) override;
-    void focusOutEvent(QFocusEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
 
 signals:
