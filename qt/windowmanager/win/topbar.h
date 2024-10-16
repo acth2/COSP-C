@@ -72,7 +72,6 @@ private:
     int minimalSizePos;
     bool isMinimized = false;
 
-    QRect windowGeometry = trackedWindow->geometry();
 };
 
 #endif // TOPBAR_H
