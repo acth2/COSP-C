@@ -15,14 +15,14 @@ SOURCES += main.cpp \
            userinteractright.cpp \
            taskbar.cpp \
            win/topbar.cpp \
-           win/MimizedPosInt.cpp
+           win/MinimizedPosInt.cpp
            
 HEADERS += windowmanager.h \
            konami_code_handler.h \
            userinteractright.h \
            taskbar.h \
            win/topbar.h \
-           win/MimizedPosInt.h
+           win/MinimizedPosInt.h
 
 DESTDIR = src
 
