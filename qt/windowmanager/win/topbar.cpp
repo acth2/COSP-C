@@ -207,8 +207,6 @@ void TopBar::minimizeWindow() {
         trackedWindow->setGeometry(0, screenGeometry.height(), 0, 0);
         this->setGeometry(MinimizedPosInt::getInstance().getValue(), screenGeometry.height() - 38, 25, 25);
         this->resize(100, currentHeight);
-        this->resize(101, currentHeight);
-        this->resize(100, currentHeight);
         
         isMinimized = true;
     }
@@ -311,8 +309,7 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
         maximizeButton->setVisible(true);
         closeButton->setVisible(true);
         minusButton->setVisible(true);
-        resizeButton->setVisible(true);      
-        this->resize(250, currentHeight);
+        resizeButton->setVisible(true);
         
         isMinimized = false;
     }
