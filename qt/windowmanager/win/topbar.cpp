@@ -310,7 +310,6 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
         resizeButton->setVisible(true);
         
         isMinimized = false;
-        return;
     }
     
     if (!isResizing) {
@@ -341,6 +340,7 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
+    isMinimized = false;
     if (isDragging) {
         if (isMaximized) {
             trackedWindow->setGeometry(restoreGeometry);
