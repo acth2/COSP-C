@@ -206,7 +206,7 @@ void TopBar::minimizeWindow() {
         minusButton->hide();
         resizeButton->hide();
 
-        this->setGeometry(minimizedXPosition(), screenGeometry.height(), 100, 25);
+        this->setGeometry(minimizedXPosition(), screenGeometry.height() - 38, 100, 25);
 
         isMinimized = true;
     }
@@ -445,5 +445,5 @@ void TopBar::moveMinimizedWindow(bool moveRight) {
     int adjustment = moveRight ? 50 : -50;
 
     MinimizedPosInt::getInstance().setValue(currentValue + adjustment);
-    this->setGeometry(minimizedXPosition(), screenGeometry.height(), 100, 25);
+    this->setGeometry(minimizedXPosition(), screenGeometry.height() - 38, 100, 25);
 }
