@@ -207,6 +207,8 @@ void TopBar::minimizeWindow() {
         trackedWindow->setGeometry(0, screenGeometry.height(), 0, 0);
         this->setGeometry(MinimizedPosInt::getInstance().getValue(), screenGeometry.height() - 38, 25, 25);
         this->resize(100, currentHeight);
+        this->resize(101, currentHeight);
+        this->resize(100, currentHeight);
         
         isMinimized = true;
     }
@@ -343,13 +345,6 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
-    if(isMinimized) {
-        toggleMaximizeRestore();
-        isMinimized = false;
-        isDragging = false;
-        isResizing = false;
-    }
-    
     if (isDragging) {
         if (isMaximized) {
             trackedWindow->setGeometry(restoreGeometry);
