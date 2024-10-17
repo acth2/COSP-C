@@ -1,16 +1,12 @@
 #include <iostream>
 #include <memory>
 #include <mutex>
-#include <thread>
 #include <stdexcept>
 
 class MinimizedPosInt {
 public:
-    MinimizedPosInt(int initialValue) {
-        if (initialValue <= 0) {
-            throw std::invalid_argument("Initial value must be a positive integer.");
-        }
-        sharedInt = std::make_shared<int>(initialValue);
+    MinimizedPosInt() {
+        sharedInt = std::make_shared<int>(75);
     }
 
     int getValue() {
