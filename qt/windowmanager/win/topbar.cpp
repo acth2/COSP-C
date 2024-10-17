@@ -301,6 +301,7 @@ void TopBar::stopResizing() {
 
 void TopBar::mousePressEvent(QMouseEvent *event) {
     if(isMinimized) {
+        posInt.setValue(posInt.getValue() - 75);
         trackedWindow->setVisible(true);
         maximizeButton->setVisible(true);
         closeButton->setVisible(true);
