@@ -439,9 +439,11 @@ void TopBar::maximizeWindow() {
 }
 
 void TopBar::moveMinimizedWindow(bool moveRight) {
+    QScreen *screen = QApplication::primaryScreen();
+    QRect screenGeometry = screen->geometry();
     int currentValue = MinimizedPosInt::getInstance().getValue();
     int adjustment = moveRight ? 50 : -50;
 
     MinimizedPosInt::getInstance().setValue(currentValue + adjustment);
-    this->setGeometry(minimizedXPosition(), taskbarHeight(), 100, 25);
+    this->setGeometry(minimizedXPosition(), screenGeometry.height(), 100, 25);
 }
