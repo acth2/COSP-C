@@ -197,30 +197,22 @@ void TopBar::minimizeWindow() {
     QScreen *screen = QApplication::primaryScreen();
     if (trackedWindow) {
         QRect screenGeometry = screen->geometry();
-        int currentHeight = this->height();
         
-        int minimizedPos = MinimizedPosInt::getInstance().getValue();
-        MinimizedPosInt::getInstance().setValue(minimizedPos + 85);
-
+        MinimizedPosInt::getInstance().setValue(MinimizedPosInt::getInstance().getValue() + 75);
         maximizeButton->hide();
         closeButton->hide();
         minusButton->hide();
         resizeButton->hide();
-        
         trackedWindow->setGeometry(0, screenGeometry.height(), 0, 0);
-        
-        this->setGeometry(minimizedPos, screenGeometry.height() - 38, 100, currentHeight);
-        this->resize(100, currentHeight);
+        this->setGeometry(MinimizedPosInt::getInstance().getValue(), screenGeometry.height() - 38, 25, 25);
         
         isMinimized = true;
     }
 }
 
+
 void TopBar::focusInEvent(QFocusEvent *event) {
     QWidget::focusInEvent(event);
-    if (trackedWindow && !trackedWindow->isVisible()) {
-        trackedWindow->show();
-    }
     this->show();
 }
 
@@ -308,23 +300,27 @@ void TopBar::stopResizing() {
 }
 
 void TopBar::mousePressEvent(QMouseEvent *event) {
-    if (isMinimized) {
-        maximizeButton->show();
-        closeButton->show();
-        minusButton->show();
-        resizeButton->show();
-        MinimizedPosInt::getInstance().setValue(MinimizedPosInt::getInstance().getValue() - 85);
+    if(isMinimized) {
+        MinimizedPosInt::getInstance().setValue(MinimizedPosInt::getInstance().getValue() - 75);
+        trackedWindow->setVisible(true);
+        maximizeButton->setVisible(true);
+        closeButton->setVisible(true);
+        minusButton->setVisible(true);
+        resizeButton->setVisible(true);        
+        
         isMinimized = false;
     }
-
+    
     if (!isResizing) {
         isDragging = true;
         dragStartPos = event->globalPos();
         windowStartPos = trackedWindow->position();
         setCursor(Qt::ClosedHandCursor);
         updatePosition();
-    } else {
-        QPoint bottomRightCorner = trackedWindow->geometry().bottomRight();
+        QWidget::mousePressEvent(event);
+    }  else {
+        QRect windowGeometry = trackedWindow->geometry();
+        QPoint bottomRightCorner = windowGeometry.bottomRight();
         QCursor::setPos(bottomRightCorner);
     }
     getTrackedWindow()->raise();
@@ -343,11 +339,11 @@ void TopBar::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void TopBar::mouseMoveEvent(QMouseEvent *event) {
-    isMinimized = false;
     if (isDragging) {
         if (isMaximized) {
             trackedWindow->setGeometry(restoreGeometry);
             resizeButton->setVisible(true);
+            isMaximized = false;
         }
         getTrackedWindow()->raise();
         this->raise();
