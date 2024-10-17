@@ -47,6 +47,8 @@ private slots:
     void stopResizing();
     void toggleMaximizeRestore();
     void minimizeWindow();
+    void minimizedXPosition();
+    void moveMinimizedWindow(bool moveRight);
 
 private:
     QLabel *titleLabel;
