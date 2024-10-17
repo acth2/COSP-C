@@ -17,7 +17,7 @@ public:
     void setValue(int newValue);
 
 private:
-    MinimizedPosInt() : sharedInt(std::make_shared<int>(50)) {}
+    MinimizedPosInt() : sharedInt(std::make_shared<int>(150)) {}
     std::shared_ptr<int> sharedInt;
     std::mutex mtx;
 
