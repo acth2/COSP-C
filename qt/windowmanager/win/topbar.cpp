@@ -312,6 +312,7 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
         closeButton->setVisible(true);
         minusButton->setVisible(true);
         resizeButton->setVisible(true);      
+        this->resize(250, currentHeight);
         
         isMinimized = false;
     }
