@@ -197,16 +197,17 @@ void TopBar::minimizeWindow() {
     QScreen *screen = QApplication::primaryScreen();
     if (trackedWindow) {
         QRect screenGeometry = screen->geometry();
-        MinimizedPosInt::getInstance().setValue(MinimizedPosInt::getInstance().getValue() + 50);
+        isMinimized = true;
+
+        trackedWindow->hide();
 
         maximizeButton->hide();
         closeButton->hide();
         minusButton->hide();
         resizeButton->hide();
 
-        trackedWindow->setGeometry(0, screenGeometry.height(), 0, 0);
+        this->setGeometry(minimizedXPosition(), screenGeometry.height(), 100, 25);
 
-        this->setGeometry(MinimizedPosInt::getInstance().getValue(), screenGeometry.height() - 38, 25, 25);
         isMinimized = true;
     }
 }
@@ -301,14 +302,22 @@ void TopBar::stopResizing() {
     maximizeButton->setVisible(true);
 }
 
+int TopBar::minimizedXPosition() {
+    int currentValue = MinimizedPosInt::getInstance().getValue();
+    int newPosition = currentValue + 50;
+    MinimizedPosInt::getInstance().setValue(newPosition);
+
+    return newPosition;
+}
+
 void TopBar::mousePressEvent(QMouseEvent *event) {
     if (isMinimized) {
-        MinimizedPosInt::getInstance().setValue(MinimizedPosInt::getInstance().getValue() - 50);
-        trackedWindow->setVisible(true);
-        maximizeButton->setVisible(true);
-        closeButton->setVisible(true);
-        minusButton->setVisible(true);
-        resizeButton->setVisible(true);
+        trackedWindow->show();
+
+        maximizeButton->show();
+        closeButton->show();
+        minusButton->show();
+        resizeButton->show();
 
         isMinimized = false;
     }
@@ -427,4 +436,12 @@ void TopBar::maximizeWindow() {
      trackedWindow->setGeometry(0, topbarHeight, newWidth, newHeight);
 
      updatePosition();
+}
+
+void TopBar::moveMinimizedWindow(bool moveRight) {
+    int currentValue = MinimizedPosInt::getInstance().getValue();
+    int adjustment = moveRight ? 50 : -50;
+
+    MinimizedPosInt::getInstance().setValue(currentValue + adjustment);
+    this->setGeometry(minimizedXPosition(), taskbarHeight(), 100, 25);
 }
