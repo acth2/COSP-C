@@ -202,7 +202,7 @@ void TopBar::minimizeWindow() {
         minusButton->hide();
         resizeButton->hide();
         trackedWindow->setGeometry(0, screenGeometry.height(), 0, 0);
-        this->setGeometry(0, screenGeometry.height() - 28, 25, 25);
+        this->setGeometry(0, screenGeometry.height() - 34, 25, 25);
         
         isMinimized = true;
     }
