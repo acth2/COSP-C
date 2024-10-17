@@ -324,6 +324,9 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
         minusButton->show();
         resizeButton->show();
 
+        this->show();
+        this->raise();
+
         isMinimized = false;
     }
     
