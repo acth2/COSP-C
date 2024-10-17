@@ -72,8 +72,6 @@ private:
 
     int minimalSizePos;
     bool isMinimized = false;
-
-    MinimizedPosInt posInt;
 };
 
 #endif // TOPBAR_H
