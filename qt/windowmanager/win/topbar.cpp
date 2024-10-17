@@ -346,6 +346,8 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
     if(isMinimized) {
         toggleMaximizeRestore();
         isMinimized = false;
+        isDragging = false;
+        isResizing = false;
     }
     
     if (isDragging) {
@@ -353,6 +355,8 @@ void TopBar::mouseMoveEvent(QMouseEvent *event) {
             trackedWindow->setGeometry(restoreGeometry);
             resizeButton->setVisible(true);
             isMaximized = false;
+            isResizing = false;
+            is
         }
         getTrackedWindow()->raise();
         this->raise();
