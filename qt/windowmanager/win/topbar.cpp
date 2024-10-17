@@ -201,6 +201,9 @@ void TopBar::minimizeWindow() {
 
         trackedWindow->hide();
 
+        this->show();
+        this->raise();
+
         maximizeButton->hide();
         closeButton->hide();
         minusButton->hide();
@@ -208,11 +211,11 @@ void TopBar::minimizeWindow() {
 
         this->setGeometry(minimizedXPosition(), screenGeometry.height() - 38, 100, 25);
 
+        this->setVisible(true);
+        this->raise();
         isMinimized = true;
     }
 }
-
-
 
 void TopBar::focusInEvent(QFocusEvent *event) {
     QWidget::focusInEvent(event);
@@ -230,7 +233,9 @@ QLabel* TopBar::getPopup() const {
 bool TopBar::eventFilter(QObject *obj, QEvent *event) {
     if (obj == trackedWindow) {
         if (event->type() == QEvent::WindowActivate) {
-            this->show();
+            if (!isMinimized) {
+                this->show();
+            }
         }
     }
 
