@@ -198,7 +198,7 @@ void TopBar::minimizeWindow() {
     if (trackedWindow) {
         QRect screenGeometry = screen->geometry();
         
-        posInt.setValue(posInt.getValue() + 75);
+        MinimizedPosInt::getInstance().setValue(MinimizedPosInt::getInstance().getValue() + 75);
         maximizeButton->hide();
         closeButton->hide();
         minusButton->hide();
@@ -301,7 +301,7 @@ void TopBar::stopResizing() {
 
 void TopBar::mousePressEvent(QMouseEvent *event) {
     if(isMinimized) {
-        posInt.setValue(posInt.getValue() - 75);
+        MinimizedPosInt::getInstance().setValue(MinimizedPosInt::getInstance().getValue() - 75);
         trackedWindow->setVisible(true);
         maximizeButton->setVisible(true);
         closeButton->setVisible(true);
