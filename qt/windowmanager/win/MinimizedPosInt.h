@@ -8,15 +8,21 @@
 
 class MinimizedPosInt {
 public:
-    MinimizedPosInt();
+    static MinimizedPosInt& getInstance() {
+        static MinimizedPosInt instance;
+        return instance;
+    }
 
     int getValue();
-
     void setValue(int newValue);
 
 private:
+    MinimizedPosInt() : sharedInt(std::make_shared<int>(75)) {}
     std::shared_ptr<int> sharedInt;
     std::mutex mtx;
+
+    MinimizedPosInt(const MinimizedPosInt&) = delete;
+    void operator=(const MinimizedPosInt&) = delete;
 };
 
 #endif // MINIMIZEDPOSINT_H
