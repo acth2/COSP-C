@@ -14,7 +14,7 @@
 #include <QMouseEvent>
 #include <QFocusEvent>
 #include <QRect>
-#include <MinimizedPosInt>
+#include <win/MinimizedPosInt.h>
 
 class WindowManager;
 
