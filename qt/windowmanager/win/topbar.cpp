@@ -1,4 +1,5 @@
 #include "topbar.h"
+#include "MinimizedPosInt.h"
 #include "../windowmanager.h"
 #include <QApplication>
 #include <QMouseEvent>
@@ -197,12 +198,13 @@ void TopBar::minimizeWindow() {
     if (trackedWindow) {
         QRect screenGeometry = screen->geometry();
         
+        posInt.setValue(posInt.getValue() + 75);
         maximizeButton->hide();
         closeButton->hide();
         minusButton->hide();
         resizeButton->hide();
         trackedWindow->setGeometry(0, screenGeometry.height(), 0, 0);
-        this->setGeometry(0, screenGeometry.height() - 38, 25, 25);
+        this->setGeometry(posInt.getValue(), screenGeometry.height() - 38, 25, 25);
         
         isMinimized = true;
     }
