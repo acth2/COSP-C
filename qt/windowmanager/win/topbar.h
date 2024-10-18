@@ -76,6 +76,7 @@ private:
     bool isMinimized = false;
 
     QRect originalGeometry;
+    std::vector<int> minimizedSlots;
 };
 
 #endif // TOPBAR_H
