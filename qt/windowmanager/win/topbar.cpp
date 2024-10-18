@@ -313,7 +313,7 @@ int TopBar::minimizedXPosition() {
     int newPosition = currentValue + 50;
     MinimizedPosInt::getInstance().setValue(newPosition);
 
-    return newPosition;
+    return newPosition + 50;
 }
 
 void TopBar::mousePressEvent(QMouseEvent *event) {
