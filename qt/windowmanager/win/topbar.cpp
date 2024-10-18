@@ -220,12 +220,13 @@ void TopBar::minimizeWindow() {
             QRect screenGeometry = screen->geometry();
             this->setGeometry(availableSlot, screenGeometry.height() - 38, 100, 25);
             minimizedSlots.push_back(availableSlot);
+        } else {
+            this->setGeometry(0, screenGeometry.height() - 38, 100, 25);
         }
 
         isMinimized = true;
     }
 }
-
 
 void TopBar::focusInEvent(QFocusEvent *event) {
     QWidget::focusInEvent(event);
