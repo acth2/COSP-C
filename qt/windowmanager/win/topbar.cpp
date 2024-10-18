@@ -196,7 +196,7 @@ TopBar::TopBar(QWindow *parentWindow, WindowManager *manager, QWidget *parent)
 void TopBar::minimizeWindow() {
     if (trackedWindow && !isMinimized) {
         originalGeometry = trackedWindow->geometry();
-
+        
         trackedWindow->setGeometry(trackedWindow->x(), trackedWindow->y(), 0, 0);
 
         maximizeButton->hide();
@@ -204,16 +204,28 @@ void TopBar::minimizeWindow() {
         minusButton->hide();
         resizeButton->hide();
 
-        QScreen *screen = QApplication::primaryScreen();
-        QRect screenGeometry = screen->geometry();
-        this->setGeometry(minimizedXPosition(), screenGeometry.height() - 38, 100, 25);
+        const int slotWidth = 150;
+        int availableSlot = -1;
 
-        this->show();
-        this->raise();
+        for (int i = 0; i < 10; ++i) {
+            int position = i * slotWidth;
+            if (std::find(minimizedSlots.begin(), minimizedSlots.end(), position) == minimizedSlots.end()) {
+                availableSlot = position;
+                break;
+            }
+        }
+
+        if (availableSlot != -1) {
+            QScreen *screen = QApplication::primaryScreen();
+            QRect screenGeometry = screen->geometry();
+            this->setGeometry(availableSlot, screenGeometry.height() - 38, 100, 25);
+            minimizedSlots.push_back(availableSlot);
+        }
 
         isMinimized = true;
     }
 }
+
 
 void TopBar::focusInEvent(QFocusEvent *event) {
     QWidget::focusInEvent(event);
@@ -325,8 +337,14 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
         minusButton->show();
         resizeButton->show();
 
-        updatePosition();
+        int usedSlot = this->x();
+        auto it = std::find(minimizedSlots.begin(), minimizedSlots.end(), usedSlot);
+        if (it != minimizedSlots.end()) {
+            minimizedSlots.erase(it);
+        }
+
         isMinimized = false;
+        updatePosition();
     }
     
     if (!isResizing) {
@@ -451,6 +469,13 @@ void TopBar::moveMinimizedWindow(bool moveRight) {
     int currentValue = MinimizedPosInt::getInstance().getValue();
     int adjustment = moveRight ? 50 : -50;
 
-    MinimizedPosInt::getInstance().setValue(currentValue + adjustment);
-    this->setGeometry(minimizedXPosition(), screenGeometry.height() - 38, 100, 25);
+    int newPosition = currentValue + adjustment;
+    if (newPosition < 0) {
+        newPosition = 0;
+    } else if (newPosition + 100 > screenGeometry.width()) {
+        newPosition = screenGeometry.width() - 100;
+    }
+
+    MinimizedPosInt::getInstance().setValue(newPosition);
+    this->setGeometry(newPosition, screenGeometry.height() - 38, 100, 25);
 }
