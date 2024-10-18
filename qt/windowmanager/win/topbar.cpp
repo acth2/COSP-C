@@ -326,7 +326,6 @@ void TopBar::mousePressEvent(QMouseEvent *event) {
         resizeButton->show();
 
         updatePosition();
-        QCursor::setPos(trackedWindow->x() / 2, trackedWindow->y() / 2);
         isMinimized = false;
     }
     
