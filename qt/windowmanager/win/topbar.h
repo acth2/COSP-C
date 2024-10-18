@@ -74,6 +74,8 @@ private:
 
     int minimalSizePos;
     bool isMinimized = false;
+
+    QRect originalGeometry;
 };
 
 #endif // TOPBAR_H
