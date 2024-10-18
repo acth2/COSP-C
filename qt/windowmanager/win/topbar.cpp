@@ -214,10 +214,10 @@ void TopBar::minimizeWindow() {
                 break;
             }
         }
+        QScreen *screen = QApplication::primaryScreen();
+        QRect screenGeometry = screen->geometry();
 
         if (availableSlot != -1) {
-            QScreen *screen = QApplication::primaryScreen();
-            QRect screenGeometry = screen->geometry();
             this->setGeometry(availableSlot, screenGeometry.height() - 38, 100, 25);
             minimizedSlots.push_back(availableSlot);
         } else {
