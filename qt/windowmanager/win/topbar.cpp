@@ -199,8 +199,6 @@ void TopBar::minimizeWindow() {
         QRect screenGeometry = screen->geometry();
         isMinimized = true;
 
-        trackedWindow->hide();
-
         this->show();
         this->raise();
 
